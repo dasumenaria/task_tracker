@@ -38,7 +38,7 @@ class TasksTable extends Table
         $this->setDisplayField('title');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('Users', [
+        $this->hasMany('Users', [
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
         ]);
@@ -68,10 +68,10 @@ class TasksTable extends Table
             ->requirePresence('title', 'create')
             ->notEmpty('title');
       
-        $validator
+       /*  $validator
             ->date('deadline')
             ->requirePresence('deadline', 'create')
-            ->notEmpty('deadline');
+            ->notEmpty('deadline'); */
 			
          return $validator;
     }

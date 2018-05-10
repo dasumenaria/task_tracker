@@ -14,21 +14,30 @@ class TasksController extends AppController
 {
     public function CreateTask()
     {	 
-        $task = $this->Tasks->newEntity();
+		$project_id=$this->request->getData('project_id');
+		$title=$this->request->getData('title');
+		$login_id=$this->request->getData('login_id');
+		$user_ids=$this->request->getData('user_id');
+		$deadline=$this->request->getData('deadline');
+		
         if ($this->request->is('post')) {
-            $task = $this->Tasks->patchEntity($task, $this->request->getData());
-			$deadline=$this->request->getData('deadline');
-			$task->deadline=date('Y-m-d',strtotime($deadline));
-			$login_id=$this->request->getData('login_id');
-			$task->created_user_id=$login_id;
-			
-            if ($this->Tasks->save($task)) {
-                $success=true;
-				$error='Task create Successfully'; 
-            }
-			else{
- 				$success=false;
-				$error='Something Went Wrong'; 
+            foreach($user_ids as $userid){
+				$query = $this->Tasks->query();
+						$query->insert(['project_id', 'title', 'user_id', 'deadline','created_user_id'])
+						->values([
+						'project_id' => $project_id,
+						'title' => $title,
+						'user_id' => $userid,
+						'deadline' => date('Y-m-d',strtotime($deadline)),
+						'created_user_id'=>$login_id,
+						]);
+				if($query->execute()){
+					$success=true;
+					$error='Task Created Successfully';
+				}else{
+					$success=false;
+					$error='Something Went Wrong'; 
+				}
 			}
         } 
         $this->set(compact('success','error'));
