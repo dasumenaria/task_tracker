@@ -24,13 +24,28 @@ class LeavesController extends AppController
     public function LeavesList($user_id=null)
     {
         $user_id=$this->request->getQuery('user_id');  
-        $count = $this->Leaves->find()
-			->where(['Leaves.user_id'=>$user_id])
-			->count();
+        if($user_id==1){
+            $count = $this->Leaves->find() 
+			    ->count();
+        }
+        else
+        {
+            $count = $this->Leaves->find()
+			    ->where(['Leaves.user_id'=>$user_id])
+			    ->count();
+        }
 		if($count>0){
-			$response_object = $this->Leaves->find()
-				->contain(['Users','LeaveTypes'])
-				->where(['Leaves.user_id'=>$user_id]);
+		    if($user_id==1){
+               	$response_object = $this->Leaves->find()
+    				->contain(['Users','LeaveTypes']);
+            }
+            else
+            {
+                $response_object = $this->Leaves->find()
+    				->contain(['Users','LeaveTypes'])
+    				->where(['Leaves.user_id'=>$user_id]);
+            }
+			 
 			$success=true;
 			$error='';
 		}
