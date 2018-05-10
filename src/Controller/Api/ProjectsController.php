@@ -17,7 +17,38 @@ class ProjectsController extends AppController
         /*$this->paginate = [
             'contain' => ['MasterClients', 'Users']
         ];*/
-        $response_object = $this->Projects->find()->where(['completed_status'=>0]);
+        $response_object = $this->Projects->find()->where(['completed_status'=>0])->contain(['Tasks'=>function ($q){
+			return $q->order(['Tasks.deadline'=>'ASC']);
+		}])->order(['deadline'=>'ASC']);
+		//start code for get deadline date
+			$tasks=[];
+			foreach($response_object as $projects){ 
+				$tasks[$projects->id]=$projects->tasks;
+			}
+			
+			$task_dates=[];
+			foreach($tasks as $task){  
+				foreach($task as $tasks_deadline){
+					$task_dates[$tasks_deadline->project_id][] = date('Y-m-d',strtotime($tasks_deadline->deadline));
+				}
+			}
+			$totalSizeOf=0;
+			foreach($response_object as $projectss){
+				if(!empty($projectss->tasks)){				
+					$totalSizeOf=sizeof($task_dates[$projectss->id]);
+					//pr($projectss); exit;
+					//exit;
+					$noFoSize=$totalSizeOf-1;
+					$LastDateOfTask=$task_dates[$projectss->id][$noFoSize];
+					$projectss['LastDateOfTask']=$LastDateOfTask;
+				}
+				else{
+					$projectss['LastDateOfTask']='0000-00-00';
+				}
+			}
+		 
+		//ends code for get deadline date
+
         $success=true;
 		$error='';
 		$this->set(compact('success','error','response_object'));	
@@ -45,11 +76,45 @@ class ProjectsController extends AppController
 	public function projectDetails($project_id=null)
     {
         $project_id=$this->request->getQuery('project_id');  
-        $response_object = $this->Projects->find()
+        /*  $response_object = $this->Projects->find()
 			->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users'],'Tasks'=>function($q){
-				return $q->where(['Tasks.status'=>0]);
+				return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
 			}])
-			->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0]);
+			->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0]); */ 
+		
+		 $response_object = $this->Projects->get($project_id,[
+			'contain'=>['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users'],'Tasks'=>function($q){
+				return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
+			}],
+			'conditions' => ['Projects.completed_status' => 0],
+		]);
+			
+	
+		//start code for get deadline date
+			$tasks=[];
+			$tasks[$response_object->id]=$response_object->tasks;
+				
+			
+			$task_dates=[];
+			foreach($tasks as $task){  
+				foreach($task as $tasks_deadline){
+					$task_dates[$tasks_deadline->project_id][] = date('Y-m-d',strtotime($tasks_deadline->deadline));
+				}
+			}
+			$totalSizeOf=0;
+				if(!empty($response_object->tasks)){				
+					$totalSizeOf=sizeof($task_dates[$response_object->id]);
+					//pr($projectss); exit;
+					//exit;
+					$noFoSize=$totalSizeOf-1;
+					$LastDateOfTask=$task_dates[$response_object->id][$noFoSize];
+					$response_object['LastDateOfTask']=$LastDateOfTask;
+				}
+				else{
+					$response_object['LastDateOfTask']='0000-00-00';
+				}
+		 
+		//ends code for get deadline date	
         $success=true;
 		$error='';
 		$this->set(compact('success','error','response_object'));
