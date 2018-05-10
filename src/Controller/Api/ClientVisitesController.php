@@ -18,14 +18,21 @@ class ClientVisitesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function clientVisitList($user_id=null)
     {
-        $this->paginate = [
-            'contain' => ['MasterClients', 'Users']
-        ];
-        $clientVisites = $this->paginate($this->ClientVisites);
-
-        $this->set(compact('clientVisites'));
+		$user_id=$this->request->getQuery('user_id'); 
+        if($user_id==1){
+            $response_object = $this->ClientVisites->find()->contain(['MasterClients','Users']);
+        }
+        else
+        {
+            $response_object = $this->ClientVisites->find()
+			    ->where(['ClientVisites.user_id'=>$user_id])->contain(['MasterClients','Users']);
+        }
+        $success=true;
+		$error='';
+		$this->set(compact('success','error','response_object'));	
+        $this->set('_serialize', ['success','error','response_object']);
     }
 	
     public function AddClientVisit()
