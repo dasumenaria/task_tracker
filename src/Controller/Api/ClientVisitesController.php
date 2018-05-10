@@ -22,15 +22,29 @@ class ClientVisitesController extends AppController
     {
 		$user_id=$this->request->getQuery('user_id'); 
         if($user_id==1){
-            $response_object = $this->ClientVisites->find()->contain(['MasterClients','Users']);
+            $count = $this->ClientVisites->find()->contain(['MasterClients','Users'])->count();
         }
         else
-        {
-            $response_object = $this->ClientVisites->find()
-			    ->where(['ClientVisites.user_id'=>$user_id])->contain(['MasterClients','Users']);
+        { 
+            $count = $this->ClientVisites->find()->where(['ClientVisites.user_id'=>$user_id])->contain(['MasterClients','Users'])->count();
         }
-        $success=true;
-		$error='';
+		if($count>0){
+			 if($user_id==1){ 
+				$response_object = $this->ClientVisites->find()->contain(['MasterClients','Users']);
+			}
+			else
+			{  
+				$response_object = $this->ClientVisites->find()->where(['ClientVisites.user_id'=>$user_id])->contain(['MasterClients','Users']);
+			}
+			$success=true;
+			$error='';
+		}
+		else{
+			$success=false;
+			$response_object=array();
+			$error='';
+		}
+        
 		$this->set(compact('success','error','response_object'));	
         $this->set('_serialize', ['success','error','response_object']);
     }
