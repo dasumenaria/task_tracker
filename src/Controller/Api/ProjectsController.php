@@ -184,8 +184,6 @@ class ProjectsController extends AppController
 			$totalSizeOf=0;
 				if(!empty($response_object->tasks)){				
 					$totalSizeOf=sizeof($task_dates[$response_object->id]);
-					//pr($projectss); exit;
-					//exit;
 					$noFoSize=$totalSizeOf-1;
 					$LastDateOfTask=$task_dates[$response_object->id][$noFoSize];
 					$response_object['LastDateOfTask']=$LastDateOfTask;
