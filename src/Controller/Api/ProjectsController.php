@@ -57,22 +57,39 @@ class ProjectsController extends AppController
     public function projectListbyUser($user_id=null)
     {
         $user_id=$this->request->getQuery('user_id');
-		if($user_id!=1){
+		if($user_id!=1){ 
+			$count=$response_object = $this->Projects->find()
+				->innerJoinWith('ProjectMembers',function($q)use($user_id){
+					return $q->where(['ProjectMembers.user_id'=>$user_id]);
+				})->contain(['Users','Tasks'=>function ($q) use($user_id){
+					return $q->where(['user_id'=>$user_id])->order(['Tasks.deadline'=>'ASC']);
+				}])->where(['Projects.completed_status'=>0])->count();
+				
+		}
+		else{ 
+			$count=$this->Projects->find()
+					->contain(['Users','Tasks'=>function ($q) {
+						return $q->order(['Tasks.deadline'=>'ASC']);
+					}])->where(['Projects.completed_status'=>0])->count();
+		}
+		//pr($count);exit;
+		if($count > 0){
+			if($user_id!=1){
 			$response_object = $this->Projects->find()
 				->innerJoinWith('ProjectMembers',function($q)use($user_id){
 					return $q->where(['ProjectMembers.user_id'=>$user_id]);
 				})->contain(['Users','Tasks'=>function ($q) use($user_id){
 					return $q->where(['user_id'=>$user_id])->order(['Tasks.deadline'=>'ASC']);
 				}])->where(['Projects.completed_status'=>0]);
-			
-		}
-		else{
+
+			}
+			else{
 				$response_object = $this->Projects->find()
 					->contain(['Users','Tasks'=>function ($q) {
 						return $q->order(['Tasks.deadline'=>'ASC']);
 					}])->where(['Projects.completed_status'=>0]);
-		}
-		//start code for get deadline date
+			}
+			//start code for get deadline date
 			$tasks=[];
 			foreach($response_object as $projects){ 
 				$tasks[$projects->id]=$projects->tasks;
@@ -100,30 +117,60 @@ class ProjectsController extends AppController
 			}
 		 
 		//ends code for get deadline date	
-        $success=true;
-		$error='';
+			$success=true;
+			$error='';
+		}else{ 
+			$success=false;
+			$error='No data found';
+			$Response=array();
+		}
 		$this->set(compact('success','error','response_object'));
         $this->set('_serialize', ['success','error','response_object']);
     }
 	
-	public function projectDetails($project_id=null)
+	public function projectDetails($project_id=null,$user_id=null)
     {
         $project_id=$this->request->getQuery('project_id');  
-        /*  $response_object = $this->Projects->find()
-			->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users'],'Tasks'=>function($q){
-				return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
-			}])
-			->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0]); */ 
-		
-		 $response_object = $this->Projects->get($project_id,[
-			'contain'=>['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users'],'Tasks'=>function($q){
-				return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
-			}],
-			'conditions' => ['Projects.completed_status' => 0],
-		]);
-			
-	
-		//start code for get deadline date
+        $user_id=$this->request->getQuery('user_id');  
+       
+		if($user_id!=1){ 
+			$count=$this->Projects->find()
+				->innerJoinWith('ProjectMembers',function($q)use($user_id){
+					return $q->where(['ProjectMembers.user_id'=>$user_id]);
+				})
+				->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers','Tasks'=>function($q){
+					return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
+				}])
+				->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0])->count();
+				
+		}
+		else{ 
+			$count=$this->Projects->find()
+				->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>
+					['Users'],'Tasks'=>function($q){
+					return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
+				}])
+				->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0])->count();
+		}
+		if($count>0){ 
+			if($user_id == 1){
+				$response_object = $this->Projects->get($project_id,[
+					'contain'=>['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users'],'Tasks'=>function($q){
+						return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
+					}],
+					'conditions' => ['Projects.completed_status' => 0],
+				]);
+			}else{
+				$response_object = $this->Projects->find()
+					->innerJoinWith('ProjectMembers',function($q)use($user_id){
+						return $q->where(['ProjectMembers.user_id'=>$user_id]);
+					})
+					->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers','Tasks'=>function($q){
+						return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
+					}])
+					->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0])->first();
+			}
+				//start code for get deadline date
 			$tasks=[];
 			$tasks[$response_object->id]=$response_object->tasks;
 				
@@ -147,9 +194,17 @@ class ProjectsController extends AppController
 					$response_object['LastDateOfTask']='0000-00-00';
 				}
 		 
-		//ends code for get deadline date	
-        $success=true;
-		$error='';
+		//ends code for get deadline date
+			$success=true;
+			$error=''; 
+		}else{ 
+			$success=false;
+			$error='No data found';
+			$Response=array();
+		}
+			//pr($response_object);exit;
+			
+        
 		$this->set(compact('success','error','response_object'));
         $this->set('_serialize', ['success','error','response_object']);
     }

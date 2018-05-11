@@ -18,8 +18,8 @@
         <thead>
             <tr>
                 <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('user_from_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('user_to_id') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('user_id') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('sendto_user_id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('project_id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('created_on') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -29,8 +29,8 @@
             <?php foreach ($chats as $chat): ?>
             <tr>
                 <td><?= $this->Number->format($chat->id) ?></td>
-                <td><?= $this->Number->format($chat->user_from_id) ?></td>
-                <td><?= $this->Number->format($chat->user_to_id) ?></td>
+                <td><?= $this->Number->format($chat->user_id) ?></td>
+                <td><?= $this->Number->format($chat->sendto_user_id) ?></td>
                 <td><?= $chat->has('project') ? $this->Html->link($chat->project->title, ['controller' => 'Projects', 'action' => 'view', $chat->project->id]) : '' ?></td>
                 <td><?= h($chat->created_on) ?></td>
                 <td class="actions">

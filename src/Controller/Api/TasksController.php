@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller\Api;
 
-use App\Controller\AppController;
+use App\Controller\Api\AppController;
 
 /**
  * Tasks Controller
@@ -12,6 +12,7 @@ use App\Controller\AppController;
  */
 class TasksController extends AppController
 {
+	
     public function CreateTask()
     {	 
 		$project_id=$this->request->getData('project_id');
@@ -31,7 +32,17 @@ class TasksController extends AppController
 						'deadline' => date('Y-m-d',strtotime($deadline)),
 						'created_user_id'=>$login_id,
 						]);
+						
 				if($query->execute()){
+					if($login_id == 1){
+						$message = "Task Created By Admin";
+					}else{
+						$user_name = $this->Tasks->Users->get($login_id);
+						$userNames =  $user_name->name;
+						$message = "Task Created By".$userNames;
+					}
+					
+					$this->chatsOfUsers($login_id,$userid,$project_id,$message);
 					$success=true;
 					$error='Task Created Successfully';
 				}else{

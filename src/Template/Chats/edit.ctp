@@ -23,8 +23,8 @@
     <fieldset>
         <legend><?= __('Edit Chat') ?></legend>
         <?php
-            echo $this->Form->control('user_from_id');
-            echo $this->Form->control('user_to_id');
+            echo $this->Form->control('user_id');
+            echo $this->Form->control('sendto_user_id');
             echo $this->Form->control('project_id', ['options' => $projects]);
             echo $this->Form->control('chat_messages');
             echo $this->Form->control('created_on');

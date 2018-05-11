@@ -55,6 +55,25 @@ class AppController extends Controller
 			]);*/
 	}
 	
+	 public function chatsOfUsers($user_id=null,$senduser_id=null,$project_id=null,$messages=null)
+		{
+			$this->loadModel('Chats');
+			$query = $this->Chats->query();
+			$query->insert(['user_id', 'sendto_user_id', 'project_id', 'chat_messages'])
+						->values([
+						'user_id' => $user_id,
+						'sendto_user_id' => $senduser_id,
+						'project_id' => $project_id,
+						'chat_messages' => $messages
+						]);
+			if($query->execute()){
+				return true;
+			}else{
+				return false;
+			}			
+						
+		}	
+	
 }
 
 /*

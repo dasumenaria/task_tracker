@@ -7,8 +7,8 @@ use Cake\ORM\Entity;
  * Chat Entity
  *
  * @property int $id
- * @property int $user_from_id
- * @property int $user_to_id
+ * @property int $user_id
+ * @property int $sendto_user_id
  * @property int $project_id
  * @property string $chat_messages
  * @property \Cake\I18n\FrozenTime $created_on
@@ -30,8 +30,8 @@ class Chat extends Entity
      * @var array
      */
     protected $_accessible = [
-        'user_from_id' => true,
-        'user_to_id' => true,
+        'user_id' => true,
+        'sendto_user_id' => true,
         'project_id' => true,
         'chat_messages' => true,
         'created_on' => true,

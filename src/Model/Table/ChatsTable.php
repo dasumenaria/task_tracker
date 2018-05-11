@@ -9,8 +9,8 @@ use Cake\Validation\Validator;
 /**
  * Chats Model
  *
- * @property \App\Model\Table\UserFromsTable|\Cake\ORM\Association\BelongsTo $UserFroms
- * @property \App\Model\Table\UserTosTable|\Cake\ORM\Association\BelongsTo $UserTos
+ * @property |\Cake\ORM\Association\BelongsTo $Users
+ * @property |\Cake\ORM\Association\BelongsTo $SendtoUsers
  * @property \App\Model\Table\ProjectsTable|\Cake\ORM\Association\BelongsTo $Projects
  *
  * @method \App\Model\Entity\Chat get($primaryKey, $options = [])
@@ -38,12 +38,12 @@ class ChatsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('UserFroms', [
-            'foreignKey' => 'user_from_id',
+        $this->belongsTo('Users', [
+            'foreignKey' => 'user_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('UserTos', [
-            'foreignKey' => 'user_to_id',
+        $this->belongsTo('SendtoUsers', [
+            'foreignKey' => 'sendto_user_id',
             'joinType' => 'INNER'
         ]);
         $this->belongsTo('Projects', [
@@ -87,8 +87,8 @@ class ChatsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['user_from_id'], 'UserFroms'));
-        $rules->add($rules->existsIn(['user_to_id'], 'UserTos'));
+        $rules->add($rules->existsIn(['user_id'], 'Users'));
+        $rules->add($rules->existsIn(['sendto_user_id'], 'SendtoUsers'));
         $rules->add($rules->existsIn(['project_id'], 'Projects'));
 
         return $rules;

@@ -27,12 +27,12 @@
             <td><?= $this->Number->format($chat->id) ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('User From Id') ?></th>
-            <td><?= $this->Number->format($chat->user_from_id) ?></td>
+            <th scope="row"><?= __('User Id') ?></th>
+            <td><?= $this->Number->format($chat->user_id) ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('User To Id') ?></th>
-            <td><?= $this->Number->format($chat->user_to_id) ?></td>
+            <th scope="row"><?= __('Sendto User Id') ?></th>
+            <td><?= $this->Number->format($chat->sendto_user_id) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Created On') ?></th>
