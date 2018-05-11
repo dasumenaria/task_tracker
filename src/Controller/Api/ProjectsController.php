@@ -61,12 +61,45 @@ class ProjectsController extends AppController
 			$response_object = $this->Projects->find()
 				->innerJoinWith('ProjectMembers',function($q)use($user_id){
 					return $q->where(['ProjectMembers.user_id'=>$user_id]);
-				})
-				->where(['Projects.completed_status'=>0]);
+				})->contain(['Users','Tasks'=>function ($q) use($user_id){
+					return $q->where(['user_id'=>$user_id])->order(['Tasks.deadline'=>'ASC']);
+				}])->where(['Projects.completed_status'=>0]);
+			
 		}
 		else{
-				$response_object = $this->Projects->find()->where(['Projects.completed_status'=>0]);
+				$response_object = $this->Projects->find()
+					->contain(['Users','Tasks'=>function ($q) {
+						return $q->order(['Tasks.deadline'=>'ASC']);
+					}])->where(['Projects.completed_status'=>0]);
 		}
+		//start code for get deadline date
+			$tasks=[];
+			foreach($response_object as $projects){ 
+				$tasks[$projects->id]=$projects->tasks;
+			}
+			
+			$task_dates=[];
+			foreach($tasks as $task){  
+				foreach($task as $tasks_deadline){
+					$task_dates[$tasks_deadline->project_id][] = date('Y-m-d',strtotime($tasks_deadline->deadline));
+				}
+			}
+			$totalSizeOf=0;
+			foreach($response_object as $projectss){
+				if(!empty($projectss->tasks)){				
+					$totalSizeOf=sizeof($task_dates[$projectss->id]);
+					//pr($projectss); exit;
+					//exit;
+					$noFoSize=$totalSizeOf-1;
+					$LastDateOfTask=$task_dates[$projectss->id][$noFoSize];
+					$projectss['LastDateOfTask']=$LastDateOfTask;
+				}
+				else{
+					$projectss['LastDateOfTask']='0000-00-00';
+				}
+			}
+		 
+		//ends code for get deadline date	
         $success=true;
 		$error='';
 		$this->set(compact('success','error','response_object'));
