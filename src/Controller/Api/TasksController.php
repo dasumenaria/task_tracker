@@ -39,7 +39,7 @@ class TasksController extends AppController
 					}else{
 						$user_name = $this->Tasks->Users->get($login_id);
 						$userNames =  $user_name->name;
-						$message = "Task Created By".$userNames;
+						$message = "Task Created By".''.$userNames;
 					}
 					
 					$this->chatsOfUsers($login_id,$userid,$project_id,$message);
@@ -106,47 +106,75 @@ class TasksController extends AppController
         $this->set(compact('success','error','Response'));
         $this->set('_serialize', ['success','error','Response']);
     }
+	
+	
 	public function TaskEdit()
     {
 		$task_id=$this->request->getData('task_id'); 
-		
-		$Tasks = $this->Tasks->find()->where(['id'=>$task_id])->toArray();
-		if(!empty($Tasks))
-		{
-			foreach($Tasks as $Task)
-			{
-				$TaskStatuses = $this->Tasks->TaskStatuses->newEntity();
-				$TaskStatuses->user_id = $Task->user_id;
-				$TaskStatuses->deadline = $Task->deadline; 
-				$TaskStatuses->task_id = $Task->id; 
-				//
-				if ($this->Tasks->TaskStatuses->save($TaskStatuses))
-				{
-					$task = $this->Tasks->get($task_id, [
-						'contain' => []
+		$user_ids=$this->request->getData('login_id'); 
+		$type=$this->request->getData('type'); 
+		if($type == 1){
+			if($user_ids == 1){ 
+				$count = $this->Tasks->find()->where(['id'=>$task_id])->count();
+			}else{
+				$count = $this->Tasks->find()->where(['user_id'=>$user_ids,'id'=>$task_id])->count();
+			}
+			
+			if($count > 0){
+				if($user_ids != 1){ 
+					$response_object = $this->Tasks->get($task_id,[
+					'conditions' => ['user_id'=>$user_ids]
 					]);
-					
-					$task = $this->Tasks->patchEntity($task, $this->request->getData());
-					$deadline=$this->request->getData('deadline');
-					$task->deadline=date('Y-m-d',strtotime($deadline));								
-					 
-					if ($this->Tasks->save($task)) {
-						$success=true;
-						$error='Task Updated Successfully'; 
-					}
-					else{
-						$success=false;
-						$error='Something Went Wrong'; 
-					}					
-				}else
+				}else{
+					$response_object = $this->Tasks->get($task_id);
+				}
+				$success=true;
+				$error=''; 	
+			}else{
+				$success=false;
+				$error='No data found';
+				$response_object=array();
+			}
+			
+		}else if($type == 2){
+			$Tasks = $this->Tasks->find()->where(['id'=>$task_id])->toArray();
+			if(!empty($Tasks))
+			{
+				foreach($Tasks as $Task)
 				{
-					$success=false;
-					$error='Not Updated'; 				
+					$TaskStatuses = $this->Tasks->TaskStatuses->newEntity();
+					$TaskStatuses->user_id = $Task->user_id;
+					$TaskStatuses->deadline = $Task->deadline; 
+					$TaskStatuses->task_id = $Task->id; 
+					//
+					if ($this->Tasks->TaskStatuses->save($TaskStatuses))
+					{
+						$task = $this->Tasks->get($task_id, [
+							'contain' => []
+						]);
+						
+						$task = $this->Tasks->patchEntity($task, $this->request->getData());
+						$deadline=$this->request->getData('deadline');
+						$task->deadline=date('Y-m-d',strtotime($deadline));								
+						 
+						if ($this->Tasks->save($task)) {
+							$success=true;
+							$error='Task Updated Successfully'; 
+						}
+						else{
+							$success=false;
+							$error='Something Went Wrong'; 
+						}					
+					}else
+					{
+						$success=false;
+						$error='Not Updated'; 				
+					}
 				}
 			}
 		}
-        $this->set(compact('success','error'));
-        $this->set('_serialize', ['success','error']);
+		
+        $this->set(compact('success','error','response_object'));
+        $this->set('_serialize', ['success','error','response_object']);
     }
-
 }

@@ -128,7 +128,7 @@ class ProjectsController extends AppController
         $this->set('_serialize', ['success','error','response_object']);
     }
 	
-	public function projectDetails($project_id=null,$user_id=null)
+public function projectDetails($project_id=null,$user_id=null)
     {
         $project_id=$this->request->getQuery('project_id');  
         $user_id=$this->request->getQuery('user_id');  
@@ -138,8 +138,8 @@ class ProjectsController extends AppController
 				->innerJoinWith('ProjectMembers',function($q)use($user_id){
 					return $q->where(['ProjectMembers.user_id'=>$user_id]);
 				})
-				->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers','Tasks'=>function($q){
-					return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
+				->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers','Tasks'=>function($q) use($user_id){
+					return $q->where(['Tasks.status'=>0,'Tasks.user_id'=>$user_id])->order(['Tasks.deadline'=>'ASC']);
 				}])
 				->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0])->count();
 				
@@ -162,14 +162,13 @@ class ProjectsController extends AppController
 				]);
 			}else{
 				$response_object = $this->Projects->find()
-					->innerJoinWith('ProjectMembers',function($q)use($user_id){
-						return $q->where(['ProjectMembers.user_id'=>$user_id]);
-					})
-					->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers','Tasks'=>function($q){
-						return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
+					->innerJoinWith('ProjectMembers')
+					->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users'],'Tasks'=>function($q) use($user_id){
+						return $q->where(['Tasks.status'=>0,'Tasks.user_id'=>$user_id])->order(['Tasks.deadline'=>'ASC']);
 					}])
 					->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0])->first();
 			}
+			//pr($response_object);exit;zz
 				//start code for get deadline date
 			$tasks=[];
 			$tasks[$response_object->id]=$response_object->tasks;
@@ -266,50 +265,79 @@ class ProjectsController extends AppController
         $this->set('_serialize', ['success','error']); 
     }
 	
-    public function ProjectEdit()
+   public function ProjectEdit()
     {
 		$project_id=$this->request->getData('project_id'); 
-		
-		$Projects = $this->Projects->find()->where(['id'=>$project_id])->toArray();
-		if(!empty($Projects))
-		{
-			foreach($Projects as $Project)
-			{
-				$TaskStatuses = $this->Projects->ProjectStatuses->newEntity();
-				$TaskStatuses->created_by = $Project->created_by;
-				$TaskStatuses->deadline = $Project->deadline; 
-				$TaskStatuses->project_id = $Project->id; 
-				//
-				//pr($TaskStatuses); exit;
-				if ($this->Projects->ProjectStatuses->save($TaskStatuses))
-				{
-					$project = $this->Projects->get($project_id, [
-						'contain' => []
+		$userIds=$this->request->getData('login_id'); 
+		$type=$this->request->getData('type'); 
+		if($type == 1){ 
+			if($userIds == 1){ 
+				$count = $this->Projects->find()->where(['id'=>$project_id])->count();
+			}else{
+				$count = $this->Projects->find()->where(['user_id'=>$userIds,'id'=>$project_id])->count();
+			}
+			if($count > 0){
+				if($userIds != 1){ 
+					$response_object = $this->Projects->get($project_id,[
+					'conditions' => ['user_id'=>$userIds],
+					'contain'=>['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users']]
 					]);
- 					$this->Projects->ProjectMembers->deleteAll(['ProjectStatuses.project_id'=>$project_id]);
-					$project = $this->Projects->patchEntity($project, $this->request->getData(),[ 'associated' => ['ProjectMembers']]); 
-					$deadline=$this->request->getData('deadline');
-					$login_id=$this->request->getData('login_id');
-					$project->deadline=date('Y-m-d',strtotime($deadline));
-					$project->created_by=$login_id;
-					//pr($project); exit;
-					if ($this->Projects->save($project)) {
-						$success=true;
-						$error='Project Update Successfully'; 
-					}
-					else{
-						$success=false;
-						$error='Something Went Wrong'; 
-					}					
-				}else
+				}else{
+					$response_object = $this->Projects->get($project_id,[
+					    'contain'=>['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users']]
+					    ]);
+				}
+				$success=true;
+				$error=''; 	
+			}else{
+				$success=false;
+				$error='No data found';
+				$response_object=array();
+			}
+		}else if($type == 2){
+			$Projects = $this->Projects->find()->where(['id'=>$project_id])->toArray();
+			if(!empty($Projects))
+			{
+				foreach($Projects as $Project)
 				{
-					$success=false;
-					$error='Not Updated'; 				
+					$TaskStatuses = $this->Projects->ProjectStatuses->newEntity();
+					$TaskStatuses->created_by = $Project->created_by;
+					$TaskStatuses->deadline = $Project->deadline; 
+					$TaskStatuses->project_id = $Project->id; 
+					//
+					//pr($TaskStatuses); exit;
+					if ($this->Projects->ProjectStatuses->save($TaskStatuses))
+					{
+						$project = $this->Projects->get($project_id, [
+							'contain' => []
+						]);
+						$this->Projects->ProjectMembers->deleteAll(['ProjectStatuses.project_id'=>$project_id]);
+						$project = $this->Projects->patchEntity($project, $this->request->getData(),[ 'associated' => ['ProjectMembers']]); 
+						$deadline=$this->request->getData('deadline');
+						$login_id=$this->request->getData('login_id');
+						$project->deadline=date('Y-m-d',strtotime($deadline));
+						$project->created_by=$login_id;
+						//pr($project); exit;
+						if ($this->Projects->save($project)) {
+							$success=true;
+							$error='Project Update Successfully'; 
+						}
+						else{
+							$success=false;
+							$error='Something Went Wrong'; 
+						}					
+					}else
+					{
+						$success=false;
+						$error='Not Updated'; 				
+					}
 				}
 			}
 		}
-        $this->set(compact('success','error'));
-        $this->set('_serialize', ['success','error']);
+		
+		
+        $this->set(compact('success','error','response_object'));
+        $this->set('_serialize', ['success','error','response_object']);
     }
     /**
      * Delete method

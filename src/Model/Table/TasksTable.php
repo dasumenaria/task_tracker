@@ -35,7 +35,8 @@ class TasksTable extends Table
         parent::initialize($config);
 
         $this->setTable('tasks');
-        $this->setDisplayField('title');
+        //$this->setDisplayField('title');
+        $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
         $this->hasMany('Users', [
@@ -43,7 +44,8 @@ class TasksTable extends Table
             'joinType' => 'INNER'
         ]);
 		$this->hasMany('TaskStatuses', [
-            'foreignKey' => 'task_id'
+            'foreignKey' => 'task_id',
+			'saveStrategy' => 'replace'
         ]);
         $this->belongsTo('Projects', [
             'foreignKey' => 'project_id',
