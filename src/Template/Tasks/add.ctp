@@ -1,36 +1,85 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Task $task
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('List Tasks'), ['action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Projects'), ['controller' => 'Projects', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Project'), ['controller' => 'Projects', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="tasks form large-9 medium-8 columns content">
-    <?= $this->Form->create($task) ?>
-    <fieldset>
-        <legend><?= __('Add Task') ?></legend>
-        <?php
-            echo $this->Form->control('user_id', ['options' => $users]);
-            echo $this->Form->control('project_id', ['options' => $projects]);
-            echo $this->Form->control('title');
-            echo $this->Form->control('status');
-            echo $this->Form->control('deadline');
-            echo $this->Form->control('created_user_id');
-            echo $this->Form->control('created_on');
-            echo $this->Form->control('completed_on');
-            echo $this->Form->control('deleted_on');
-            echo $this->Form->control('is_deleted');
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
-</div>
+<?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); ?>
+<style>
+#Content{ width:90% !important; margin-left: 5%;}
+input:focus {background-color:#FFF !important;}
+input[type="password"]:focus {background-color:#FFF !important;}
+div.error { display: block !important; } 
+label { font-weight:100 !important;}
+</style>
+
+<section class="content">
+<div class="col-md-12"></div>
+      <div class="row">
+        <div class="col-md-12">
+         <div class="box box-primary">
+			<div class="box-header with-border">
+              <h3 class="box-title">Add Task</h3>
+            </div>
+			
+			<?php  echo $this->Form->create($task, ['type' => 'file','id'=>"UserRegisterForm"]); ?>
+				<div class="box-body"> 
+					<div class="form-group col-md-6">
+						<label>Title</label>
+						<input type="text" class="form-control" name="title" id="title" placeholder="Enter title">
+					</div>
+					<div class="form-group col-md-6">
+						<label>Deadline</label>
+						<input type="text" class="form-control date-picker" data-date-format="dd-mm-yyyy" name="deadline" id="deadline" placeholder="Enter deadline">
+					</div>
+					<div class="form-group col-md-6">
+						<label>Select Project</label>
+						<?php echo  $this->Form->control('project_id', ['options' => $projects,'class'=>"form-control select2", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false]);?>
+						<label id="project-id-error" class="error" style="display:none" for="project-id">This field is required.</label>
+					</div>
+					<div class="form-group col-md-6">
+						<label>Select User</label>
+						<?php echo  $this->Form->control('user_id', ['options' => $users,'class'=>"form-control select2", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false]);?>
+						<label id="user-id-error" class="error" style="display:none" for="user-id">This field is required.</label>
+					</div>  
+				 
+					<div class="col-md-12">
+						<hr></hr>
+						<center>
+							<button type="submit" class="btn btn-info">Submit</button>
+						</center>	
+					</div>	 
+				</div>					
+             </form>
+                     
+        </div>
+       </div>
+   </section> 
+ <?php echo $this->Html->script(['jquery.validate']);?>   
+<script>  
+$.validator.addMethod("specialChars", function( value, element ) {
+	var regex = new RegExp("^[a-zA-Z ]+$");
+	var key = value;
+
+	if (!regex.test(key)) {
+	   return false;
+	}
+	return true;
+}, "please use only alphabetic characters");
+
+$('#UserRegisterForm').validate({
+	rules: {
+		"title": {
+			required: true,
+		},
+		"user_id": {
+			required: true
+		},
+		"project_id": {
+			required: true,
+		}, 
+		"deadline": {
+			required: true,
+		}
+	},
+	ignore: ":hidden:not(select)",
+	submitHandler: function (form) {
+		$("#loader-1").show();
+		form[0].submit(); 
+	}
+});
+</script> 

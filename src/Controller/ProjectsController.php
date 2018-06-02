@@ -12,7 +12,6 @@ use App\Controller\AppController;
  */
 class ProjectsController extends AppController
 {
-
     /**
      * Index method
      *
@@ -21,10 +20,10 @@ class ProjectsController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['MasterClients', 'Users']
+            'contain' => ['MasterClients', 'Users','ProjectMembers'=>['Users'],'Tasks'=>['Users']]
         ];
-        $projects = $this->paginate($this->Projects);
-
+        $projects = $this->paginate($this->Projects->find()->where(['Projects.is_deleted'=>0]));
+		 
         $this->set(compact('projects'));
     }
 
@@ -54,7 +53,20 @@ class ProjectsController extends AppController
         $project = $this->Projects->newEntity();
         if ($this->request->is('post')) {
             $project = $this->Projects->patchEntity($project, $this->request->getData());
-            if ($this->Projects->save($project)) {
+			$project->deadline=date('Y-m-d',strtotime($this->request->getData('deadline')));
+			$project->created_by=$this->Auth->User('id');
+			
+            if ($data=$this->Projects->save($project)) {
+				$projectmenbers=$this->request->getData('projectmenbers');
+				foreach($projectmenbers as $users)
+				{
+					$projectMembers = $this->Projects->ProjectMembers->newEntity();
+					$projectMembers = $this->Projects->ProjectMembers->patchEntity($projectMembers, $this->request->getData());
+					$projectMembers->project_id = $data->id;
+					$projectMembers->user_id = $users;
+					//pr($projectMembers); exit;
+					$this->Projects->ProjectMembers->save($projectMembers);
+				}
                 $this->Flash->success(__('The project has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

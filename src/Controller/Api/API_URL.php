@@ -10,6 +10,14 @@ Method: GET
 http://stxavier.co.in/task_tractor/api/projects/ClientList.json
 Method: GET
 --------------------------------------------------------------
+
+
+
+
+
+
+
+Remaining------------////////////////
 http://stxavier.co.in/task_tractor/api/projects/CreateProject.json
 Method: Post
 Paramerer:--
@@ -17,7 +25,7 @@ Paramerer:--
 	deadline:04-05-2018
 	user_id:2 (Point of Contact)
 	title:Family function
-	login_id:2 (Admin Id )
+	login_id:2 (Admin Id)
 	project_members[0][user_id]:2 (team Members)
 	project_members[1][user_id]:2 (team Members)
 --------------------------------------------------------------

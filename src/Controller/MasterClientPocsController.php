@@ -99,14 +99,16 @@ class MasterClientPocsController extends AppController
      */
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $masterClientPoc = $this->MasterClientPocs->get($id);
-        if ($this->MasterClientPocs->delete($masterClientPoc)) {
-            $this->Flash->success(__('The master client poc has been deleted.'));
+        $masterClientPoc = $this->MasterClientPocs->get($id, [
+            'contain' => []
+        ]);
+		$masterClientPoc = $this->MasterClientPocs->patchEntity($masterClientPoc, $this->request->getData());
+		$masterClientPoc->is_deleted=1;
+        if ($this->MasterClientPocs->save($masterClientPoc)) { 
+            $this->Flash->success(__('The client poc has been deleted.'));
         } else {
-            $this->Flash->error(__('The master client poc could not be deleted. Please, try again.'));
-        }
-
-        return $this->redirect(['action' => 'index']);
+            $this->Flash->error(__('The client poc could not be deleted. Please, try again.'));
+        } 
+        return $this->redirect(['controller'=>'MasterClients','action' => 'index']);
     }
 }

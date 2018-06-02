@@ -1,54 +1,106 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\User $user
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Form->postLink(
-                __('Delete'),
-                ['action' => 'delete', $user->id],
-                ['confirm' => __('Are you sure you want to delete # {0}?', $user->id)]
-            )
-        ?></li>
-        <li><?= $this->Html->link(__('List Users'), ['action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('List Master Roles'), ['controller' => 'MasterRoles', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Master Role'), ['controller' => 'MasterRoles', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Client Visites'), ['controller' => 'ClientVisites', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Client Visite'), ['controller' => 'ClientVisites', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Leaves'), ['controller' => 'Leaves', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Leave'), ['controller' => 'Leaves', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Notes'), ['controller' => 'Notes', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Note'), ['controller' => 'Notes', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Project Members'), ['controller' => 'ProjectMembers', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Project Member'), ['controller' => 'ProjectMembers', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Projects'), ['controller' => 'Projects', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Project'), ['controller' => 'Projects', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Task Statuses'), ['controller' => 'TaskStatuses', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Task Status'), ['controller' => 'TaskStatuses', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Tasks'), ['controller' => 'Tasks', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Task'), ['controller' => 'Tasks', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="users form large-9 medium-8 columns content">
-    <?= $this->Form->create($user) ?>
-    <fieldset>
-        <legend><?= __('Edit User') ?></legend>
-        <?php
-            echo $this->Form->control('name');
-            echo $this->Form->control('email');
-            echo $this->Form->control('password');
-            echo $this->Form->control('mobile_no');
-            echo $this->Form->control('date_of_birth');
-            echo $this->Form->control('address');
-            echo $this->Form->control('master_role_id', ['options' => $masterRoles]);
-            echo $this->Form->control('mobile_otp');
-            echo $this->Form->control('details');
-            echo $this->Form->control('is_deleted');
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
-</div>
+<?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); ?>
+<style>
+#Content{ width:90% !important; margin-left: 5%;}
+input:focus {background-color:#FFF !important;}
+input[type="password"]:focus {background-color:#FFF !important;}
+div.error { display: block !important; } 
+label { font-weight:100 !important;}
+</style>
+
+<section class="content">
+<div class="col-md-12"></div>
+      <div class="row">
+        <div class="col-md-12">
+         <div class="box box-primary">
+			<div class="box-header with-border">
+              <h3 class="box-title">Edit User</h3>
+            </div>
+			
+			<?php  echo $this->Form->create($user, ['type' => 'file','id'=>"UserRegisterForm"]); ?>
+			<div class="box-body"> 
+ 				<div class="form-group col-md-4">
+					<label>Name</label>
+					<input type="text" class="form-control" name="name" id="name" value="<?php echo $user->name;?>" placeholder="Enter user name">
+                </div>
+				<div class="form-group col-md-4">
+					<label>Mobile No</label>
+					<input type="text" value="<?php echo $user->mobile_no;?>" class="form-control" name="mobile_no" maxlength="10" minlength="10"  id="mobile_no" placeholder="Enter user mobile no"></input>
+                </div>
+				<div class="form-group col-md-4">
+					<label>Date of Birth</label>
+					<input type="text" value="<?php echo date('d-m-Y',strtotime($user->date_of_birth));?>" class="form-control datepickers" name="date_of_birth" id="date_of_birth" placeholder="Enter user Date of Birth" data-date-format="dd-mm-yyyy"></input>
+                </div>
+				<div class="form-group col-md-6">
+					<label>Email</label>
+					<input type="text" value="<?php echo $user->email;?>" class="form-control" name="email"  id="Email" placeholder="Enter user email"></input>
+                </div>
+				<div class="form-group col-md-6">
+					<label>Password</label>
+					<input type="password" value="<?php echo $user->password;?>"  class="form-control" name="password" id="password" placeholder="Enter user password"></input>
+                </div>
+				<div class="form-group col-md-6">
+					<label>Address</label>
+					<textarea type="text"  class="form-control" name="address"  id="address" placeholder="Enter user address"><?php echo $user->address;?></textarea>
+                </div>
+				<div class="form-group col-md-6">
+					<label>Other Details</label>
+					<textarea type="text" class="form-control" name="details"  id="details" placeholder="Enter user Other Details"><?php echo $user->details;?></textarea>
+                </div>
+				 
+				<div class="col-md-12">
+					<hr></hr>
+					<center>
+						<button type="submit" class="btn btn-info">Update</button>
+					</center>	
+				</div>	 			
+             </form>
+          </div>            
+        </div>
+       </div>
+   </section> 
+ <?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); ?>
+<?php echo $this->Html->script(['jquery.validate']);?>   
+<script>  
+$.validator.addMethod("specialChars", function( value, element ) {
+	var regex = new RegExp("^[a-zA-Z ]+$");
+	var key = value;
+
+	if (!regex.test(key)) {
+	   return false;
+	}
+	return true;
+}, "please use only alphabetic characters");
+
+$('#UserRegisterForm').validate({
+	rules: {
+		"name": {
+			required: true,
+			specialChars: true
+		},
+		"email": {
+			required: true
+		},
+		"address": {
+			required: true,
+		},
+		"password": {
+			required: true
+		},
+		"date_of_birth": {
+			required: true,
+		},
+		"mobile_no": {
+			required: true, 
+			digits:true,
+		},
+	}, 
+	ignore: ":hidden:not(select)",
+	submitHandler: function (form) {
+		$("#loader-1").show();
+		form[0].submit(); 
+	}
+});
+
+</script>
+ 
+ 

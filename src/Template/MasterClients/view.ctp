@@ -1,27 +1,7 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\MasterClient $masterClient
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('Edit Master Client'), ['action' => 'edit', $masterClient->id]) ?> </li>
-        <li><?= $this->Form->postLink(__('Delete Master Client'), ['action' => 'delete', $masterClient->id], ['confirm' => __('Are you sure you want to delete # {0}?', $masterClient->id)]) ?> </li>
-        <li><?= $this->Html->link(__('List Master Clients'), ['action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Master Client'), ['action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Client Visites'), ['controller' => 'ClientVisites', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Client Visite'), ['controller' => 'ClientVisites', 'action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Master Client Pocs'), ['controller' => 'MasterClientPocs', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Master Client Poc'), ['controller' => 'MasterClientPocs', 'action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Projects'), ['controller' => 'Projects', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Project'), ['controller' => 'Projects', 'action' => 'add']) ?> </li>
-    </ul>
-</nav>
+ 
 <div class="masterClients view large-9 medium-8 columns content">
     <h3><?= h($masterClient->id) ?></h3>
-    <table class="vertical-table">
+    <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
         <tr>
             <th scope="row"><?= __('Client Name') ?></th>
             <td><?= h($masterClient->client_name) ?></td>

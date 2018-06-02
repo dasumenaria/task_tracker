@@ -5,7 +5,7 @@
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <head>
 <meta charset="utf-8">
-<title>TB2B</title>
+<title>PHPPOETS</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta content="width=device-width, initial-scale=1" name="viewport">
 <meta content="" name="description">
@@ -27,6 +27,9 @@
 	<?php echo $this->Html->css('/assets/loader-1.css'); ?>
 	<?php echo $this->Html->css('https://fonts.googleapis.com/css?family=Raleway'); ?>
  	<?php echo $this->Html->css('//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'); ?>
+	<?php  echo $this->Html->css('/assets/scroll/jquery/jquery-ui.css'); ?>
+	<?php  echo $this->Html->css('/assets/scroll/css/styles.css'); ?>
+	<?php  echo $this->Html->css('/assets/scroll/css/fixed_table_rc.css'); ?> 
 	 
 <link rel="stylesheet" href="">
  
@@ -36,17 +39,7 @@
     '/images/shortcut_icon/favicon.ico',
     ['type' => 'icon']
 );
-?>
-<style>
-	#country-list{list-style:none;margin-left: 1px;padding:0;width:94%; margin-top: 10px;    position: absolute;
-    z-index: 1000;
-    background-color: #fff;}
-	#country-list li{padding-left: 10px;padding-top: 7px; background: #d8d4d41a ; border: 0px solid #bbb9b9;;top:2px}
-	#country-list li:hover{background:#d8d4d4;cursor: pointer;}
-	.column_column ul li, .column_helper ul li, .column_visual ul li, .icon_box ul li, .mfn-acc ul li, .ui-tabs-panel ul li, .post-excerpt ul li, .the_content_wrapper ul li{margin-bottom:0px !important}
-	#search-box{border: #e2e2e2 1px solid;border-radius:4px;}
-	#Content{ width:90% !important; margin-left: 5%;}
-</style>
+?> 
 <style>
 input[type=checkbox],input[type=radio] {
     margin: 0px 0 0;
@@ -216,14 +209,14 @@ fieldset
 	}
 	.user-panel
 	{
-		background: #057F8A !important;
+		background: #156e92 !important;
 	}
 
 	.btn-info
 	{
-		background-color:#1295A2 !important;
+		background-color:#2391c3 !important;
 		color:#FFF;
-		border-color:#1295A2 !important;
+		border-color:#2391c3 !important;
 	}
 	.btn-danger
 	{
@@ -269,7 +262,6 @@ fieldset
 	 
 </style>
 <style>
- 
 .hotelType {	
 	color: #0095A1;
     font-weight: 600;
@@ -306,16 +298,14 @@ fieldset
 	.logo-lg {
 		width: 180px;
 		height: 55px;
-		background-image: url(‘http://wordpress.coastalrepro.com/wp-content/uploads/2013/06/coastalcreative-logo-mobile.png’);
-		background-size: 250px 47px;
+ 		background-size: 250px 47px;
 	}
 }
 @media all and (min-width: 520px) {
 	/* Logo for Mobile */
 	.logo-lg {
 		width: 210px;
-		height: 55px;
-		background-image: url(‘http://wordpress.coastalrepro.com/wp-content/uploads/2013/06/coastalcreative-logo-mobile.png’);
+		height: 55px; 
 		background-size: 250px 47px;
 	}
 }
@@ -366,27 +356,22 @@ fieldset
 	.main-sidebar, .left-side {
 		padding-top: 46px !important;
 	}
+} 
+.breakline{
+	margin-bottom:0px !important;
+	margin-top:0px !important;
 }
 </style>
 </head>
 <!--<body class="hold-transition skin-blue fixed sidebar-mini">-->
-
 <body class="hold-transition skin-blue fixed sidebar-mini">
-<?php $this->Form->templates([
-		'inputContainer' => '{{content}}'
-	]); 
-?>
-<?php 
-	$page_name=$this->request->params['action']; 
-	$controller=$this->request->params['controller']; 
-?>
 <div id="wrapper">
 	<header class="main-header  no-print">
     <!-- Logo background: #1295a2; -->
-    <a style="line-height: 56px;" href="<?php echo $this->Url->build(["controller" => "Admins",'action'=>'dashboard']); ?>" class="logo outnav" >
+    <a style="line-height: 56px;" href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'dashboard']); ?>" class="logo outnav" >
       <span class="logo-mini" style="font-size:0px !important;"><?=  $this->Html->image('/img/mini_logo.png', ['style'=>'width:77%;']) ?></span>
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg" style="font-size:0px !important;"><?=  $this->Html->image('/img/main_logo.png', ['style'=>'width:80%;','class'=>'image-responsive']) ?></span>
+      <span class="logo-lg" style="font-size:0px !important;"><?=  $this->Html->image('/img/logo.png', ['style'=>'width:80%;','class'=>'image-responsive']) ?></span>
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -394,7 +379,7 @@ fieldset
     <a href="#" style="font-size: 16px;margin-top:0px !important" class="sidebar-toggle" data-toggle="offcanvas" role="button">
         <span class="sr-only">Toggle navigation</span>
     </a>
-	<a style="line-height: 60px;" href="<?php echo $this->Url->build(["controller" => "Admins",'action'=>'dashboard']); ?>" class="logo innav" >
+	<a style="line-height: 60px;" href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'dashboard']); ?>" class="logo innav" >
       <span class="logo-mini" style="font-size:0px !important;"><?=  $this->Html->image('/img/mini_logo.png', ['style'=>'width:77%;']) ?></span>
       <!-- logo for regular state and mobile devices -->
       <span class="logo-lg" style="font-size:0px !important;"><?=  $this->Html->image('/img/main_logo.png', ['style'=>'width:80%;','class'=>'image-responsive']) ?></span>
@@ -402,7 +387,7 @@ fieldset
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav" style="padding-top: 2px !important;">
   		<li>
-			<a href="<?php echo $this->Url->build(["controller" => "Admins",'action'=>'logout']); ?>"><i style="font-size: 20px;" class="fa fa-power-off"></i></a>
+			<a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'logout']); ?>"><i style="font-size: 20px;" class="fa fa-power-off"></i></a>
 		</li>           
         </ul>
       </div>
@@ -421,12 +406,12 @@ fieldset
 					echo $this->Html->image('admin_profile/'.$profile_pic, ["class"=>"img-responsive","alt"=>"Profile Pic",'style'=>"width: 45%;"]);
 				}
 				else{
-					echo $this->Html->image('no-profile-image.jpg', ["class"=>"img-responsive","alt"=>"Profile Pic"]);
+					echo $this->Html->image('no-profile-image.png', ["class"=>"img-responsive","alt"=>"Profile Pic"]);
 				}
 			}
 			else
 			{
-				echo $this->Html->image('no-profile-image.jpg', ["class"=>"img-responsive","alt"=>"Profile Pic"]);
+				echo $this->Html->image('no-profile-image.png', ["class"=>"img-responsive","alt"=>"Profile Pic"]);
 			}
 		  ?>
         </div>
@@ -435,132 +420,68 @@ fieldset
 		  </br>
 		   Admin
 		  <br>
-		  <a href="<?php echo $this->Url->build(["controller" => "Admins",'action'=>'profileedit']); ?>" class="logo">Edit Profile</a> | &nbsp;
-		  <a href="<?php echo $this->Url->build(["controller" => "Admins",'action'=>'change_password']); ?>" class="logo">Reset Password</a>
+		  <a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'profileedit']); ?>" class="logo">Edit Profile</a>  
         </div>
     </div>		
 	<ul class="sidebar-menu">
-			<?php  
-			 $class_selected='';
-			$user_right1="";
-			$user_right1 = $this->requestAction(['controller'=>'Admins', 'action'=>'UserRights'],['pass'=>array()]);
-			
-			$user_right=explode(',', $user_right1);
-			
-			$fetch_menu = $this->requestAction(['controller'=>'Admins', 'action'=>'menu'],['pass'=>array()]);
-		    $main_menu_arr[]='';
-			$page_name=$this->request->params['action'];
-             foreach($fetch_menu as $data)
-			 {
-				if(in_array($data->id, $user_right))
-				{
-					if(empty($data->main_menu) && empty($data->sub_menu))
-					{
-						if($page_name==$data['page_name_url'])
-						{
-							$class_selected='selected';
-						}
-							
-						?>
-						<li class="<?php if($page_name==$data['page_name_url']){ echo 'active'; } ?>">
-						<?php echo $this->Html->link('<i class="'.$data['icon_class_name'].'"></i>&nbsp;&nbsp;<span class="title">'.$data['name'].'</span><span class="'.$class_selected.'"></span>',array('controller' => $data['controller'], 'action' => $data['page_name_url'], '_full' => true),['escape'=>false]); ?>
-						
-						</li>
-				<?php $class_selected=''; }else{
-					if(!in_array($data['main_menu'], $main_menu_arr)){
-						$main_menu_arr[]=$data['main_menu'];
-						$fetch_menu_submenu = $this->requestAction(['controller'=>'Admins', 'action'=>'MenuSubmenu'],['pass'=>array($data['main_menu'])]);		
-							foreach($fetch_menu_submenu as $data_value1)
-							{ 	
-								if($data_value1['page_name_url'] == $page_name)
-								{
-									$class_active='active';
-									$arrow_open='open';
-									$class_selected='selected';
-								}
-							}
-						?>
-						<li class="treeview<?php  echo @$class_active; ?> ">
-								<?php echo $this->Html->link('<i class="'.$data['main_menu_icon'].'"></i>&nbsp;&nbsp;<span class="title">'.$data['main_menu'].'</span><span class="'.$class_selected.'"></span><span class="pull-right-container">
-								  <i class="fa fa-angle-left pull-right"></i>
-								</span>',array('action' => '#'),['escape'=>false]); ?>
-								
-								<ul class="treeview-menu">
-								<?php
-								$class_active='';
-								$arrow_open='';
-								$class_selected='';
-						
-						foreach($fetch_menu_submenu as $data_value)
-						{
-							if(!empty($data_value['sub_menu']))
-							{ 
-								$fetch_submenu = $this->requestAction(['controller'=>'Admins', 'action'=>'submenu'],['pass'=>array($data_value['sub_menu'])]);	
-								
-								if(!in_array($data_value['sub_menu'], $main_menu_arr))
-								{
-									$main_menu_arr[]=$data_value['sub_menu'];
-										$main_menu_arr_my[]=$data_value['sub_menu'];
-										foreach($fetch_submenu as $data_value1)
-										{
-											if($data_value1['page_name_url'] == $page_name)
-											{
-												$class_active='active';
-												$arrow_open='open';
-												$class_selected='selected';
-											}
-											 
-										}
-										$x=0;
-								foreach($fetch_submenu as $data_submenu)
-								{$x++;
-										if(in_array($data_submenu['id'], $user_right) && $x==1)
-										{  
-										?>
-										<li class="treeview <?php  echo @$class_active; ?>">
-										<?php echo $this->Html->link('<i class="'.$data_value['sub_menu_icon'].'"></i><span class="title">'.$data_value['sub_menu'].'</span><span class="'.$class_selected.'"></span><span class="pull-right-container">
-										  <i class="fa fa-angle-left pull-right"></i>
-										</span>',array('action' => '#'),['escape'=>false]); ?>
-										<ul  class="treeview-menu">
-										<?php
-										foreach($fetch_submenu as $data_submenu)
-										{
-											if((in_array($data_submenu['id'], $user_right))&& (!in_array($data_submenu['name'], $main_menu_arr)))
-											{
-												$main_menu_arr[]=$data_submenu['name'];
-											 ?>
-											<li class="<?php if($page_name==$data_submenu['page_name_url']){ echo ' active'; } ?>">
-											<?php echo $this->Html->link('<i class="'.$data_submenu['icon_class_name'].'"></i><span class="title">'.$data_submenu['name'].'</span>',array('controller' => $data_submenu['controller'], 'action' => $data_submenu['page_name_url'], '_full' => true),['escape'=>false]); ?>
-												
-											</li>
-											<?php
-											}
-										}
-										$class_active='';
-										$arrow_open='';
-										$class_selected='';
-										?>
-										</ul>
-									</li>
-							<?php
-						 }}} }else
-							{
-										if((in_array($data_value['id'], $user_right)) && (!in_array($data_value['name'], $main_menu_arr)))
-										{
-											$main_menu_arr[]=$data_value['name'];
-										 ?>
-												<li class="<?php if($page_name==$data_value['page_name_url']){ echo ' active'; } ?>">
-												<?php echo $this->Html->link('<i class="'.$data_value['icon_class_name'].'"></i><span class="title">'.$data_value['name'].'</span>',array('controller' => $data_value['controller'], 'action' => $data_value['page_name_url'], '_full' => true),['escape'=>false]); ?>
-												</li>
-												<?php
-						}}} ?>
-				</ul>	
-							</li>
-							<?php
-						$class_active='';
-						$arrow_open='';
-						$class_selected='';
-		}}}}	  ?>
+		<li class="active"><a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'dashboard']); ?>"><i class="fa fa-home"></i> <span>Home</span></a></li><hr class="breakline"></hr>
+		<li class="treeview">
+          <a href="#">
+            <i class="fa fa-group"></i>
+            <span>Master Clients</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="<?php echo $this->Url->build(["controller" => "MasterClients",'action'=>'add']); ?>"><i class="fa fa-user"></i> Add</a></li>
+            <li><a href="<?php echo $this->Url->build(["controller" => "MasterClients",'action'=>'index']); ?>"><i class="fa fa-edit"></i> View</a></li> 
+          </ul>
+        </li>
+		<hr class="breakline"></hr>
+		<li class="treeview">
+          <a href="#">
+            <i class="fa fa-user"></i>
+            <span>Users</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'add']); ?>"><i class="fa fa-user"></i> Add</a></li>
+            <li><a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'index']); ?>"><i class="fa fa-edit"></i> View</a></li> 
+          </ul>
+        </li>
+		<hr class="breakline"></hr>
+		<li class="treeview">
+          <a href="#">
+            <i class="fa fa-book"></i>
+            <span>Tasks</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="<?php echo $this->Url->build(["controller" => "Tasks",'action'=>'add']); ?>"><i class="fa fa-user"></i> Add</a></li>
+            <li><a href="<?php echo $this->Url->build(["controller" => "Tasks",'action'=>'index']); ?>"><i class="fa fa-edit"></i> View</a></li> 
+          </ul>
+        </li>
+		<hr class="breakline"></hr>
+		<li class="treeview">
+          <a href="#">
+            <i class="fa fa-database"></i>
+            <span>Projects</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="<?php echo $this->Url->build(["controller" => "Projects",'action'=>'add']); ?>"><i class="fa fa-book"></i> Add</a></li>
+            <li><a href="<?php echo $this->Url->build(["controller" => "Projects",'action'=>'index']); ?>"><i class="fa fa-edit"></i> View</a></li> 
+          </ul>
+        </li>
+	 
+		
 	</ul>
 	</section>
 	</aside>
@@ -595,6 +516,7 @@ fieldset
 <?php echo $this->Html->script('/assets/dist/js/app.js'); ?>
 <?php echo $this->Html->script('/assets/dist/js/demo.js'); ?> 
 <?php echo $this->Html->script('/assets/plugins/WYSIWYG/editor.js'); ?>
+<?php echo $this->Html->script('/assets/scroll/js/fixed_table_rc.js'); ?>
 <script>
 	$('.select2').select2();
 	var date = new Date();
@@ -610,43 +532,8 @@ fieldset
 		autoclose:true
 	});
 	$('.datepickers').datepicker({autoclose:true});
-	//--
-	$('.datepickers').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-	$('.datepicker').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-	$('.date-picker').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-
-	//--- Place REQ datepickers
-	$('#datepicker1').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-	$('#datepicker2').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-	$('#datepickerofTransport').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-	$('#datepickerofTransport1').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-	$('#datepickerofpkg').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-	$('#datepickerofpkg1').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-	$('#packageTransport').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-	$('#packageTransport1').click(function(){
-		$(this).datepicker().datepicker( "show" );
-	});
-	///------ END
+	 
+	 
 	$('input[type="text"]'). attr("autocomplete", "off");
 
 	$(".txtEditor").Editor({

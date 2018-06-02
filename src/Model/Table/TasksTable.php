@@ -39,7 +39,7 @@ class TasksTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->hasMany('Users', [
+        $this->belongsTo('Users', [
             'foreignKey' => 'user_id',
             'joinType' => 'INNER'
         ]);

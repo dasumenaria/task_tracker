@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller\Api;
-use App\Controller\AppController;
+use App\Controller\Api;
+use App\Controller\Api\AppController;
 
 /**
  * Projects Controller
@@ -11,7 +12,10 @@ use App\Controller\AppController;
  */
 class ProjectsController extends AppController
 {
-
+	public function initialize()
+	{
+		parent::initialize();
+ 	} 
     public function projectList()
     {
         /*$this->paginate = [

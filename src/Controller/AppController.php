@@ -46,7 +46,7 @@ class AppController extends Controller
 		]);
         $this->loadComponent('Flash');
 		
-		/*$this->loadComponent('Auth', [
+		$this->loadComponent('Auth', [
 				'authenticate' => [
 					'Form' => [
 						'fields' => [
@@ -76,7 +76,16 @@ class AppController extends Controller
          */
         //$this->loadComponent('Security');
         //$this->loadComponent('Csrf');
+	 
+		 
+		$loginId=$this->Auth->User('id');  
+		if(!empty($loginId)){
+			$first_name=$this->Auth->User('name'); 
+			$profile_pic=$this->Auth->User('profile_pic');  
+			$authUserName=$first_name;
+			$this->set('MemberName',$authUserName);
+			$this->set('profile_pic', $profile_pic);
+			$this->set('loginId',$loginId); 
+		}
     }
-	
-	
 }

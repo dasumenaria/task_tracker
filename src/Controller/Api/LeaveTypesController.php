@@ -1,7 +1,7 @@
 <?php
-namespace App\Controller;
-
-use App\Controller\AppController;
+namespace App\Controller\Api;
+use App\Controller\Api;
+use App\Controller\Api\AppController;
 
 /**
  * LeaveTypes Controller

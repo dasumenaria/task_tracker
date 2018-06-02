@@ -104,7 +104,7 @@ class UsersTable extends Table
             ->requirePresence('mobile_no', 'create')
             ->notEmpty('mobile_no');
 
-        $validator
+       /* $validator
             ->date('date_of_birth')
             ->requirePresence('date_of_birth', 'create')
             ->notEmpty('date_of_birth');
@@ -129,7 +129,7 @@ class UsersTable extends Table
             ->integer('is_deleted')
             ->requirePresence('is_deleted', 'create')
             ->notEmpty('is_deleted');
-
+*/
         return $validator;
     }
 
@@ -143,7 +143,7 @@ class UsersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['email']));
-        $rules->add($rules->existsIn(['master_role_id'], 'MasterRoles'));
+       // $rules->add($rules->existsIn(['master_role_id'], 'MasterRoles'));
 
         return $rules;
     }

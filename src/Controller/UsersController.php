@@ -10,35 +10,24 @@ use App\Controller\AppController;
  */
 class UsersController extends AppController
 {
-	public function initialize()
-	{
-		parent::initialize();
-		$this->Auth->allow(['logout']);
-		 
-		$loginId=$this->Auth->User('id');  
-		if(!empty($loginId)){
-			$first_name=$this->Auth->User('name'); 
-			$profile_pic=$this->Auth->User('profile_pic');  
-			$authUserName=$first_name;
-			$this->set('MemberName',$authUserName);
-			$this->set('profile_pic', $profile_pic);
-			$this->set('loginId',$loginId); 
-		}
-	} 
-	public function dashboard()
+	public function index()
     {
-		
+		$this->paginate = [
+             'contain' => ['ProjectMembers'=>['Projects']]
+        ];
+        $users = $this->paginate($this->Users->find()->where(['Users.is_deleted'=>0]));
+        $this->set(compact('users'));
+    } 
+ 	public function dashboard()
+	{
 		$loginId=$this->Auth->User('id');
-		//-- counts
-     }
+	}
  	public function changePassword()
     {
-		
-		$loginId=$this->Auth->User('id');
+ 		$loginId=$this->Auth->User('id');
 		if ($this->request->is('post')) {
 			$Users = $this->Users->find()->where(['id' => $loginId])->first();
-			
-			$verify = (new \Cake\Auth\DefaultPasswordHasher)->check($this->request->data['old_password'], $Users->password);
+ 			$verify = (new \Cake\Auth\DefaultPasswordHasher)->check($this->request->data['old_password'], $Users->password);
 			if($verify) {
 				$result = $this->Users->patchEntity($Users, ['password' => $this->request->data['password']]);
  				if ($this->Users->save($result)) {
@@ -56,40 +45,21 @@ class UsersController extends AppController
 		
 		$loginId=$this->Auth->User('id');
 		$Users = $this->Users->find()->where(['id' => $loginId])->first();
-		$this->set('Users',$Users); 
-		if ($this->request->is('post')) {
-			
-			if(!empty($this->request->data['profile_pic']['tmp_name']))
-			{
-				$path_info = pathinfo($this->request->data['profile_pic']['name']);
-				chmod ($this->request->data['profile_pic']['tmp_name'], 0644);
-				$photo=time()."admin.".$path_info['extension'];
-				$fullpath= WWW_ROOT."img".DS."admin_profile";
-				$res1 = is_dir($fullpath);
-				if($res1 != 1) {
-					$res2= mkdir($fullpath, 0777, true);
-				}
-				move_uploaded_file($this->request->data['profile_pic']['tmp_name'],$fullpath.DS.$photo);
-				$this->request->data['profile_pic'] = $photo; 
- 				$this->request->session()->write('Auth.User.profile_pic', $photo);
- 			}
-			$this->request->session()->write('Auth.User.first_name', $this->request->data['first_name']);
-			$this->request->session()->write('Auth.User.last_name', $this->request->data['last_name']);
-			
-			$result = $this->Users->patchEntity($Users, $this->request->data);
-			//print_r($result); exit;
- 			if ($this->Users->save($result)) {
-				$this->Flash->success(__('Profile has been changed successfully.'));
-				return $this->redirect(['action' => 'profileedit']);
-			}
-			else{
-				$this->Flash->error(__('Something went wrong please try again.'));
-				return $this->redirect(['action' => 'profileedit']);
-			}
-			 
-		}		
+		$this->set('user',$Users); 
+		if ($this->request->is(['patch', 'post', 'put'])) {
+            $user = $this->Users->patchEntity($Users, $this->request->getData());
+			$user->date_of_birth=date('Y-m-d',strtotime($this->request->getData('date_of_birth')));
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('The user has been saved.'));
+
+                return $this->redirect(['action' => 'profileedit']);
+            } else {
+                $this->Flash->error(__('The user could not be saved. Please, try again.'));
+            }
+        }	
     }
-    public function login()
+    
+	public function login()
     {
        $this->viewBuilder()->setLayout(''); 
 	   if ($this->request->is('post')) {			
@@ -111,7 +81,7 @@ class UsersController extends AppController
     public function view($id = null)
     {
         $admin = $this->Users->get($id, [
-            'contain' => ['AdminRole']
+            //'contain' => ['AdminRole']
         ]);
         $this->set('admin', $admin);
         $this->set('_serialize', ['admin']);
@@ -119,35 +89,19 @@ class UsersController extends AppController
 
     public function add()
     {
-		
-        $admin = $this->Users->newEntity();
-        
+        $user = $this->Users->newEntity();
         if ($this->request->is('post')) {
-            $admin = $this->Users->patchEntity($admin, $this->request->data);
- 			$admin_role=$this->request->data['role_id'];
-             if ($insert=$this->Users->save($admin)) {
-				//- Admin Role Insert
-				$AdminRole = $this->Users->AdminRole->newEntity();
-				$AdminRole = $this->Users->AdminRole->patchEntity($AdminRole, $this->request->data);
-				$AdminRole->admin_id=$insert->id;
-				$AdminRole->role_id=$admin_role;
-				$this->Users->AdminRole->save($AdminRole);
-				 
-                $this->Flash->success(__('The admin has been saved.'));
-                return $this->redirect(['action' => 'add']);
+            $user = $this->Users->patchEntity($user, $this->request->getData());
+			$user->date_of_birth=date('Y-m-d',strtotime($this->request->getData('date_of_birth')));
+              if ($insert=$this->Users->save($user)) {
+                 $this->Flash->success(__('The user has been saved.'));
+                return $this->redirect(['action' => 'index']);
             } else { 
-                $this->Flash->error(__('The admin could not be saved. Please, try again.'));
+                $this->Flash->error(__('The user could not be saved. Please, try again.'));
             }
         }
-		$Users = $this->Users->AdminRole->Roles->find('list', ['limit' => 200]);
-		//-- VIew List 
-		$this->paginate = [
-            'contain' => ['AdminRole']
-        ];
-        $UsersRecord = $this->paginate($this->Users);
-		
-        $this->set(compact('admin','Users','UsersRecord'));
-        $this->set('_serialize', ['admin','Users','UsersRecord']);
+        $this->set(compact('user','Users'));
+        $this->set('_serialize', ['user','Users']);
     }
 	
 	public function UserRights()
@@ -216,42 +170,39 @@ class UsersController extends AppController
      */
     public function edit($id = null)
     {
-        $admin = $this->Users->get($id, [
+        $user = $this->Users->get($id, [
             'contain' => []
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $admin = $this->Users->patchEntity($admin, $this->request->data);
-            if ($this->Users->save($admin)) {
-                $this->Flash->success(__('The admin has been saved.'));
+            $user = $this->Users->patchEntity($user, $this->request->getData());
+			$user->date_of_birth=date('Y-m-d',strtotime($this->request->getData('date_of_birth')));
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('The user has been saved.'));
 
-                return $this->redirect(['action' => 'add']);
+                return $this->redirect(['action' => 'index']);
             } else {
-                $this->Flash->error(__('The admin could not be saved. Please, try again.'));
+                $this->Flash->error(__('The user could not be saved. Please, try again.'));
             }
         }
-        $this->set(compact('admin'));
-        $this->set('_serialize', ['admin']);
+        $this->set(compact('user'));
+        $this->set('_serialize', ['user']);
     }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Admin id.
-     * @return \Cake\Network\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+ 
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $admin = $this->Users->get($id);
-        if ($this->Users->delete($admin)) {
-            $this->Flash->success(__('The admin has been deleted.'));
+       $admin = $this->Users->get($id, [
+            'contain' => []
+        ]);
+		$admin = $this->Users->patchEntity($admin, $this->request->getData());
+		$admin->is_deleted=1;
+		if ($this->Users->save($admin)) {
+            $this->Flash->success(__('The User has been deleted.'));
         } else {
-            $this->Flash->error(__('The admin could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The User could not be deleted. Please, try again.'));
         }
-
-        return $this->redirect(['action' => 'add']);
+        return $this->redirect(['action' => 'index']);
     }
+	
 	public function broadcast()
     {
 		
@@ -283,6 +234,7 @@ class UsersController extends AppController
 		$this->set(compact('admin'));
         $this->set('_serialize', ['admin']);
 	}
+	
 	public function sendpushnotification($userid,$message,$message_data)
 	{
 		$Users=$this->Users->find()->where(['id'=>$userid])->toArray();

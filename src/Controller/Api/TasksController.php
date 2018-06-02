@@ -1,6 +1,6 @@
 <?php
 namespace App\Controller\Api;
-
+use App\Controller\Api;
 use App\Controller\Api\AppController;
 
 /**
@@ -12,7 +12,10 @@ use App\Controller\Api\AppController;
  */
 class TasksController extends AppController
 {
-	
+	public function initialize()
+	{
+		parent::initialize();
+ 	} 
     public function CreateTask()
     {	 
 		$project_id=$this->request->getData('project_id');

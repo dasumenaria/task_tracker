@@ -1,63 +1,161 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\MasterClient[]|\Cake\Collection\CollectionInterface $masterClients
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Master Client'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Client Visites'), ['controller' => 'ClientVisites', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Client Visite'), ['controller' => 'ClientVisites', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Master Client Pocs'), ['controller' => 'MasterClientPocs', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Master Client Poc'), ['controller' => 'MasterClientPocs', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Projects'), ['controller' => 'Projects', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Project'), ['controller' => 'Projects', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="masterClients index large-9 medium-8 columns content">
-    <h3><?= __('Master Clients') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('client_name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_on') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_by') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('edited_on') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('edited_by') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('is_deleted') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($masterClients as $masterClient): ?>
-            <tr>
-                <td><?= $this->Number->format($masterClient->id) ?></td>
-                <td><?= h($masterClient->client_name) ?></td>
-                <td><?= h($masterClient->created_on) ?></td>
-                <td><?= $this->Number->format($masterClient->created_by) ?></td>
-                <td><?= h($masterClient->edited_on) ?></td>
-                <td><?= $this->Number->format($masterClient->edited_by) ?></td>
-                <td><?= $this->Number->format($masterClient->is_deleted) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $masterClient->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $masterClient->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $masterClient->id], ['confirm' => __('Are you sure you want to delete # {0}?', $masterClient->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
+
+
+<section class="content">
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<b>Client lists </b>
+ 			</div>
+			<div class="box-body" style="overflow-x:scroll"> 
+			<table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
+				<thead>
+					<tr>
+						<th scope="col"><?= ('S. No.') ?></th>
+						<th scope="col"><?= $this->Paginator->sort('client_name') ?></th> 
+						<th scope="col"><?= ('POC List') ?></th>
+						<th scope="col"><?= ('Project List') ?></th>
+						<th scope="col" class="actions"><?= __('Actions') ?></th>
+					</tr>
+				</thead>
+				<tbody>
+					<?php $sno=0; foreach ($masterClients as $masterClient): ?>
+					<?php $sno++; //pr($masterClient); exit;?>
+					 
+					<tr>
+						<td><?= $sno ?></td>
+						<td><?= h($masterClient->client_name) ?></td> 
+						<td><a class="btn btn-xs btn-info" data-target="#AcDetails<?php echo $masterClient->id;?>" data-toggle="modal">POC's</a>
+						<div id="AcDetails<?php echo $masterClient->id;?>" class="modal fade" role="dialog">
+							<div class="modal-dialog modal-md">
+								<div class="modal-content">
+								  <div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal">&times;</button>
+									<h4 class="modal-title">Point of Contacts</h4>
+								  </div>
+								<div class="modal-body">
+									<table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
+										<thead>
+											<tr style="background-color:#DFD9C4;">
+												<th scope="col">Sr.No.</th>
+												<th scope="col">Name</th>
+												<th scope="col">Email</th>
+												<th scope="col">Mobile No.</th>
+												<th scope="col" class="actions"><?= __('Actions') ?></th>
+											</tr>
+										</thead>
+										<tbody>
+											<?php $x=0; foreach ($masterClient->master_client_pocs as $master_client_pocs): ?>
+											<?php $x++; ?>
+											<tr>
+												<td><?php echo $x;?></td>
+												<td><?= h($master_client_pocs->contact_person_name) ?></td>
+												<td><?= h($master_client_pocs->email) ?></td>
+												<td><?= h($master_client_pocs->mobile) ?></td>
+												<td><?= $this->Form->postLink(__('Delete'), ['action' => '../MasterClientPocs/delete', $master_client_pocs->id], ['class'=>'btn btn-danger btn-xs','confirm' => __('Are you sure you want to delete')]) ?></td>
+											</tr>
+											<?php endforeach; ?>
+										</tbody>
+									</table>
+								</div>
+									<div class="modal-footer" style="height:60px;">
+										<div class="row">
+											<div class="col-md-12 text-center">
+												<input type="submit" class="btn btn-info btn-sm" data-dismiss="modal" Value="Cancel"/>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div> 
+						</td>
+						<td><a class="btn btn-xs btn-info" data-target="#ProjectList<?php echo $masterClient->id;?>" data-toggle="modal">Project's</a>
+						<div id="ProjectList<?php echo $masterClient->id;?>" class="modal fade" role="dialog">
+							<div class="modal-dialog modal-md">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal">&times;</button>
+										<h4 class="modal-title">Project List</h4>
+									</div>
+									<div class="modal-body">
+										<table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
+											<thead>
+												<tr style="background-color:#DFD9C4;">
+													<!--<th scope="col">Sr.No.</th>-->
+													<th scope="col">Project Name</th>
+													<th scope="col">Deadline</th>
+													<th scope="col">Project POC</th>
+													<th scope="col">POC Mobile</th> 
+												</tr>
+											</thead>
+											<tbody>
+												<?php $x=0; foreach ($masterClient->projects as $projects): ?>
+												<?php $x++; ?>
+												<tr>
+													<!--<td><?php echo $x;?></td>-->
+													<td><?= h($projects->title) ?></td>
+													<td><?= h(date('d-m-Y',strtotime($projects->deadline))) ?></td>
+													<td><?= h($projects->user->name) ?></td>
+													<td><?= h($projects->user->mobile_no) ?></td> 
+												</tr>
+												<?php endforeach; ?>
+											</tbody>
+										</table>
+									</div>
+									<div class="modal-footer" style="height:60px;">
+										<div class="row">
+											<div class="col-md-12 text-center">
+												<input type="submit" class="btn btn-info btn-sm" data-dismiss="modal" Value="Cancel"/>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						</td>
+						<td class="actions"> 
+							<?php echo $this->Html->link('<i class="fa fa-edit"></i>','/MasterClients/edit/'.$masterClient->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
+							
+							<a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $masterClient->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
+							<div id="deletemodal<?php echo $masterClient->id; ?>" class="modal fade" role="dialog">
+								<div class="modal-dialog modal-md" >
+									<form method="post" action="<?php echo $this->Url->build(array('controller'=>'MasterClients','action'=>'delete',$masterClient->id)) ?>">
+										<div class="modal-content">
+										  <div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal">&times;</button>
+												<h4 class="modal-title">
+												Are you sure you want to remove this Client?
+												</h4>
+											</div>
+											<div class="modal-footer">
+												<button type="submit" class="btn  btn-sm btn-info">Yes</button>
+												<button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+							
+							<?php $this->Form->postLink(__('Delete'), ['action' => 'delete', $masterClient->id], ['confirm' => __('Are you sure you want to delete # {0}?', $masterClient->id)]) ?>
+							
+						</td>
+					</tr>
+
+ 
+
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+			<div class="paginator">
+				<ul class="pagination">
+					<?= $this->Paginator->first('<< ' . __('first')) ?>
+					<?= $this->Paginator->prev('< ' . __('previous')) ?>
+					<?= $this->Paginator->numbers() ?>
+					<?= $this->Paginator->next(__('next') . ' >') ?>
+					<?= $this->Paginator->last(__('last') . ' >>') ?>
+				</ul>
+				<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+			</div>
+		</div>
+	</div>
 </div>

@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller\Api;
-use App\Controller\AppController;
+use App\Controller\Api;
+use App\Controller\Api\AppController;
 use Cake\Auth\DefaultPasswordHasher;
-
 /**
  * Users Controller
  *

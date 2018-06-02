@@ -16,27 +16,40 @@ label { font-weight:100 !important;}
               <h3 class="box-title">Edit Profile</h3>
             </div>
 			
-			<?php  echo $this->Form->create("Users", ['type' => 'file','id'=>"UserRegisterForm"]); ?>
+			<?php  echo $this->Form->create($user, ['type' => 'file','id'=>"UserRegisterForm"]); ?>
 			<div class="box-body"> 
- 				<div class="form-group col-md-6">
-					<label>First Name</label>
-					<input type="text" class="form-control" name="first_name" value="<?php echo $admins['first_name'] ?>" id="first_name" placeholder="First Name">
+ 				<div class="form-group col-md-4">
+					<label>Name</label>
+					<input type="text" class="form-control" name="name" id="name" value="<?php echo $user->name;?>" placeholder="Enter user name">
                 </div>
-				<div class="form-group col-md-6">
-					<label>Last Name</label>
-					<input type="text" class="form-control" name="last_name" value="<?php echo $admins['last_name'] ?>" id="last_name" placeholder="last Name">
+				<div class="form-group col-md-4">
+					<label>Mobile No</label>
+					<input type="text" value="<?php echo $user->mobile_no;?>" class="form-control" name="mobile_no" maxlength="10" minlength="10"  id="mobile_no" placeholder="Enter user mobile no"></input>
+                </div>
+				<div class="form-group col-md-4">
+					<label>Date of Birth</label>
+					<input type="text" value="<?php echo date('d-m-Y',strtotime($user->date_of_birth));?>" class="form-control datepickers" name="date_of_birth" id="date_of_birth" placeholder="Enter user Date of Birth" data-date-format="dd-mm-yyyy"></input>
                 </div>
 				<div class="form-group col-md-6">
 					<label>Email</label>
-					<input type="text" class="form-control" name="email" value="<?php echo $admins['email'] ?>" id="email" placeholder="E-Mail">
+					<input type="text" value="<?php echo $user->email;?>" class="form-control" name="email"  id="Email" placeholder="Enter user email"></input>
                 </div>
 				<div class="form-group col-md-6">
- 					<?php echo $this->Form->input('Profile Picture', ['type' => 'file', 'class' => 'form-control', 'name' => 'profile_pic', "profile_pic"]); ?>
+					<label>Password</label>
+					<input type="password" value="<?php echo $user->password;?>"  class="form-control" name="password" id="password" placeholder="Enter user password"></input>
+                </div>
+				<div class="form-group col-md-6">
+					<label>Address</label>
+					<textarea type="text"  class="form-control" name="address"  id="address" placeholder="Enter user address"><?php echo $user->address;?></textarea>
+                </div>
+				<div class="form-group col-md-6">
+					<label>Other Details</label>
+					<textarea type="text" class="form-control" name="details"  id="details" placeholder="Enter user Other Details"><?php echo $user->details;?></textarea>
                 </div>
 				<div class="col-md-12">
 					<hr></hr>
 					<center>
-						<button type="submit" class="btn btn-info">Update Profile</button>
+						<button type="submit" class="btn btn-info">Update</button>
 					</center>	
 				</div>	 			
              </form>
@@ -44,31 +57,42 @@ label { font-weight:100 !important;}
         </div>
        </div>
    </section> 
+ <?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); ?>
 <?php echo $this->Html->script(['jquery.validate']);?>   
-<script> 
+<script>  
+$.validator.addMethod("specialChars", function( value, element ) {
+	var regex = new RegExp("^[a-zA-Z ]+$");
+	var key = value;
+
+	if (!regex.test(key)) {
+	   return false;
+	}
+	return true;
+}, "please use only alphabetic characters");
+
 $('#UserRegisterForm').validate({
 	rules: {
-		"last_name": {
-			required: true
-		},
-		"first_name": {
-			required: true
-		},
-		"email": {
+		"name": {
 			required: true,
-		}
-	},
-	messages: {
-		"first_name": {
-			required: "Please enter your First Name."
-		},
-		"last_name": {
-			required: "Please enter your Last Name."
+			specialChars: true
 		},
 		"email": {
-			required: "Please enter your E-Mail Address."
-		}
-	},
+			required: true
+		},
+		"address": {
+			required: true,
+		},
+		"password": {
+			required: true
+		},
+		"date_of_birth": {
+			required: true,
+		},
+		"mobile_no": {
+			required: true, 
+			digits:true,
+		},
+	}, 
 	ignore: ":hidden:not(select)",
 	submitHandler: function (form) {
 		$("#loader-1").show();
@@ -76,4 +100,6 @@ $('#UserRegisterForm').validate({
 	}
 });
 
-</script>  
+</script>
+ 
+ 

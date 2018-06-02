@@ -42,7 +42,8 @@ class MasterClientsTable extends Table
             'foreignKey' => 'master_client_id'
         ]);
         $this->hasMany('MasterClientPocs', [
-            'foreignKey' => 'master_client_id'
+            'foreignKey' => 'master_client_id',
+			'saveStrategy'=>'replace'			
         ]);
         $this->hasMany('Projects', [
             'foreignKey' => 'master_client_id'

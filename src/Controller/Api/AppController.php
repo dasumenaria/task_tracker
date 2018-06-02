@@ -2,7 +2,10 @@
 namespace App\Controller\Api;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
-
+/* <?php
+namespace App\Controller\Api;
+use App\Controller\Api;
+use App\Controller\Api\AppController; */
 //use Cake\I18n\FrozenDate;
 //use Cake\I18n\FrozenTime;
 class AppController extends Controller
@@ -32,28 +35,7 @@ class AppController extends Controller
 		];
 		$this->coreVariable = $coreVariable;
 		$this->set(compact('coreVariable'));
-		//-- AUTH
-		/*$this->loadComponent('Auth', [
-				'authenticate' => [
-					'Form' => [
-						'fields' => [
-							'username' => 'email',
-							'password' => 'password'
-						],
-						'userModel' => 'Admins'
-					]
-				],
-				'loginAction' => [
-					'controller' => 'Users',
-					'action' => 'login'
-				], 
-				'logoutRedirect' => [
-					'controller' => 'Users',
-					'action' => 'login'
-				],
-				'unauthorizedRedirect' => $this->referer(),
-			]);*/
-	}
+ 	}
 	
 	 public function chatsOfUsers($user_id=null,$senduser_id=null,$project_id=null,$messages=null)
 		{

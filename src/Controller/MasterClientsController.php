@@ -20,18 +20,16 @@ class MasterClientsController extends AppController
      */
     public function index()
     {
-        $masterClients = $this->paginate($this->MasterClients);
-
+		$this->paginate = [
+            'contain' => ['MasterClientPocs'=>function($q){
+				return $q->where(['MasterClientPocs.is_deleted'=>0]);
+			}, 'Projects'=>['Users']]
+        ];
+        $masterClients = $this->paginate($this->MasterClients->find()->where(['MasterClients.is_deleted'=>0]));
+		
         $this->set(compact('masterClients'));
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Master Client id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
+    } 
+	
     public function view($id = null)
     {
         $masterClient = $this->MasterClients->get($id, [
@@ -51,12 +49,12 @@ class MasterClientsController extends AppController
         $masterClient = $this->MasterClients->newEntity();
         if ($this->request->is('post')) {
             $masterClient = $this->MasterClients->patchEntity($masterClient, $this->request->getData());
+			//pr($masterClient); exit;
             if ($this->MasterClients->save($masterClient)) {
-                $this->Flash->success(__('The master client has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
+                $this->Flash->success(__('The Client has been saved.'));
+               return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The master client could not be saved. Please, try again.'));
+            $this->Flash->error(__('The Client could not be saved. Please, try again.'));
         }
         $this->set(compact('masterClient'));
     }
@@ -71,16 +69,15 @@ class MasterClientsController extends AppController
     public function edit($id = null)
     {
         $masterClient = $this->MasterClients->get($id, [
-            'contain' => []
+            'contain' => ['MasterClientPocs']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $masterClient = $this->MasterClients->patchEntity($masterClient, $this->request->getData());
             if ($this->MasterClients->save($masterClient)) {
-                $this->Flash->success(__('The master client has been saved.'));
-
+                $this->Flash->success(__('The Client has been saved.'));
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The master client could not be saved. Please, try again.'));
+            $this->Flash->error(__('The Client could not be saved. Please, try again.'));
         }
         $this->set(compact('masterClient'));
     }
@@ -94,12 +91,15 @@ class MasterClientsController extends AppController
      */
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $masterClient = $this->MasterClients->get($id);
-        if ($this->MasterClients->delete($masterClient)) {
-            $this->Flash->success(__('The master client has been deleted.'));
+        $masterClient = $this->MasterClients->get($id, [
+            'contain' => []
+        ]); 
+		$masterClient = $this->MasterClients->patchEntity($masterClient, $this->request->getData());
+		$masterClient->is_deleted=1;
+		if ($this->MasterClients->save($masterClient)) {
+            $this->Flash->success(__('The Client has been deleted.'));
         } else {
-            $this->Flash->error(__('The master client could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The Client could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);

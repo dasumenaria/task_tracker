@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Travel B2B HUB</title>
+	<title>PHPPOETS</title>
 	 <?php echo $this->Html->css('/assets/bootstrap/css/bootstrap.min.css'); ?> 	
 	<?php echo $this->Html->css('/assets/login/fonts/iconic/css/material-design-iconic-font.min.css'); ?>
 	<?php echo $this->Html->css('/assets/login/animate/animate.css'); ?>
@@ -38,9 +38,9 @@
 		<div class="container-login100 bgdiv">
 			<div class="wrap-login100 main_div prakash">
 					<center>
-						<?=  $this->Html->image('/img/Travel B2B logo.png', ['style'=>'width:50%;']) ?>
+						<?=  $this->Html->image('/img/logowhite.png', ['style'=>'width:85%;']) ?>
 					</center> 
-					<div class="container-login100-form-btn" style="margin-top:15px">
+					<div class="container-login100-form-btn" style="padding:20px">
 						<?php echo  $this->Flash->render() ?>
 					</div>
 				 
@@ -55,34 +55,23 @@
 						<span class="focus-input100" data-placeholder="Password"></span>
 					</div>
 
-					<div class="contact100-form-checkbox">
+					<div class="contact100-form-checkbox" style="visibility:hidden">
 						<input class="input-checkbox100" id="ckb1" type="checkbox" name="remember-me">
-						<label class="label-checkbox100" for="ckb1">
-							Keep me signed in
-						</label>
 					</div>
-					
+
 					<div class="container-login100-form-btn">
 						<button class="login100-form-btn" style="width: 100%;">
 							Login
-						</button>
-						<input type="hidden" name="redirect_page" value="<?php echo $redirect_page;?>"/>
+						</button> 
 					</div>
 
-					<div class="text-center p-t-90" style="padding-top: 20px;"> 
+					<div class="text-center p-t-90" style="padding-top: 20px; visibility:hidden"> 
  						<p style="color:#fff">Forgot password?
 							<a class="txt1" style="color:#a9d4fa;" href="<?php echo $this->Url->build(array('controller'=>'Users','action'=>'forgotPassword')) ?>">
 							 Click Here
 						</a>
 						</p>
-					</div>
-					<div class="text-center p-t-90" style="padding-top: 20px;">
-						<p style="color:#fff">Don't  have an account?
-							<a class="txt1"  style="color:#a9d4fa;" href="<?php echo $this->Url->build(array('controller'=>'users','action'=>'register')) ?>" style="color:#5ba7a4;">
-								Sign up
-							</a>
-						</p>
-					</div>					
+					</div> 				
 				<?php echo $this->Form->end();?>
 			</div>
 		</div>
