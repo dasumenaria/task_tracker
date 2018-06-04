@@ -103,12 +103,17 @@ class ProjectMembersController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
         $projectMember = $this->ProjectMembers->get($id);
+		$user_id=$projectMember->user_id;
+		$project_id=$projectMember->project_id;
+		$Projects = $this->ProjectMembers->Projects->find()->where(['id'=>$project_id])->first();;
+		$POCID=$Projects->user_id;
+		$this->loadModel('Tasks');
+		$this->Tasks->updateAll(['Tasks.user_id' => $POCID], ['Tasks.user_id' => $user_id,'status'=>0,'project_id'=>$project_id]);
         if ($this->ProjectMembers->delete($projectMember)) {
             $this->Flash->success(__('The project member has been deleted.'));
         } else {
             $this->Flash->error(__('The project member could not be deleted. Please, try again.'));
         }
-
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(['controller'=>'Projects','action' => 'view/'.$project_id]);
     }
 }

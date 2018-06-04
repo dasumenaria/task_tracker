@@ -10,17 +10,34 @@ use App\Controller\AppController;
  */
 class UsersController extends AppController
 {
-	public function index()
+	public function index($id=null)
     {
 		$this->paginate = [
              'contain' => ['ProjectMembers'=>['Projects']]
         ];
-        $users = $this->paginate($this->Users->find()->where(['Users.is_deleted'=>0]));
-        $this->set(compact('users'));
+		if(!empty($id)){
+			$users = $this->paginate($this->Users->find()->where(['Users.is_deleted'=>0,'id'=>$id]));
+		}
+		else{
+			$users = $this->paginate($this->Users->find()->where(['Users.is_deleted'=>0]));
+		}
+		$this->set(compact('users'));
     } 
  	public function dashboard()
 	{
 		$loginId=$this->Auth->User('id');
+		if($loginId!=1){ $this->Flash->error(__('You are not authorized user!'));  return $this->redirect(['action' => 'login']); }
+		//-- COunts
+		$this->loadmodel('MasterClients');
+		$MasterClientsCount=$this->MasterClients->find()->where(['is_deleted'=>0])->count();
+
+		$UsersCount=$this->Users->find()->where(['is_deleted'=>0])->count();
+	 
+		$ProjectsCount=$this->Users->Projects->find()->where(['Projects.is_deleted'=>0])->count();
+		 
+		$TasksCount=$this->Users->Tasks->find()->where(['Tasks.is_deleted'=>0])->count();
+
+        $this->set(compact('users','MasterClientsCount','UsersCount','ProjectsCount','TasksCount'));
 	}
  	public function changePassword()
     {

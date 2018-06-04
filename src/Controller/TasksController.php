@@ -20,7 +20,8 @@ class TasksController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Users', 'Projects','TaskStatuses'=>['Users']]
+            'contain' => ['Users', 'Projects','TaskStatuses'=>['Users']],
+			'limit'=>40
         ];
         $tasks = $this->paginate($this->Tasks->find()->where(['Tasks.is_deleted'=>0]));
 
@@ -117,6 +118,22 @@ class TasksController extends AppController
             $this->Flash->error(__('The task could not be deleted. Please, try again.'));
         }
 
+        return $this->redirect(['action' => 'index']);
+    }
+	
+    public function undodelete($id = null)
+    {
+        $task = $this->Tasks->get($id, [
+            'contain' => []
+        ]);
+		$task = $this->Tasks->patchEntity($task, $this->request->getData());
+		$task->is_deleted=0;
+		$task->status=0;
+		if ($this->Tasks->save($task)) { 
+            $this->Flash->success(__('The task has been deleted.'));
+        } else {
+            $this->Flash->error(__('The task could not be deleted. Please, try again.'));
+        }
         return $this->redirect(['action' => 'index']);
     }
 }

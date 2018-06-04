@@ -19,8 +19,8 @@ label { font-weight:100 !important;}
 			<?php  echo $this->Form->create($masterClient, ['type' => 'file','id'=>"UserRegisterForm"]); ?>
 			<div class="box-body"> 
  				<div class="form-group col-md-4">
-					<label>Name</label>
-					<input type="text" class="form-control" name="client_name" value="<?php echo $masterClient->client_name;?>" id="client_name" placeholder="Enter client name">
+					<label>Company Name</label>
+					<input type="text" class="form-control" name="client_name" value="<?php echo $masterClient->client_name;?>" id="client_name" placeholder="Enter Company name">
                 </div>
 				<div class="form-group col-md-4">
 					<label>Location</label>
@@ -35,8 +35,8 @@ label { font-weight:100 !important;}
 					<div class="data">
 						<div class="col-md-12"><hr style="margin-top:5px;margin-bottom:5px;"></hr></div>
 						<div class="form-group col-md-4">
-							<label>Point of Contact</label>
-							<input type="text" class="form-control poc" value="<?php echo $master_client_pocs->contact_person_name ?>" name="contact_person_name" id="contact_person_name" placeholder="Enter name of Contact"> 
+							<label>Contact Person</label>
+							<input type="text" class="form-control poc" value="<?php echo $master_client_pocs->contact_person_name ?>" name="contact_person_name" id="contact_person_name" placeholder="Enter name of Contact person"> 
 						</div>
 						<div class="form-group col-md-3">
 							<label>Email</label>
@@ -76,8 +76,8 @@ label { font-weight:100 !important;}
 	<div class="data">
 		<div class="col-md-12"><hr style="margin-top:5px;margin-bottom:5px;"></hr></div>
 		<div class="form-group col-md-4">
-			<label>Point of Contact</label>
-			<input type="text" class="form-control poc" name="contact_person_name" id="contact_person_name" placeholder="Enter name of Contact"> 
+			<label>Contact Person</label>
+			<input type="text" class="form-control poc" name="contact_person_name" id="contact_person_name" placeholder="Enter name of Contact person"> 
 		</div>
 		<div class="form-group col-md-3">
 			<label>Email</label>
@@ -171,7 +171,7 @@ function rename_rows()
 		
 } 
 $(document).ready(function(){
-	//add_row();
+	add_row();
 	rename_rows();
 });
 $( document ).ready(function() {  

@@ -26,7 +26,7 @@ label { font-weight:100 !important;}
 						<label>Deadline</label>
 						<input type="text" value="<?php echo date('d-m-Y',strtotime($task->deadline));?>" class="form-control date-picker" data-date-format="dd-mm-yyyy" name="deadline" id="deadline" placeholder="Enter deadline">
 						
-						<input type="text" value="<?php echo date('Y-m-d',strtotime($task->deadline));?>" class="form-control" name="TaskStatusesDeadline"> 
+						<input type="hidden" value="<?php echo date('Y-m-d',strtotime($task->deadline));?>" class="form-control" name="TaskStatusesDeadline"> 
 					</div>
 					<div class="form-group col-md-6">
 						<label>Select Project</label>

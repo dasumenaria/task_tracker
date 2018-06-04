@@ -441,6 +441,20 @@ fieldset
 		<hr class="breakline"></hr>
 		<li class="treeview">
           <a href="#">
+            <i class="fa fa-database"></i>
+            <span>Projects</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="<?php echo $this->Url->build(["controller" => "Projects",'action'=>'add']); ?>"><i class="fa fa-book"></i> Add</a></li>
+            <li><a href="<?php echo $this->Url->build(["controller" => "Projects",'action'=>'index']); ?>"><i class="fa fa-edit"></i> View</a></li> 
+          </ul>
+        </li>
+		<hr class="breakline"></hr>
+		<li class="treeview">
+          <a href="#">
             <i class="fa fa-user"></i>
             <span>Users</span>
             <span class="pull-right-container">
@@ -466,20 +480,7 @@ fieldset
             <li><a href="<?php echo $this->Url->build(["controller" => "Tasks",'action'=>'index']); ?>"><i class="fa fa-edit"></i> View</a></li> 
           </ul>
         </li>
-		<hr class="breakline"></hr>
-		<li class="treeview">
-          <a href="#">
-            <i class="fa fa-database"></i>
-            <span>Projects</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="<?php echo $this->Url->build(["controller" => "Projects",'action'=>'add']); ?>"><i class="fa fa-book"></i> Add</a></li>
-            <li><a href="<?php echo $this->Url->build(["controller" => "Projects",'action'=>'index']); ?>"><i class="fa fa-edit"></i> View</a></li> 
-          </ul>
-        </li>
+		
 	 
 		
 	</ul>

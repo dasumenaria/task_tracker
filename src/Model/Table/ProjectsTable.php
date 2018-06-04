@@ -49,7 +49,8 @@ class ProjectsTable extends Table
             'joinType' => 'INNER'
         ]);
         $this->hasMany('ProjectMembers', [
-            'foreignKey' => 'project_id'
+            'foreignKey' => 'project_id',
+			'saveStrategy' => 'replace'
         ]);
         $this->hasMany('ProjectStatuses', [
             'foreignKey' => 'project_id'

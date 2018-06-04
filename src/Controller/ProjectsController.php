@@ -17,12 +17,18 @@ class ProjectsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id=null)
     {
         $this->paginate = [
-            'contain' => ['MasterClients', 'Users','ProjectMembers'=>['Users'],'Tasks'=>['Users']]
+            'contain' => ['MasterClients', 'Users']
         ];
-        $projects = $this->paginate($this->Projects->find()->where(['Projects.is_deleted'=>0]));
+		 
+		if(!empty($id)){
+			$projects = $this->paginate($this->Projects->find()->where(['Projects.is_deleted'=>0,'Projects.id'=>$id]));
+		}
+		else {
+			$projects = $this->paginate($this->Projects->find()->where(['Projects.is_deleted'=>0]));
+		}
 		 
         $this->set(compact('projects'));
     }
@@ -37,7 +43,7 @@ class ProjectsController extends AppController
     public function view($id = null)
     {
         $project = $this->Projects->get($id, [
-            'contain' => ['MasterClients', 'Users', 'ProjectMembers', 'ProjectStatuses', 'Tasks']
+            'contain' => ['MasterClients', 'Users', 'ProjectMembers'=>['Users'], 'ProjectStatuses', 'Tasks'=>['Users']]
         ]);
 
         $this->set('project', $project);
@@ -88,11 +94,24 @@ class ProjectsController extends AppController
     public function edit($id = null)
     {
         $project = $this->Projects->get($id, [
-            'contain' => []
+            'contain' => ['ProjectMembers']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $project = $this->Projects->patchEntity($project, $this->request->getData());
+			$project->deadline=date('Y-m-d',strtotime($this->request->getData('deadline')));
+			//pr($project); exit;
             if ($this->Projects->save($project)) {
+				$projectmenbers=$this->request->getData('projectmenbers');
+				$this->Projects->ProjectMembers->deleteAll(["project_id"=>$id]);
+				foreach($projectmenbers as $users)
+				{
+					$projectMembers = $this->Projects->ProjectMembers->newEntity();
+					$projectMembers = $this->Projects->ProjectMembers->patchEntity($projectMembers, $this->request->getData());
+					$projectMembers->project_id = $id;
+					$projectMembers->user_id = $users;
+					//pr($projectMembers); exit;
+					$this->Projects->ProjectMembers->save($projectMembers);
+				}
                 $this->Flash->success(__('The project has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

@@ -49,11 +49,12 @@
 												<tbody>
 													<?php $x=0; foreach ($user->project_members as $projects): ?>
 													<?php $x++; ?>
-													<tr>
-														<td><?php echo $x;?></td>
-														<td><?= h($projects->project->title) ?></td>
-														<td><?= h(date('d-m-Y',strtotime($projects->project->deadline))) ?></td>  
-													</tr>
+														<tr>
+															<td><?php echo $x;?></td>
+															<td>
+															<?= $projects->has('project') ? $this->Html->link($projects->project->title, ['controller' => 'Projects', 'action' => 'index', $projects->project->id]) : '' ?></td>
+															<td><?= h(date('d-m-Y',strtotime($projects->project->deadline))) ?></td>  
+														</tr>
 													<?php endforeach; ?>
 												</tbody>
 											</table>

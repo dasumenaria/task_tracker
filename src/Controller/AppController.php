@@ -52,7 +52,7 @@ class AppController extends Controller
 						'fields' => [
 							'username' => 'email',
 							'password' => 'password'
-						],
+						], 
 						'userModel' => 'Users'
 					]
 				],
@@ -79,13 +79,13 @@ class AppController extends Controller
 	 
 		 
 		$loginId=$this->Auth->User('id');  
-		if(!empty($loginId)){
+		if($loginId==1){
 			$first_name=$this->Auth->User('name'); 
 			$profile_pic=$this->Auth->User('profile_pic');  
 			$authUserName=$first_name;
 			$this->set('MemberName',$authUserName);
 			$this->set('profile_pic', $profile_pic);
 			$this->set('loginId',$loginId); 
-		}
+		} 
     }
 }

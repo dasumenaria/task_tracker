@@ -1,4 +1,10 @@
-<?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); ?>
+<?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); 
+$ProjectMenbers=array();
+foreach($project->project_members as $mem){
+	$ProjectMenbers[]=$mem->user_id;
+}; 
+
+?>
 <style>
 #Content{ width:90% !important; margin-left: 5%;}
 input:focus {background-color:#FFF !important;}
@@ -6,14 +12,13 @@ input[type="password"]:focus {background-color:#FFF !important;}
 div.error { display: block !important; } 
 label { font-weight:100 !important;}
 </style>
-
 <section class="content">
 <div class="col-md-12"></div>
       <div class="row">
         <div class="col-md-12">
          <div class="box box-primary">
 			<div class="box-header with-border">
-              <h3 class="box-title">Add Project</h3>
+              <h3 class="box-title">Edit Project</h3>
             </div>
 			
 			<?php  echo $this->Form->create($project, ['type' => 'file','id'=>"UserRegisterForm"]); ?>
@@ -38,7 +43,7 @@ label { font-weight:100 !important;}
 					</div>
 					<div class="form-group col-md-6">
 						<label>Select Project Memabers</label>
-						<?php echo  $this->Form->control('projectmenbers', ['options' => $users,'class'=>"form-control select2",'multiple'=>true, 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false]);?>
+						<?php echo  $this->Form->control('projectmenbers', ['options' => $users,'class'=>"form-control select2",'multiple'=>true, 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'value'=>$ProjectMenbers]);?>
 						<label id="projectmenbers-error" class="error" style="display:none" for="projectmenbers">This field is required.</label>
 					</div>  
 				 

@@ -18,15 +18,19 @@ class MasterClientsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id=null)
     {
 		$this->paginate = [
             'contain' => ['MasterClientPocs'=>function($q){
 				return $q->where(['MasterClientPocs.is_deleted'=>0]);
 			}, 'Projects'=>['Users']]
         ];
-        $masterClients = $this->paginate($this->MasterClients->find()->where(['MasterClients.is_deleted'=>0]));
-		
+		if(!empty($id)){
+			$masterClients = $this->paginate($this->MasterClients->find()->where(['MasterClients.is_deleted'=>0,'id'=>$id]));
+		}
+		else{
+			$masterClients = $this->paginate($this->MasterClients->find()->where(['MasterClients.is_deleted'=>0]));
+		}
         $this->set(compact('masterClients'));
     } 
 	

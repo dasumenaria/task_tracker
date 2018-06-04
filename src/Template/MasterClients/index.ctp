@@ -93,9 +93,13 @@
 												<?php $x++; ?>
 												<tr>
 													<!--<td><?php echo $x;?></td>-->
-													<td><?= h($projects->title) ?></td>
-													<td><?= h(date('d-m-Y',strtotime($projects->deadline))) ?></td>
-													<td><?= h($projects->user->name) ?></td>
+													<td>
+													<?= $projects->has('user') ? $this->Html->link($projects->title, ['controller' => 'Projects', 'action' => 'index', $projects->id]) : '' ?>
+													
+													 <td><?= h(date('d-m-Y',strtotime($projects->deadline))) ?></td>
+													<td> 
+													<?= $projects->has('user') ? $this->Html->link($projects->user->name, ['controller' => 'Users', 'action' => 'index', $projects->user->id]) : '' ?>
+													</td>
 													<td><?= h($projects->user->mobile_no) ?></td> 
 												</tr>
 												<?php endforeach; ?>

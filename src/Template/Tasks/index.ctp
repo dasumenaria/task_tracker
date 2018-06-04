@@ -50,7 +50,7 @@
 						<tr style="background-color:<?php echo $color;?>">
 							<td><?= $X; ?></td>
 							<td><?= $task->user->name ?></td>
-							<td><?= $task->has('project') ? $this->Html->link($task->project->title, ['controller' => 'Projects', 'action' => 'index']) : '' ?></td>
+							<td><?= $task->has('project') ? $this->Html->link($task->project->title, ['controller' => 'Projects', 'action' => 'index/'.$task->project->id]) : '' ?></td>
 							<td  width="400px"><?= $task->title ?></td>
 							<td><?= h(date('d-M-Y',strtotime($task->deadline))) ?></td> 
 							<td><?= h(date('d-M-Y',strtotime($task->created_on))) ?></td>
@@ -61,6 +61,8 @@
 								<?php if($task->status!=1){  echo $this->Html->link('<i class="fa fa-edit"></i>','/Tasks/edit/'.$task->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
 							
 								<a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
+								<?php } else {?>	
+								<a class=" btn btn-successto btn-xs" data-target="#undi<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-reply"></i></a>
 								<?php }?>
 								<a class=" btn btn-info btn-xs" data-target="#Details<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-book"></i></a>
 								
@@ -104,7 +106,7 @@
 					<div class="modal-content">
 						<div class="modal-header">
 							<button type="button" class="close" data-dismiss="modal">&times;</button>
-							<h4 class="modal-title">Project Details</h4>
+							<h4 class="modal-title">Task Status Details</h4>
 						</div>
 						<div class="modal-body">
 							<table class="table table-bordered">
@@ -137,6 +139,24 @@
 							</div>
 						</div>
 					</div>
+				</div>
+			</div>
+			<div id="undi<?php echo $task->id; ?>" class="modal fade" role="dialog">
+				<div class="modal-dialog modal-md" >
+					<form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'undodelete',$task->id)) ?>">
+						<div class="modal-content">
+						  <div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">
+								Are you sure you want to undo this Task?
+								</h4>
+							</div>
+							<div class="modal-footer">
+								<button type="submit" class="btn  btn-sm btn-info">Yes</button>
+								<button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+							</div>
+						</div>
+					</form>
 				</div>
 			</div>
 		<?php endforeach; ?>

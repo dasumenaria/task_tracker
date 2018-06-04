@@ -15,7 +15,7 @@
 						<th scope="col"><?= $this->Paginator->sort('title') ?></th>
 						<th scope="col"><?= $this->Paginator->sort('deadline') ?></th> 
 						<th scope="col"><?= $this->Paginator->sort('created_on') ?></th> 
-						<th scope="col" class="actions"><?= __('Members | Tasks') ?></th>
+						<!--<th scope="col" class="actions"><?= __('Members | Tasks') ?></th>-->
 						<th scope="col" class="actions"><?= __('Actions') ?></th>
 					</tr>
 				</thead>
@@ -28,7 +28,54 @@
 						<td><?= h($project->title) ?></td>
 						<td><?= h(date('d-m-Y',strtotime($project->deadline))) ?></td> 
 						<td><?= h(date('d-m-Y',strtotime($project->created_on))) ?></td> 
-						<td>
+						
+						<td class="actions">
+							<?php $this->Html->link(__('View'), ['action' => 'view', $project->id]) ?>
+							<?php $this->Html->link(__('Edit'), ['action' => 'edit', $project->id]) ?>
+							<?php $this->Form->postLink(__('Delete'), ['action' => 'delete', $project->id], ['confirm' => __('Are you sure you want to delete # {0}?', $project->id)]) ?>
+							<?php echo $this->Html->link('<i class="fa fa-book"></i>','/Projects/view/'.$project->id,array('escape'=>false,'class'=>'btn btn-info btn-xs','target'=>'_blank'));?>
+							
+							<?php echo $this->Html->link('<i class="fa fa-edit"></i>','/Projects/edit/'.$project->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
+							
+							<a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $project->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
+							<div id="deletemodal<?php echo $project->id; ?>" class="modal fade" role="dialog">
+								<div class="modal-dialog modal-md" >
+									<form method="post" action="<?php echo $this->Url->build(array('controller'=>'Projects','action'=>'delete',$project->id)) ?>">
+										<div class="modal-content">
+										  <div class="modal-header">
+												<button type="button" class="close" data-dismiss="modal">&times;</button>
+												<h4 class="modal-title">
+												Are you sure you want to remove this Project?
+												</h4>
+											</div>
+											<div class="modal-footer">
+												<button type="submit" class="btn  btn-sm btn-info">Yes</button>
+												<button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+			<div class="paginator">
+				<ul class="pagination">
+					<?= $this->Paginator->first('<< ' . __('first')) ?>
+					<?= $this->Paginator->prev('< ' . __('previous')) ?>
+					<?= $this->Paginator->numbers() ?>
+					<?= $this->Paginator->next(__('next') . ' >') ?>
+					<?= $this->Paginator->last(__('last') . ' >>') ?>
+				</ul>
+				<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<!--<td>
 						<a class="btn btn-xs btn-info" data-target="#ProjectMembers<?php echo $project->id;?>" data-toggle="modal"> Member's</a>
 						
 						<div id="ProjectMembers<?php echo $project->id;?>" class="modal fade" role="dialog">
@@ -119,49 +166,4 @@
 							</div>
 						</div>
 						
-						</td> 
-						<td class="actions">
-							<?php $this->Html->link(__('View'), ['action' => 'view', $project->id]) ?>
-							<?php $this->Html->link(__('Edit'), ['action' => 'edit', $project->id]) ?>
-							<?php $this->Form->postLink(__('Delete'), ['action' => 'delete', $project->id], ['confirm' => __('Are you sure you want to delete # {0}?', $project->id)]) ?>
-							<?php echo $this->Html->link('<i class="fa fa-edit"></i>','/Projects/edit/'.$project->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
-							
-							<a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $project->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
-							<div id="deletemodal<?php echo $project->id; ?>" class="modal fade" role="dialog">
-								<div class="modal-dialog modal-md" >
-									<form method="post" action="<?php echo $this->Url->build(array('controller'=>'Projects','action'=>'delete',$project->id)) ?>">
-										<div class="modal-content">
-										  <div class="modal-header">
-												<button type="button" class="close" data-dismiss="modal">&times;</button>
-												<h4 class="modal-title">
-												Are you sure you want to remove this Project?
-												</h4>
-											</div>
-											<div class="modal-footer">
-												<button type="submit" class="btn  btn-sm btn-info">Yes</button>
-												<button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
-											</div>
-										</div>
-									</form>
-								</div>
-							</div>
-							
-						</td>
-					</tr>
-					<?php endforeach; ?>
-				</tbody>
-			</table>
-			<div class="paginator">
-				<ul class="pagination">
-					<?= $this->Paginator->first('<< ' . __('first')) ?>
-					<?= $this->Paginator->prev('< ' . __('previous')) ?>
-					<?= $this->Paginator->numbers() ?>
-					<?= $this->Paginator->next(__('next') . ' >') ?>
-					<?= $this->Paginator->last(__('last') . ' >>') ?>
-				</ul>
-				<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-			</div>
-		</div>
-	</div>
-</div>
-</div>
+						</td>-->
