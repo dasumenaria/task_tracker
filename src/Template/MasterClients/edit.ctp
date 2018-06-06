@@ -20,15 +20,15 @@ label { font-weight:100 !important;}
 			<div class="box-body"> 
  				<div class="form-group col-md-4">
 					<label>Company Name</label>
-					<input type="text" class="form-control" name="client_name" value="<?php echo $masterClient->client_name;?>" id="client_name" placeholder="Enter Company name">
+					<input type="text" class="form-control" name="client_name" value="<?php echo $masterClient->client_name;?>" id="client_name" placeholder="Enter Company Name">
                 </div>
 				<div class="form-group col-md-4">
-					<label>Location</label>
-					<textarea type="text" class="form-control" name="location"  id="location" placeholder="Enter client loaction"><?php echo $masterClient->location;?></textarea>
+					<label>Alias</label>
+					<textarea type="text" class="form-control" name="location" rows="1" id="location" placeholder="Enter Alias"><?php echo $masterClient->location;?></textarea>
                 </div>
 				<div class="form-group col-md-4">
 					<label>Address</label>
-					<textarea type="text" class="form-control" name="address" id="address" placeholder="Enter client address"><?php echo $masterClient->address;?></textarea>
+					<textarea type="text" class="form-control" name="address" id="address" placeholder="Enter Company Address"><?php echo $masterClient->address;?></textarea>
                 </div>
 				<div class="no-print" style="margin-top:20px;" id="monthly_table">
 				<?php $vf=0; foreach($masterClient->master_client_pocs as $master_client_pocs) { ?>
@@ -48,14 +48,14 @@ label { font-weight:100 !important;}
 						</div>
 						<?php if($vf==0){ ?>
 						<div class="form-group col-md-2">
-							<label style="visibility:hidden">helloasdasdsds</label>
-							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> Add More </button> 
+							<label style="visibility:hidden">helloasdasdsdsasd</label>
+							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> </button> 
 						</div> 
 						<?php } else { ?>
 						<div class="form-group col-md-2">
-							<label style="visibility:hidden">helloasdasdsds</label>
-							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> Add More </button> 
-							<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i> Delete </button>	
+							<label style="visibility:hidden">helloasdasdsdsasd</label>
+							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> </button> 
+							<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i> </button>	
 						</div>
 						<?php } ?>
 					</div> 
@@ -88,9 +88,9 @@ label { font-weight:100 !important;}
 			<input type="text" class="form-control mobile"  maxlength="10" minlength="10"  name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
 		</div>
 		<div class="form-group col-md-2">
-			<label style="visibility:hidden">helloasdasdsds</label>
-			<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> Add More </button> 
-			<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i> Delete </button>	
+			<label style="visibility:hidden">helloasdasdsdsasd</label>
+			<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> </button> 
+			<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i></button>	
 		</div>
 	</div>
 </div>
@@ -171,7 +171,8 @@ function rename_rows()
 		
 } 
 $(document).ready(function(){
-	add_row();
+	<?php if($vf==0){ ?>
+	add_row(); <?php } ?>
 	rename_rows();
 });
 $( document ).ready(function() {  

@@ -54,7 +54,7 @@ class MasterClientPocsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
+       /* $validator
             ->scalar('contact_person_name')
             ->maxLength('contact_person_name', 200)
             ->requirePresence('contact_person_name', 'create')
@@ -75,7 +75,7 @@ class MasterClientPocsTable extends Table
             ->scalar('password')
             ->requirePresence('password', 'create')
             ->notEmpty('password');
-*/
+ 
         $validator
             ->scalar('mobile')
             ->maxLength('mobile', 20)
@@ -109,7 +109,7 @@ class MasterClientPocsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['email']));
+        //$rules->add($rules->isUnique(['email']));
         //$rules->add($rules->isUnique(['username']));
         $rules->add($rules->existsIn(['master_client_id'], 'MasterClients'));
 

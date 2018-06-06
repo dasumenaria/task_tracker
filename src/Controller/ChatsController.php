@@ -12,7 +12,13 @@ use App\Controller\AppController;
  */
 class ChatsController extends AppController
 {
-
+	public function initialize()
+	{
+		parent::initialize();
+		$this->Auth->allow(['logout']);
+		$loginId=$this->Auth->User('id');
+		if($loginId!=1){ $this->Flash->error(__('You are not authorized user!'));  return $this->redirect(['controller'=>'Users','action' => 'login']); }
+	}
     /**
      * Index method
      *

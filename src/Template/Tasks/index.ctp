@@ -50,7 +50,7 @@
 						<tr style="background-color:<?php echo $color;?>">
 							<td><?= $X; ?></td>
 							<td><?= $task->user->name ?></td>
-							<td><?= $task->has('project') ? $this->Html->link($task->project->title, ['controller' => 'Projects', 'action' => 'index/'.$task->project->id]) : '' ?></td>
+							<td><?= $task->has('project') ? $this->Html->link($task->project->title, ['controller' => 'Projects', 'action' => 'view/'.$task->project->id]) : '' ?></td>
 							<td  width="400px"><?= $task->title ?></td>
 							<td><?= h(date('d-M-Y',strtotime($task->deadline))) ?></td> 
 							<td><?= h(date('d-M-Y',strtotime($task->created_on))) ?></td>

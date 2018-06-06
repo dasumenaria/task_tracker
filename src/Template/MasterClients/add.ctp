@@ -20,34 +20,34 @@ label { font-weight:100 !important;}
 			<div class="box-body"> 
  				<div class="form-group col-md-4">
 					<label>Company Name</label>
-					<input type="text" class="form-control" name="client_name" id="client_name" placeholder="Enter Company name">
+					<input type="text" class="form-control" name="client_name" id="client_name" placeholder="Enter Company Name">
                 </div>
 				<div class="form-group col-md-4">
-					<label>Location</label>
-					<textarea type="text" class="form-control" name="location"  id="location" placeholder="Enter client loaction"></textarea>
+					<label>Alias</label>
+					<textarea type="text" class="form-control" rows="1" name="location"  id="location" placeholder="Enter  Alias"></textarea>
                 </div>
 				<div class="form-group col-md-4">
 					<label>Address</label>
-					<textarea type="text" class="form-control" name="address" id="address" placeholder="Enter client address"></textarea>
+					<textarea type="text" class="form-control" name="address" id="address" placeholder="Enter Company Address"></textarea>
                 </div>
 				<div class="no-print" style="margin-top:20px;" id="monthly_table">
 					<div class="data">
 						<div class="col-md-12"><hr style="margin-top:5px;margin-bottom:5px;"></hr></div>
 						<div class="form-group col-md-4">
 							<label>Contact Person</label>
-							<input type="text" class="form-control poc" name="contact_person_name" id="contact_person_name" placeholder="Enter name of Contact"> 
+							<input type="text" class="form-control poc" required name="contact_person_name" id="contact_person_name" placeholder="Enter name of Contact"> 
 						</div>
 						<div class="form-group col-md-3">
 							<label>Email</label>
-							<input type="text" class="form-control email" name="email" id="email" placeholder="Enter Contact Email"> 
+							<input type="text" class="form-control email" required name="email" id="email" placeholder="Enter Contact Email"> 
 						</div>
 						<div class="form-group col-md-3">
 							<label>Mobile No.</label>
-							<input type="text" class="form-control mobile"  maxlength="10" minlength="10"  name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
+							<input type="text" class="form-control mobile" required maxlength="10" minlength="10"  name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
 						</div>
 						<div class="form-group col-md-2">
-							<label style="visibility:hidden">helloasdasdsds</label>
-							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> Add More </button> 
+							<label style="visibility:hidden">helloasdasdsdsasd</label>
+							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i>  </button> 
 						</div> 
 					</div> 
 				</div>
@@ -75,12 +75,12 @@ label { font-weight:100 !important;}
 		</div>
 		<div class="form-group col-md-3">
 			<label>Mobile No.</label>
-			<input type="text" class="form-control mobile"  maxlength="10" minlength="10"   name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
+			<input type="text" class="form-control mobile"  maxlength="10" minlength="10"  name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
 		</div>
 		<div class="form-group col-md-2">
-			<label style="visibility:hidden">helloasdasdsds</label>
-			<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> Add More </button> 
-			<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i> Delete </button>	
+			<label style="visibility:hidden">helloasdasdsdsasd</label>
+			<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i>   </button> 
+			<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i>  </button>	
 		</div>
 	</div>
 </div>

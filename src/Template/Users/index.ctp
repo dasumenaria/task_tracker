@@ -52,7 +52,7 @@
 														<tr>
 															<td><?php echo $x;?></td>
 															<td>
-															<?= $projects->has('project') ? $this->Html->link($projects->project->title, ['controller' => 'Projects', 'action' => 'index', $projects->project->id]) : '' ?></td>
+															<?= $projects->has('project') ? $this->Html->link($projects->project->title, ['controller' => 'Projects', 'action' => 'view', $projects->project->id]) : '' ?></td>
 															<td><?= h(date('d-m-Y',strtotime($projects->project->deadline))) ?></td>  
 														</tr>
 													<?php endforeach; ?>

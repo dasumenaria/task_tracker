@@ -1,22 +1,12 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Leave[]|\Cake\Collection\CollectionInterface $leaves
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Leave'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Leave Types'), ['controller' => 'LeaveTypes', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Leave Type'), ['controller' => 'LeaveTypes', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="leaves index large-9 medium-8 columns content">
-    <h3><?= __('Leaves') ?></h3>
-    <table cellpadding="0" cellspacing="0">
+<section class="content">
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<b>Project </b>
+ 			</div>
+			<div class="box-body" style="overflow-x:scroll"> 
+			<table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
         <thead>
             <tr>
                 <th scope="col"><?= $this->Paginator->sort('id') ?></th>
@@ -40,7 +30,7 @@
                 <td><?= h($leave->date_from) ?></td>
                 <td><?= h($leave->date_to) ?></td>
                 <td><?= h($leave->duration) ?></td>
-                <td><?= $this->Number->format($leave->leave_status) ?></td>
+                <td><?php echo  $leave->leave_status; ?></td>
                 <td><?= h($leave->created_on) ?></td>
                 <td><?= $this->Number->format($leave->is_deleted) ?></td>
                 <td class="actions">

@@ -24,7 +24,7 @@
 					<tr>
 						<td><?= ++$x; ?></td>
 						<td><?= $project->has('master_client') ? $this->Html->link($project->master_client->client_name, ['controller' => 'MasterClients', 'action' => 'index', $project->master_client->id]) : '' ?></td>
-						<td><?= $project->has('user') ? $this->Html->link($project->user->name, ['controller' => 'Users', 'action' => 'index', $project->user->id]) : '' ?></td>
+						<td><?= h($project->user->name) ?></td>
 						<td><?= h($project->title) ?></td>
 						<td><?= h(date('d-m-Y',strtotime($project->deadline))) ?></td> 
 						<td><?= h(date('d-m-Y',strtotime($project->created_on))) ?></td> 

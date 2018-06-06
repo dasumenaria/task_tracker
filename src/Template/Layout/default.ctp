@@ -30,15 +30,12 @@
 	<?php  echo $this->Html->css('/assets/scroll/jquery/jquery-ui.css'); ?>
 	<?php  echo $this->Html->css('/assets/scroll/css/styles.css'); ?>
 	<?php  echo $this->Html->css('/assets/scroll/css/fixed_table_rc.css'); ?> 
-	 
-<link rel="stylesheet" href="">
- 
-	<?php
+ 	<?php
 	echo $this->Html->meta(
     'favicon.ico',
-    '/images/shortcut_icon/favicon.ico',
+    '/img/favicon.ico',
     ['type' => 'icon']
-);
+	);
 ?> 
 <style>
 input[type=checkbox],input[type=radio] {
@@ -478,6 +475,20 @@ fieldset
           <ul class="treeview-menu">
             <li><a href="<?php echo $this->Url->build(["controller" => "Tasks",'action'=>'add']); ?>"><i class="fa fa-user"></i> Add</a></li>
             <li><a href="<?php echo $this->Url->build(["controller" => "Tasks",'action'=>'index']); ?>"><i class="fa fa-edit"></i> View</a></li> 
+          </ul>
+        </li>
+		<hr class="breakline"></hr>
+		<li class="treeview">
+          <a href="#">
+            <i class="fa fa-book"></i>
+            <span>Reports</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="<?php echo $this->Url->build(["controller" => "Leaves",'action'=>'index']); ?>"><i class="fa fa-user"></i> Leave</a></li>
+            <li><a href="<?php echo $this->Url->build(["controller" => "Tasks",'action'=>'index']); ?>"><i class="fa fa-edit"></i> Client Visit</a></li> 
           </ul>
         </li>
 		

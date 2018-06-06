@@ -1,5 +1,3 @@
-
-
 <section class="content">
 <div class="row">
 	<div class="col-md-12">
@@ -13,7 +11,7 @@
 					<tr>
 						<th scope="col"><?= ('S. No.') ?></th>
 						<th scope="col"><?= $this->Paginator->sort('client_name') ?></th> 
-						<th scope="col"><?= ('POC List') ?></th>
+						<th scope="col"><?= ('Contact Persons') ?></th>
 						<th scope="col"><?= ('Project List') ?></th>
 						<th scope="col" class="actions"><?= __('Actions') ?></th>
 					</tr>
@@ -25,13 +23,13 @@
 					<tr>
 						<td><?= $sno ?></td>
 						<td><?= h($masterClient->client_name) ?></td> 
-						<td><a class="btn btn-xs btn-info" data-target="#AcDetails<?php echo $masterClient->id;?>" data-toggle="modal">POC's</a>
+						<td><a class="btn btn-xs btn-info" data-target="#AcDetails<?php echo $masterClient->id;?>" data-toggle="modal">Contact Person's</a>
 						<div id="AcDetails<?php echo $masterClient->id;?>" class="modal fade" role="dialog">
 							<div class="modal-dialog modal-md">
 								<div class="modal-content">
 								  <div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal">&times;</button>
-									<h4 class="modal-title">Point of Contacts</h4>
+									<h4 class="modal-title">Contact Person's</h4>
 								  </div>
 								<div class="modal-body">
 									<table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
@@ -94,11 +92,11 @@
 												<tr>
 													<!--<td><?php echo $x;?></td>-->
 													<td>
-													<?= $projects->has('user') ? $this->Html->link($projects->title, ['controller' => 'Projects', 'action' => 'index', $projects->id]) : '' ?>
+													<?= $projects->has('user') ? $this->Html->link($projects->title, ['controller' => 'Projects', 'action' => 'view', $projects->id]) : '' ?>
 													
 													 <td><?= h(date('d-m-Y',strtotime($projects->deadline))) ?></td>
 													<td> 
-													<?= $projects->has('user') ? $this->Html->link($projects->user->name, ['controller' => 'Users', 'action' => 'index', $projects->user->id]) : '' ?>
+													<?= h($projects->user->name) ?>
 													</td>
 													<td><?= h($projects->user->mobile_no) ?></td> 
 												</tr>
