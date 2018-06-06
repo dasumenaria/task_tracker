@@ -14,6 +14,7 @@ label { font-weight:100 !important;}
          <div class="box box-primary">
 			<div class="box-header with-border">
               <h3 class="box-title">Add Client</h3>
+			  
             </div>
 			
 			<?php  echo $this->Form->create($masterClient, ['type' => 'file','id'=>"UserRegisterForm"]); ?>
