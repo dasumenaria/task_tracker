@@ -13,6 +13,7 @@ class UsersController extends AppController
 	  
 	public function index($id=null)
     {
+    	$this->set('li','Users');
 		$this->paginate = [
              'contain' => ['ProjectMembers'=>['Projects']]
         ];
@@ -26,6 +27,7 @@ class UsersController extends AppController
     } 
  	public function dashboard()
 	{
+		$this->set('li','Home');
 		$loginId=$this->Auth->User('id');
 		if($loginId!=1){ $this->Flash->error(__('You are not authorized user!'));  return $this->redirect(['action' => 'login']); }
 		//-- COunts
@@ -98,6 +100,7 @@ class UsersController extends AppController
 
     public function view($id = null)
     {
+    	$this->set('li','Users');
         $admin = $this->Users->get($id, [
             //'contain' => ['AdminRole']
         ]);
@@ -107,6 +110,7 @@ class UsersController extends AppController
 
     public function add()
     {
+    	$this->set('li','Users');
         $user = $this->Users->newEntity();
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
@@ -188,6 +192,7 @@ class UsersController extends AppController
      */
     public function edit($id = null)
     {
+    	$this->set('li','Users');
         $user = $this->Users->get($id, [
             'contain' => []
         ]);

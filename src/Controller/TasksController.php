@@ -26,6 +26,7 @@ class TasksController extends AppController
      */
     public function index()
     {
+        $this->set('li','Tasks');
         $this->paginate = [
             'contain' => ['Users', 'Projects','TaskStatuses'=>['Users']],
 			'limit'=>40
@@ -44,6 +45,7 @@ class TasksController extends AppController
      */
     public function view($id = null)
     {
+        $this->set('li','Tasks');
         $task = $this->Tasks->get($id, [
             'contain' => ['Users', 'Projects']
         ]);
@@ -57,6 +59,7 @@ class TasksController extends AppController
      */
     public function add()
     {
+        $this->set('li','Tasks');
         $task = $this->Tasks->newEntity();
         if ($this->request->is('post')) {
             $task = $this->Tasks->patchEntity($task, $this->request->getData());
@@ -82,6 +85,7 @@ class TasksController extends AppController
      */
     public function edit($id = null)
     {
+        $this->set('li','Tasks');
 		$TaskStatuses = $this->Tasks->TaskStatuses->newEntity();
         $task = $this->Tasks->get($id, [
             'contain' => ['TaskStatuses']

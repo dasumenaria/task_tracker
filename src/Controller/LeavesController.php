@@ -26,12 +26,53 @@ class LeavesController extends AppController
      */
     public function index()
     {
+        $this->set('li','Reports');
         $this->paginate = [
             'contain' => ['Users', 'LeaveTypes']
         ];
         $leaves = $this->paginate($this->Leaves);
+        $users = $this->Leaves->Users->find('list')->where(['Users.is_deleted'=>0]);
+        $leaveTypes = $this->Leaves->LeaveTypes->find('list')->where(['LeaveTypes.is_deleted'=>0]);
+        if ($this->request->is('post')) 
+        {
+            $data = $this->request->getData();
+            //pr($data);exit;
 
-        $this->set(compact('leaves'));
+            if(!empty($data['user_id']))
+            {
+                $condition['Leaves.user_id']  = $data['user_id'];
+            }
+
+            if(!empty($data['leave_type_id']))
+            {
+                    $condition['Leaves.leave_type_id']  = $data['leave_type_id'];
+            }
+
+            if(!empty($data['leave_status']))
+            {
+                if($data['leave_status'] == 3)
+                    $condition['Leaves.leave_status']  = 0;
+                else
+                    $condition['Leaves.leave_status']  = $data['leave_status'];
+            }
+
+            if(!empty($data['date_from']))
+            {
+                $condition['Leaves.date_from >=']  = date('Y-m-d',strtotime($data['date_from']));
+            }
+
+            if(!empty($data['date_to']))
+            {
+                $condition['Leaves.date_to <=']  = date('Y-m-d',strtotime($data['date_to']));
+            }
+            
+            $condition['Leaves.is_deleted'] = 0;
+
+            //pr($condition);exit;
+            $leaves = $this->Leaves->find()->where($condition)->contain(['Users','LeaveTypes']);
+        }
+
+        $this->set(compact('leaves','users','leaveTypes'));
     }
 
     /**
@@ -114,6 +155,28 @@ class LeavesController extends AppController
         } else {
             $this->Flash->error(__('The leave could not be deleted. Please, try again.'));
         }
+
+        return $this->redirect(['action' => 'index']);
+    }
+
+    public function approve(int $id = null)
+    {
+        $query = $this->Leaves->query();
+        $query->update()
+        ->set(['leave_status' => 1])
+        ->where(['id' => $id])
+        ->execute();
+
+        return $this->redirect(['action' => 'index']);
+    }
+
+    public function reject(int $id = null)
+    {
+        $query = $this->Leaves->query();
+        $query->update()
+        ->set(['leave_status' => 2])
+        ->where(['id' => $id])
+        ->execute();
 
         return $this->redirect(['action' => 'index']);
     }

@@ -421,8 +421,8 @@ fieldset
         </div>
     </div>		
 	<ul class="sidebar-menu">
-		<li class="active"><a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'dashboard']); ?>"><i class="fa fa-home"></i> <span>Home</span></a></li><hr class="breakline"></hr>
-		<li class="treeview">
+		<li class="<?= $li=='Home'?'active':'' ?>"><a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'dashboard']); ?>"><i class="fa fa-home"></i> <span>Home</span></a></li><hr class="breakline"></hr>
+		<li class="treeview <?= $li=='Master Clients'?'active':'' ?>">
           <a href="#">
             <i class="fa fa-group"></i>
             <span>Master Clients</span>
@@ -436,7 +436,7 @@ fieldset
           </ul>
         </li>
 		<hr class="breakline"></hr>
-		<li class="treeview">
+		<li class="treeview <?= $li=='Projects'?'active':'' ?>">
           <a href="#">
             <i class="fa fa-database"></i>
             <span>Projects</span>
@@ -450,7 +450,7 @@ fieldset
           </ul>
         </li>
 		<hr class="breakline"></hr>
-		<li class="treeview">
+		<li class="treeview <?= $li=='Users'?'active':'' ?>">
           <a href="#">
             <i class="fa fa-user"></i>
             <span>Users</span>
@@ -464,7 +464,7 @@ fieldset
           </ul>
         </li>
 		<hr class="breakline"></hr>
-		<li class="treeview">
+		<li class="treeview <?= $li=='Tasks'?'active':'' ?>">
           <a href="#">
             <i class="fa fa-book"></i>
             <span>Tasks</span>
@@ -478,7 +478,7 @@ fieldset
           </ul>
         </li>
 		<hr class="breakline"></hr>
-		<li class="treeview">
+		<li class="treeview <?= $li=='Reports'?'active':'' ?>">
           <a href="#">
             <i class="fa fa-book"></i>
             <span>Reports</span>
@@ -488,7 +488,7 @@ fieldset
           </a>
           <ul class="treeview-menu">
             <li><a href="<?php echo $this->Url->build(["controller" => "Leaves",'action'=>'index']); ?>"><i class="fa fa-user"></i> Leave</a></li>
-            <li><a href="<?php echo $this->Url->build(["controller" => "Tasks",'action'=>'index']); ?>"><i class="fa fa-edit"></i> Client Visit</a></li> 
+            <li><a href="<?php echo $this->Url->build(["controller" => "ClientVisites",'action'=>'index']); ?>"><i class="fa fa-edit"></i> Client Visit</a></li> 
           </ul>
         </li>
 		

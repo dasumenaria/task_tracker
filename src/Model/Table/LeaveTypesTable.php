@@ -33,7 +33,7 @@ class LeaveTypesTable extends Table
         parent::initialize($config);
 
         $this->setTable('leave_types');
-        $this->setDisplayField('id');
+        $this->setDisplayField('type');
         $this->setPrimaryKey('id');
 
         $this->hasMany('Leaves', [

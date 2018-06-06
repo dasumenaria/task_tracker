@@ -26,6 +26,7 @@ class ProjectsController extends AppController
      */
     public function index($id=null)
     {
+        $this->set('li','Projects');
         $this->paginate = [
             'contain' => ['MasterClients', 'Users']
         ];
@@ -49,6 +50,7 @@ class ProjectsController extends AppController
      */
     public function view($id = null)
     {
+        $this->set('li','Projects');
         $project = $this->Projects->get($id, [
             'contain' => ['MasterClients', 'Users', 'ProjectMembers'=>['Users'], 'ProjectStatuses', 'Tasks'=>['Users']]
         ]);
@@ -63,6 +65,7 @@ class ProjectsController extends AppController
      */
     public function add()
     {
+        $this->set('li','Projects');
         $project = $this->Projects->newEntity();
         if ($this->request->is('post')) {
             $project = $this->Projects->patchEntity($project, $this->request->getData());
@@ -100,6 +103,7 @@ class ProjectsController extends AppController
      */
     public function edit($id = null)
     {
+        $this->set('li','Projects');
         $project = $this->Projects->get($id, [
             'contain' => ['ProjectMembers']
         ]);

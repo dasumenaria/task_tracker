@@ -26,13 +26,47 @@ class ClientVisitesController extends AppController
      */
     public function index()
     {
+        $this->set('li','Reports');
         $this->paginate = [
-            'contain' => ['MasterClients', 'Users']
+            'contain' => ['Users', 'MasterClients']
         ];
         $clientVisites = $this->paginate($this->ClientVisites);
+        $users = $this->ClientVisites->Users->find('list')->where(['Users.is_deleted'=>0]);
+        $masterClients = $this->ClientVisites->MasterClients->find('list')->where(['MasterClients.is_deleted'=>0]);
+        if ($this->request->is('post')) 
+        {
+            $data = $this->request->getData();
+            //pr($data);exit;
 
-        $this->set(compact('clientVisites'));
+            if(!empty($data['user_id']))
+            {
+                $condition['ClientVisites.user_id']  = $data['user_id'];
+            }
+
+            if(!empty($data['master_client_id']))
+            {
+                    $condition['ClientVisites.master_client_id']  = $data['master_client_id'];
+            }
+
+            if(!empty($data['date_from']))
+            {
+                $condition['ClientVisites.visit_date >=']  = date('Y-m-d',strtotime($data['date_from']));
+            }
+
+            if(!empty($data['date_to']))
+            {
+                $condition['ClientVisites.visit_date <=']  = date('Y-m-d',strtotime($data['date_to']));
+            }
+            
+            $condition['ClientVisites.is_deleted'] = 0;
+
+            //pr($condition);exit;
+            $clientVisites = $this->ClientVisites->find()->where($condition)->contain(['Users','MasterClients']);
+        }
+
+        $this->set(compact('clientVisites','users','masterClients'));
     }
+
 
     /**
      * View method

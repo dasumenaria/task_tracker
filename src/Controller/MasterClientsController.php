@@ -26,6 +26,7 @@ class MasterClientsController extends AppController
      */
     public function index($id=null)
     {
+        $this->set('li','Master Clients');
 		$this->paginate = [
             'contain' => ['MasterClientPocs'=>function($q){
 				return $q->where(['MasterClientPocs.is_deleted'=>0]);
@@ -42,6 +43,7 @@ class MasterClientsController extends AppController
 	
     public function view($id = null)
     {
+        $this->set('li','Master Clients');
         $masterClient = $this->MasterClients->get($id, [
             'contain' => ['ClientVisites', 'MasterClientPocs', 'Projects']
         ]);
@@ -56,6 +58,7 @@ class MasterClientsController extends AppController
      */
     public function add()
     {
+        $this->set('li','Master Clients');
         $masterClient = $this->MasterClients->newEntity();
         if ($this->request->is('post')) {
             $masterClient = $this->MasterClients->patchEntity($masterClient, $this->request->getData());
@@ -79,6 +82,7 @@ class MasterClientsController extends AppController
      */
     public function edit($id = null)
     {
+        $this->set('li','Master Clients');
         $masterClient = $this->MasterClients->get($id, [
             'contain' => ['MasterClientPocs']
         ]);
