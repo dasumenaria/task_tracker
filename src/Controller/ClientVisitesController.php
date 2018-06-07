@@ -27,10 +27,34 @@ class ClientVisitesController extends AppController
     public function index()
     {
         $this->set('li','Reports');
-        $this->paginate = [
-            'contain' => ['Users', 'MasterClients']
-        ];
-        $clientVisites = $this->paginate($this->ClientVisites);
+
+        $query = $this->ClientVisites->query();
+        $client_count = $this->ClientVisites->find()->select(['ClientVisites.master_client_id', 'count'=>$query->func()->count('ClientVisites.master_client_id')])
+            ->group(['ClientVisites.master_client_id'])
+            ->where(['ClientVisites.is_deleted'=>0]);
+
+        $i = 0;
+        foreach ($client_count as $client) {
+            $i++;
+            $meetings = $this->ClientVisites->find()->where(['ClientVisites.master_client_id'=>$client->master_client_id,'ClientVisites.is_deleted'=>0])->contain(['Users','MasterClients'])->toArray();
+
+            $data[$i]['master_client_id'] = $client->master_client_id;
+            $data[$i]['client_name'] = $meetings[0]->master_client->client_name;
+            $data[$i]['total_meetings'] = $client->count;
+
+            $j = 0;
+            foreach ($meetings as $meeting) {
+                $j++;
+                $data[$i]['meeting_data'][$j]['id'] = $meeting->id;
+                $data[$i]['meeting_data'][$j]['user'] = $meeting->user->name;
+                $data[$i]['meeting_data'][$j]['reason'] = $meeting->reason;
+                $data[$i]['meeting_data'][$j]['vehicle_type'] = $meeting->vehicle_type;
+                $data[$i]['meeting_data'][$j]['visit_date'] = $meeting->visit_date;
+            }
+            
+        }
+        //pr($data);exit;
+
         $users = $this->ClientVisites->Users->find('list')->where(['Users.is_deleted'=>0]);
         $masterClients = $this->ClientVisites->MasterClients->find('list')->where(['MasterClients.is_deleted'=>0]);
         if ($this->request->is('post')) 
@@ -41,30 +65,64 @@ class ClientVisitesController extends AppController
             if(!empty($data['user_id']))
             {
                 $condition['ClientVisites.user_id']  = $data['user_id'];
+                $condition2['ClientVisites.user_id']  = $data['user_id'];
             }
 
             if(!empty($data['master_client_id']))
             {
-                    $condition['ClientVisites.master_client_id']  = $data['master_client_id'];
+                $condition['ClientVisites.master_client_id']  = $data['master_client_id'];
             }
 
             if(!empty($data['date_from']))
             {
                 $condition['ClientVisites.visit_date >=']  = date('Y-m-d',strtotime($data['date_from']));
+
+                $condition2['ClientVisites.visit_date >=']  = date('Y-m-d',strtotime($data['date_from']));
             }
 
             if(!empty($data['date_to']))
             {
                 $condition['ClientVisites.visit_date <=']  = date('Y-m-d',strtotime($data['date_to']));
+
+                $condition2['ClientVisites.visit_date <=']  = date('Y-m-d',strtotime($data['date_to']));
             }
             
             $condition['ClientVisites.is_deleted'] = 0;
+            $condition['ClientVisites.is_deleted'] = 0;
+            unset($data);
 
             //pr($condition);exit;
-            $clientVisites = $this->ClientVisites->find()->where($condition)->contain(['Users','MasterClients']);
+
+            $query = $this->ClientVisites->query();
+            $client_count = $this->ClientVisites->find()->select(['ClientVisites.master_client_id', 'count'=>$query->func()->count('ClientVisites.master_client_id')])
+                ->group(['ClientVisites.master_client_id'])
+                ->where([$condition]);
+
+            $i = 0;
+            foreach ($client_count as $client) {
+                $i++;
+                $condition2['ClientVisites.master_client_id'] = $client->master_client_id;
+
+                $meetings = $this->ClientVisites->find()->where([$condition2])->contain(['Users','MasterClients'])->toArray();
+
+                $data[$i]['master_client_id'] = $client->master_client_id;
+                $data[$i]['client_name'] = $meetings[0]->master_client->client_name;
+                $data[$i]['total_meetings'] = $client->count;
+
+                $j = 0;
+                foreach ($meetings as $meeting) {
+                    $j++;
+                    $data[$i]['meeting_data'][$j]['id'] = $meeting->id;
+                    $data[$i]['meeting_data'][$j]['user'] = $meeting->user->name;
+                    $data[$i]['meeting_data'][$j]['reason'] = $meeting->reason;
+                    $data[$i]['meeting_data'][$j]['vehicle_type'] = $meeting->vehicle_type;
+                    $data[$i]['meeting_data'][$j]['visit_date'] = $meeting->visit_date;
+                }
+                
+            }
         }
 
-        $this->set(compact('clientVisites','users','masterClients'));
+        $this->set(compact('data','users','masterClients'));
     }
 
 

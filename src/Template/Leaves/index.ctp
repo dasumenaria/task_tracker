@@ -2,6 +2,18 @@
     .row{
         margin-bottom: 15px;
     }    
+
+    .table-bordered>thead>tr>th, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>tbody>tr>td, .table-bordered>tfoot>tr>td
+    {
+        border: 1px solid #cecece;
+    }
+    .actions
+    {
+        width: 100px;
+    }
+    .box-body>.table {
+        margin-bottom: 20px;
+    }
 </style>
 
 <section class="content">
@@ -23,11 +35,6 @@
                                     <div class="col-md-4">
                                         <label class="control-label">Select User</label>
                                         <?= $this->Form->control('user_id',['empty'=>'---Select---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false]) ?>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <label class="control-label">Select Leave Type</label>
-                                        <?= $this->Form->control('leave_type_id',['empty'=>'---Select---','options'=>$leaveTypes,'class'=>'form-control input-sm select2','label'=>false]) ?>
                                     </div>
 
                                     <div class="col-md-4">
@@ -65,60 +72,45 @@
                         </fieldset>
                     </div>
                 </form> 
+            			
+                <?php foreach ($data as $user): $k = 0;?>
 
-    			<table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
-                    <thead>
-                        <tr>
-                            <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('user_id') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('leave_type_id') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('date_from') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('date_to') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('leave_reason') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('duration') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('leave_status') ?></th>
-                            <th scope="col" class="actions"><?= __('Actions') ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $k = 0; foreach ($leaves as $leave): $k++?>
-                        <tr style='background-color:<?php if($leave->leave_status == 0) echo ""; if($leave->leave_status == 1)echo "#d9ffe9"; if($leave->leave_status == 2)echo "#ffd9d9"; ?>'>
-                            <td><?= $this->Number->format($k) ?></td>
-                            <td><?= $leave->user->name ?></td>
-                            <td><?= $leave->leave_type->type ?></td>
-                            <td><?= date('d/m/Y',strtotime($leave->date_from)) ?></td>
-                            <td><?= date('d/m/Y',strtotime($leave->date_to)) ?></td>
-                            <td><?= $leave->leave_reason ?></td>
-                            <td><?php
-                                $datetime1 = new DateTime($leave->date_from);
+                    <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
+                        <tbody>
+                            <tr>
+                                <th colspan="8"><?= $user['user_name']?> <p class="pull-right">Total Leave:  <?= $user['total_leaves']?></p></th>
+                            </tr>
+                            <?php foreach ($user['leave_data'] as $leave): $k++?>
+                                <tr style='background-color:<?php if($leave['leave_status'] == 0) echo ""; if($leave['leave_status'] == 1)echo "#d9ffe9"; if($leave['leave_status'] == 2)echo "#ffd9d9"; ?>'>
+                                    <td><?= $this->Number->format($k) ?></td>
+                                    <td><?= $leave['leave_type'] ?></td>
+                                    <td><?= $leave['leave_reason'] ?></td>
+                                    <td><?php
+                                        $datetime1 = new DateTime($leave['date_from']);
 
-                                $datetime2 = new DateTime($leave->date_to);
+                                        $datetime2 = new DateTime($leave['date_to']);
 
-                                $difference = $datetime2->diff($datetime1);
-                                $days = $difference->days;
-                                echo ($days+1).' days';
-                             ?></td>
-                            <td><?php if($leave->leave_status == 0)echo "<p class='color-blue'>Panding";if($leave->leave_status == 1)echo "<p class='color-green'>Approved";if($leave->leave_status == 2)echo "<p class='color-red'>Rejected"; ?></td>
-                            <td class="actions"> 
-								 
-								<?php echo $this->Html->link('<i class="fa fa-check"></i>', ['action' => 'approve', $leave->id],['escape'=>false,'class'=>'btn btn-xs btn-success']) ?>
-								<?php echo $this->Html->link(('<i class="fa fa-times"></i>'), ['action' => 'reject', $leave->id],['escape'=>false,'class'=>'btn btn-xs btn-danger']) ?>
-                                 
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-                <div class="paginator">
-                    <ul class="pagination">
-                        <?= $this->Paginator->first('<< ' . __('first')) ?>
-                        <?= $this->Paginator->prev('< ' . __('previous')) ?>
-                        <?= $this->Paginator->numbers() ?>
-                        <?= $this->Paginator->next(__('next') . ' >') ?>
-                        <?= $this->Paginator->last(__('last') . ' >>') ?>
-                    </ul>
-                    <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-                </div>
+                                        $difference = $datetime2->diff($datetime1);
+                                        $days = $difference->days;
+                                        echo ($days+1).' days';
+                                     ?></td>
+                                    <td><?= date('d/m/Y',strtotime($leave['date_from'])) ?></td>
+                                    <td><?= date('d/m/Y',strtotime($leave['date_to'])) ?></td>
+                                    <td><?php if($leave['leave_status'] == 0)echo "<p class='color-blue'>Panding";if($leave['leave_status'] == 1)echo "<p class='color-green'>Approved";if($leave['leave_status'] == 2)echo "<p class='color-red'>Rejected"; ?></td>
+                                    <td class="actions"> 
+        								 
+        								<?php echo $this->Html->link('<i class="fa fa-check"></i>', ['action' => 'approve', $leave['id']],['escape'=>false,'class'=>'btn btn-xs btn-success']) ?>
+        								<?php echo $this->Html->link(('<i class="fa fa-times"></i>'), ['action' => 'reject', $leave['id']],['escape'=>false,'class'=>'btn btn-xs btn-danger']) ?>
+
+                                        <?php echo $this->Html->link(('<i class="fa fa-edit"></i>'), ['action' => 'edit', $leave['id']],['escape'=>false,'class'=>'btn btn-xs btn-info']) ?>
+                                         
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+
+                        </tbody>
+                    </table>
+                <?php endforeach; ?>   
             </div>
         </div>
     </div>

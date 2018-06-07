@@ -56,42 +56,26 @@
                     </div>
                 </form> 
 
-                <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
-                    <thead>
-                        <tr>
-                            <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('user_id') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('master_client_id') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('visit_date') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('duration') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('reason') ?></th>
-                            <th scope="col"><?= $this->Paginator->sort('vehicle_type') ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $k = 0; foreach ($clientVisites as $leave): $k++?>
-                        <tr>
-                            <td><?= $this->Number->format($k) ?></td>
-                            <td><?= $leave->user->name ?></td>
-                            <td><?= $leave->master_client->client_name ?></td>
-                            <td><?= date('d/m/Y',strtotime($leave->visit_date)) ?></td>
-                            <td><?= $leave->duration ?></td>
-                            <td><?= $leave->reason ?></td>
-                            <td><?= $leave->vehicle_type ?></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-                <div class="paginator">
-                    <ul class="pagination">
-                        <?= $this->Paginator->first('<< ' . __('first')) ?>
-                        <?= $this->Paginator->prev('< ' . __('previous')) ?>
-                        <?= $this->Paginator->numbers() ?>
-                        <?= $this->Paginator->next(__('next') . ' >') ?>
-                        <?= $this->Paginator->last(__('last') . ' >>') ?>
-                    </ul>
-                    <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-                </div>
+                <?php foreach ($data as $client): $k = 0;?>
+
+                    <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
+                        <tbody>
+                            <tr>
+                                <th colspan="5"><?= $client['client_name']?> <p class="pull-right">Total Meetings:  <?= $client['total_meetings']?></p></th>
+                            </tr>
+                            <?php foreach ($client['meeting_data'] as $meeting): $k++?>
+                                <tr>
+                                    <td><?= $this->Number->format($k) ?></td>
+                                    <td><?= $meeting['user'] ?></td>
+                                    <td><?= date('d/m/Y',strtotime($meeting['visit_date'])) ?></td>
+                                    <td><?= $meeting['reason'] ?></td>
+                                    <td><?= $meeting['vehicle_type']." vehicle" ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+
+                        </tbody>
+                    </table>
+                <?php endforeach; ?> 
             </div>
         </div>
     </div>
