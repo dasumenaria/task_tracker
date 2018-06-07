@@ -64,7 +64,7 @@ class MasterClientsController extends AppController
             $masterClient = $this->MasterClients->patchEntity($masterClient, $this->request->getData());
 			//pr($masterClient); exit;
             if ($data=$this->MasterClients->save($masterClient)) {
-				$this->MasterClients->MasterClientPocs->deleteAll(["MasterClientPocs.master_client_id"=>$id,'MasterClientPocs.contact_person_name'=>'']);
+				$this->MasterClients->MasterClientPocs->deleteAll(["MasterClientPocs.master_client_id"=>$data->id,'MasterClientPocs.contact_person_name'=>'']);
                 $this->Flash->success(__('The Client has been saved.'));
                return $this->redirect(['action' => 'index']);
             }
