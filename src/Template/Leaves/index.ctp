@@ -9,7 +9,7 @@
 	<div class="col-md-12">
 		<div class="box box-primary">
 			<div class="box-header with-border">
-				<b>Project </b>
+				<b>Leave Report </b>
                 <div class="box-tools pull-right">
                     <a style="font-size:19px;  margin-top: -6px;" class="btn btn-box-tool" data-target="#myModal122" data-toggle="collapse"> <i class="fa fa-filter"></i></a>
                 </div>
@@ -21,17 +21,17 @@
                             <div class="col-md-12">
                                 <div class="row"> 
                                     <div class="col-md-4">
-                                        <label class="control-label">By User</label>
+                                        <label class="control-label">Select User</label>
                                         <?= $this->Form->control('user_id',['empty'=>'---Select---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false]) ?>
                                     </div>
 
                                     <div class="col-md-4">
-                                        <label class="control-label">By Leave Type</label>
+                                        <label class="control-label">Select Leave Type</label>
                                         <?= $this->Form->control('leave_type_id',['empty'=>'---Select---','options'=>$leaveTypes,'class'=>'form-control input-sm select2','label'=>false]) ?>
                                     </div>
 
                                     <div class="col-md-4">
-                                        <label class="control-label">By Leave Status</label>
+                                        <label class="control-label">Select Leave Status</label>
                                         <select name="leave_status" class="form-control input-sm select2">
                                             <option value="">---select---</option>
                                             <option value="3">Panding</option>
@@ -41,7 +41,7 @@
                                     </div>
                                 </div>
 
-                                <div class="row">
+                                <!--<div class="row">
                                     <div class="col-md-4 text-right"><h4>By Date:</h4></div>
                                     
                                     <div class="col-md-4">
@@ -51,7 +51,7 @@
                                     <div class="col-md-4">
                                         <input type="text" class="form-control datepickers" data-date-format="dd-mm-yyyy" name="date_to" id="date_to" placeholder="To">
                                     </div>
-                                </div>
+                                </div>-->
 
                                 <div class="row">
                                     <div class="col-md-12" align="center">
@@ -82,7 +82,7 @@
                     </thead>
                     <tbody>
                         <?php $k = 0; foreach ($leaves as $leave): $k++?>
-                        <tr>
+                        <tr style='background-color:<?php if($leave->leave_status == 0) echo ""; if($leave->leave_status == 1)echo "#d9ffe9"; if($leave->leave_status == 2)echo "#ffd9d9"; ?>'>
                             <td><?= $this->Number->format($k) ?></td>
                             <td><?= $leave->user->name ?></td>
                             <td><?= $leave->leave_type->type ?></td>
@@ -99,11 +99,11 @@
                                 echo ($days+1).' days';
                              ?></td>
                             <td><?php if($leave->leave_status == 0)echo "<p class='color-blue'>Panding";if($leave->leave_status == 1)echo "<p class='color-green'>Approved";if($leave->leave_status == 2)echo "<p class='color-red'>Rejected"; ?></td>
-                            <td class="actions">
-                                <?php if($leave->leave_status == 0): ?>
-                                    <?= $this->Html->link(__('Approve'), ['action' => 'approve', $leave->id],['class'=>'btn btn-sm btn-success']) ?>
-                                    <?= $this->Html->link(__('Reject'), ['action' => 'reject', $leave->id],['class'=>'btn btn-sm btn-danger']) ?>
-                                <?php endif; ?>
+                            <td class="actions"> 
+								 
+								<?php echo $this->Html->link('<i class="fa fa-check"></i>', ['action' => 'approve', $leave->id],['escape'=>false,'class'=>'btn btn-xs btn-success']) ?>
+								<?php echo $this->Html->link(('<i class="fa fa-times"></i>'), ['action' => 'reject', $leave->id],['escape'=>false,'class'=>'btn btn-xs btn-danger']) ?>
+                                 
                             </td>
                         </tr>
                         <?php endforeach; ?>
