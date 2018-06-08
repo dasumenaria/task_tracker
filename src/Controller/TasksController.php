@@ -36,6 +36,25 @@ class TasksController extends AppController
         if(!empty($data['user_id']))
             $condition2['Tasks.user_id'] =  $data['user_id'];
 
+        if(!empty($data['date_from']))
+            if($data['date_filter'] == 'created')
+                $condition2['Tasks.created_on >='] = date('Y-m-d',strtotime($data['date_from']));
+            else
+                $condition2['Tasks.deadline >='] = date('Y-m-d',strtotime($data['date_from']));
+        
+        if(!empty($data['date_to']))
+            if($data['date_filter'] == 'created')
+                $condition2['Tasks.created_on <='] = date('Y-m-d',strtotime($data['date_to']));
+            else
+                $condition2['Tasks.deadline <='] = date('Y-m-d',strtotime($data['date_to']));
+        if(!empty($data['status']))
+        {
+            if($data['status'] == 2)
+                $condition2['Tasks.status'] = 0;
+            else
+                $condition2['Tasks.status'] = 1;
+        }
+
         $condition['Projects.is_deleted'] = 0;
         $condition2['Tasks.is_deleted'] = 0;
 

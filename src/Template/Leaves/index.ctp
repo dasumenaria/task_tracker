@@ -41,7 +41,7 @@
                                         <label class="control-label">Select Leave Status</label>
                                         <select name="leave_status" class="form-control input-sm select2">
                                             <option value="">---All---</option>
-                                            <option value="3">Panding</option>
+                                            <option value="3">Pending</option>
                                             <option value="1">Approve</option>
                                             <option value="2">Rejected</option>
                                         </select>

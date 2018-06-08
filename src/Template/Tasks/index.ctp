@@ -14,6 +14,25 @@
     .box-body>.table {
         margin-bottom: 20px;
     }
+    input[type=radio] 
+    {
+        margin: 4px 0 0 0;
+        width: 16px;
+        height: 16px;
+    }
+    .radio-list > label.radio-inline {
+    display: inline-block;
+    }
+
+    .radio-inline, .checkbox-inline {
+        display: inline-block;
+        padding-left: 20px;
+        margin-bottom: 0;
+        font-weight: 400;
+        font-size: 16px;
+        vertical-align: middle;
+        cursor: pointer;
+    }
 </style>
 
 <section class="content">
@@ -41,10 +60,25 @@
                                         <label class="control-label">Select Project</label>
                                         <?= $this->Form->control('user_id',['empty'=>'---All---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false]) ?>
                                     </div>
+                                    <div class="col-md-4">
+                                        <label class="control-label">Select Status</label>
+                                        <select name="status" class="form-control input-sm select2">
+                                            <option value="">---All---</option>
+                                            <option value="2">Incomplete</option>
+                                            <option value="1">Completed</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-md-4 text-right"><h4>By Date:</h4></div>
+                                    <div class="radio-list col-md-4">
+                                        <label><h4>By Date: &nbsp;</h4></label>
+                                        <label class="radio-inline">
+                                        <input type="radio" name="date_filter" id="policy" value="completion" checked> Completion Date </label>
+
+                                        <label class="radio-inline">
+                                        <input type="radio" name="date_filter" id="expiry" value="created"> Created Date </label>
+                                    </div>
                                     
                                     <div class="col-md-4">
                                         <input type="text" class="form-control datepickers" data-date-format="dd-mm-yyyy" name="date_from" id="date_from" placeholder="From">
@@ -58,8 +92,6 @@
                                 <div class="row">
                                     <div class="col-md-12" align="center">
                                         <hr style="margin-top: 12px;margin-bottom: 10px;"></hr>
-                                        <a href="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'index')) ?>"class="btn btn-danger btn-sm">Reset</a>
-
                                         <?php echo $this->Form->button('Apply',['class'=>'btn btn-sm btn-success','id'=>'submit_member','name'=>'search_report']); ?>
                                     </div> 
                                 </div>

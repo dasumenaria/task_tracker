@@ -31,18 +31,28 @@ class LeavesController extends AppController
 
         if(!empty($data['user_id']))
             $condition['id'] = $data['user_id'];
+
         if(!empty($data['date_from']))
             $date_from = date('Y-m-d',strtotime($data['date_from']));
 
         if(!empty($data['date_to']))
             $date_to = date('Y-m-d',strtotime($data['date_to']));
 
+        if(!empty($data['leave_status']))
+        {
+            if($data['leave_status'] == 3)
+                $status = 0;
+            else
+                $status = $data['leave_status'];
+        }
+
         $condition['is_deleted'] = 0;
         unset($data);
-        
+
         $data = $this->Leaves->Users->find()->select(['Users.id','Users.name'])->order(['Users.name' => 'ASC'])->contain(['Leaves'=>function($q){
             return $q->where(['Leaves.date_from >='=>date('Y-01-01'),'Leaves.date_to <='=>date('Y-12-31')])->contain(['LeaveTypes']);
         }])->where([$condition]);
+
         foreach ($data as $value) 
         {
             $value['total_leaves'] = 0;
@@ -66,6 +76,15 @@ class LeavesController extends AppController
                 {
                     unset($value->leaves[$key]);
                 }
+
+                if(isset($status))
+                    if($leave->leave_status == $status)
+                    {}
+                    else
+                    {
+                        unset($value->leaves[$key]);
+                    }
+
             }
         }
 
