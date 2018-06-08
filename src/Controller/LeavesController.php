@@ -27,109 +27,49 @@ class LeavesController extends AppController
     public function index()
     {
         $this->set('li','Reports');
+        $data = $this->request->getData();
 
-        $query = $this->Leaves->query();
-        $user_count = $this->Leaves->find()->select(['Leaves.user_id', 'count'=>$query->func()->count('Leaves.user_id')])
-            ->group(['Leaves.user_id'])
-            ->where(['Leaves.is_deleted'=>0]);
+        if(!empty($data['user_id']))
+            $condition['id'] = $data['user_id'];
+        if(!empty($data['date_from']))
+            $date_from = date('Y-m-d',strtotime($data['date_from']));
 
-        $i = 0;
-        foreach ($user_count as $user) {
-            $i++;
-            $leaves = $this->Leaves->find()->where(['Leaves.user_id'=>$user->user_id,'Leaves.is_deleted'=>0])->contain(['Users','LeaveTypes'])->toArray();
+        if(!empty($data['date_to']))
+            $date_to = date('Y-m-d',strtotime($data['date_to']));
 
-            $data[$i]['user_id'] = $user->user_id;
-            $data[$i]['user_name'] = $leaves[0]->user->name;
-            $data[$i]['total_leaves'] = $user->count;
-
-            $j = 0;
-            foreach ($leaves as $leave) {
-                $j++;
-                $data[$i]['leave_data'][$j]['id'] = $leave->id;
-                $data[$i]['leave_data'][$j]['leave_type'] = $leave->leave_type->type;
-                $data[$i]['leave_data'][$j]['leave_status'] = $leave->leave_status;
-                $data[$i]['leave_data'][$j]['leave_reason'] = $leave->leave_reason;
-                $data[$i]['leave_data'][$j]['date_from'] = $leave->date_from;
-                $data[$i]['leave_data'][$j]['date_to'] = $leave->date_to;
-            }
-            
-        }
-        //  pr($data);exit;
-
-        $users = $this->Leaves->Users->find('list')->where(['Users.is_deleted'=>0]);
-
-        if ($this->request->is('post')) 
+        $condition['is_deleted'] = 0;
+        unset($data);
+        
+        $data = $this->Leaves->Users->find()->select(['Users.id','Users.name'])->order(['Users.name' => 'ASC'])->contain(['Leaves'=>function($q){
+            return $q->where(['Leaves.date_from >='=>date('Y-01-01'),'Leaves.date_to <='=>date('Y-12-31')])->contain(['LeaveTypes']);
+        }])->where([$condition]);
+        foreach ($data as $value) 
         {
-            $data = $this->request->getData();
-            //pr($data);exit;
-
-            if(!empty($data['user_id']))
+            $value['total_leaves'] = 0;
+            foreach ($value->leaves as $key => $leave)
             {
-                $condition['Leaves.user_id']  = $data['user_id'];
-            }
-
-            if(!empty($data['leave_status']))
-            {
-                if($data['leave_status'] == 3)
+                if($leave->leave_status == 1)
                 {
-                    $condition['Leaves.leave_status']  = 0;
-                    $condition2['Leaves.leave_status']  = 0;
+                    $datetime1 = new \DateTime($leave->date_from);
+
+                    $datetime2 = new \DateTime($leave->date_to);
+
+                    $difference = $datetime2->diff($datetime1);
+                    $days = $difference->days+1;
+
+                    $value['total_leaves'] += $days;
                 }
+
+                if(date('Y-m-d',strtotime($leave->date_from)) >= (isset($date_from)?$date_from:date('Y-m-01')) && date('Y-m-d',strtotime($leave->date_from)) <= (isset($date_to)?$date_to:date('Y-m-t')))
+                {}
                 else
                 {
-                    $condition['Leaves.leave_status']  = $data['leave_status'];
-                    $condition2['Leaves.leave_status']  = $data['leave_status'];
+                    unset($value->leaves[$key]);
                 }
             }
-
-            if(!empty($data['date_from']))
-            {
-                $condition['Leaves.date_from >=']  = date('Y-m-d',strtotime($data['date_from']));
-
-                $condition2['Leaves.date_from >=']  = date('Y-m-d',strtotime($data['date_from']));
-            }
-
-            if(!empty($data['date_to']))
-            {
-                $condition['Leaves.date_to <=']  = date('Y-m-d',strtotime($data['date_to']));
-
-                $condition2['Leaves.date_to <=']  = date('Y-m-d',strtotime($data['date_to']));
-            }
-            
-            $condition['Leaves.is_deleted'] = 0;
-            $condition2['Leaves.is_deleted'] = 0;
-            unset($data);
-
-            //pr($condition);exit;
-            $query = $this->Leaves->query();
-            $user_count = $this->Leaves->find()->select(['Leaves.user_id', 'count'=>$query->func()->count('Leaves.user_id')])
-                ->group(['Leaves.user_id'])
-                ->where([$condition]);
-
-            $i = 0;
-            foreach ($user_count as $user) {
-                $i++;
-                $condition2['Leaves.user_id'] = $user->user_id;
-                $leaves = $this->Leaves->find()->where($condition2)->contain(['Users','LeaveTypes'])->toArray();
-
-                $data[$i]['user_id'] = $user->user_id;
-                $data[$i]['user_name'] = $leaves[0]->user->name;
-                $data[$i]['total_leaves'] = $user->count;
-
-                $j = 0;
-                foreach ($leaves as $leave) {
-                    $j++;
-                    $data[$i]['leave_data'][$j]['id'] = $leave->id;
-                    $data[$i]['leave_data'][$j]['leave_type'] = $leave->leave_type->type;
-                    $data[$i]['leave_data'][$j]['leave_status'] = $leave->leave_status;
-                    $data[$i]['leave_data'][$j]['leave_reason'] = $leave->leave_reason;
-                    $data[$i]['leave_data'][$j]['date_from'] = $leave->date_from;
-                    $data[$i]['leave_data'][$j]['date_to'] = $leave->date_to;
-                }
-                
-            }
-            //pr($data);exit;
         }
+
+        $users = $this->Leaves->Users->find('list')->order(['name'=>'ASC']);
 
         $this->set(compact('data','users'));
     }
@@ -186,11 +126,12 @@ class LeavesController extends AppController
             'contain' => []
         ]);
 
-        $leave->date_from = date('d/m/Y',strtotime($leave->date_from));
-        $leave->date_to = date('d/m/Y',strtotime($leave->date_to));
+        $leave->date_from = date('d-m-Y',strtotime($leave->date_from));
+        $leave->date_to = date('d-m-Y',strtotime($leave->date_to));
 
         if ($this->request->is(['patch', 'post', 'put'])) {
             $leave = $this->Leaves->patchEntity($leave, $this->request->getData());
+
             $leave->date_from = date('Y-m-d',strtotime($this->request->getData('date_from')));
             $leave->date_to = date('Y-m-d',strtotime($this->request->getData('date_to')));
             if ($this->Leaves->save($leave)) {

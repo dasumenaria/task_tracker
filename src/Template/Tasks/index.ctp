@@ -1,164 +1,208 @@
-<?php  echo $this->Html->script('/assets/scroll/jquery/jquery-1.10.2.min.js'); ?>
-<script>
-	$(function () {  
-		$('#fixed_hdr1').fxdHdrCol({
-			fixedCols: 3,
-			width:     '100%',
-			height:    400,
-			colModal: [
-			   { width: 50, align: 'center' },
-			   { width: 120, align: 'center' },
-			   { width: 200, align: 'left' },
-			   { width: 400, align: 'left' },
-			   { width: 100, align: 'left' },
-			   { width: 150, align: 'left' },
-			   { width: 100, align: 'left' },
-			   { width: 80, align: 'left' }, 
-			]					
-		});	
-	});
-</script>
+<style type="text/css">
+    .row{
+        margin-bottom: 15px;
+    }    
+
+    .user{
+        background-color: #2391c3;
+        color: #fff;
+    }
+    .actions
+    {
+        width: 100px;
+    }
+    .box-body>.table {
+        margin-bottom: 20px;
+    }
+</style>
 
 <section class="content">
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-primary">
 			<div class="box-header with-border">
-				<b>Task lists </b>
+				<b>Task Report </b>
+                <div class="box-tools pull-right">
+                    <a style="font-size:19px;  margin-top: -6px;" class="btn btn-box-tool" data-target="#myModal122" data-toggle="collapse"> <i class="fa fa-filter"></i></a>
+                </div>
  			</div>
-			<div class="box-body dwrapper" style="overflow-x:scroll" id="da"> 
-				<table class="table table-bordered" cellpadding="0" cellspacing="0" id="fixed_hdr1">
-					<thead>
-						<tr>
-							<th scope="col"><?= ('id') ?></th>
-							<th scope="col"><?= ('User') ?></th>
-							<th scope="col"><?= ('project') ?></th> 
-							<th width="400px" scope="col"><?= ('Task') ?></th>
-							<th scope="col"><?= ('deadline') ?></th> 
-							<th scope="col"><?= ('created_on') ?></th>
-							<th scope="col"><?= ('completed_on') ?></th>  
-							<th scope="col" class="actions"><?= __('Actions') ?></th>
-						</tr>
-					</thead>
-					<tbody>
-						<?php $X=0; foreach ($tasks as $task): ?>
-						<?php $X++; //pr($tasks); exit;
-						$color='';
-						if($task->status==1){$color="#c5eacf";}
-						?>
-						
-						<tr style="background-color:<?php echo $color;?>">
-							<td><?= $X; ?></td>
-							<td><?= $task->user->name ?></td>
-							<td><?= $task->has('project') ? $this->Html->link($task->project->title, ['controller' => 'Projects', 'action' => 'view/'.$task->project->id]) : '' ?></td>
-							<td  width="400px"><?= $task->title ?></td>
-							<td><?= h(date('d-M-Y',strtotime($task->deadline))) ?></td> 
-							<td><?= h(date('d-M-Y',strtotime($task->created_on))) ?></td>
-							<td><?php if($task->status==1){ echo date('d-M-Y',strtotime($task->completed_on));} ?></td> 
-							<td class="actions"> 
-								<?php $this->Html->link(__('Edit'), ['action' => 'edit', $task->id]) ?>
-								<?php $this->Form->postLink(__('Delete'), ['action' => 'delete', $task->id], ['confirm' => __('Are you sure you want to delete # {0}?', $task->id)]) ?>
-								<?php if($task->status!=1){  echo $this->Html->link('<i class="fa fa-edit"></i>','/Tasks/edit/'.$task->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
-							
-								<a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
-								<?php } else {?>	
-								<a class=" btn btn-successto btn-xs" data-target="#undi<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-reply"></i></a>
-								<?php }?>
-								<a class=" btn btn-info btn-xs" data-target="#Details<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-book"></i></a>
-								
-								<div id="deletemodal<?php echo $task->id; ?>" class="modal fade" role="dialog">
-									<div class="modal-dialog modal-md" >
-										<form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'delete',$task->id)) ?>">
-											<div class="modal-content">
-											  <div class="modal-header">
-													<button type="button" class="close" data-dismiss="modal">&times;</button>
-													<h4 class="modal-title">
-													Are you sure you want to remove this Task?
-													</h4>
-												</div>
-												<div class="modal-footer">
-													<button type="submit" class="btn  btn-sm btn-info">Yes</button>
-													<button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
-												</div>
-											</div>
-										</form>
-									</div>
-								</div>
-							</td>
-						</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
-				<div class="paginator">
-					<ul class="pagination">
-						<?= $this->Paginator->first('<< ' . __('first')) ?>
-						<?= $this->Paginator->prev('< ' . __('previous')) ?>
-						<?= $this->Paginator->numbers() ?>
-						<?= $this->Paginator->next(__('next') . ' >') ?>
-						<?= $this->Paginator->last(__('last') . ' >>') ?>
-					</ul>
-					<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-				</div>
-			</div> 
-			<?php   foreach ($tasks as $task): ?>
-			<div id="Details<?php echo $task->id;?>" class="modal fade" role="dialog">
-				<div class="modal-dialog modal-md">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal">&times;</button>
-							<h4 class="modal-title">Task Status Details</h4>
-						</div>
-						<div class="modal-body">
-							<table class="table table-bordered">
-								<thead>
-									<tr style="background-color:#DFD9C4;">
-										<th scope="col">Sr.No.</th> 
-										<th scope="col">Name</th>
-										<th scope="col">Deadline</th>
-										<th scope="col">Created On</th> 
-									</tr>
-								</thead>
-								<tbody>
-									<?php $xss=0; foreach ($task->task_statuses as $Taskech): ?>
-									<?php $xss++; ?>
-									<tr>
-										<td><?php echo $xss;?></td>
-										<td><?= h($Taskech->user->name) ?></td>
-										<td><?= h(date('d-m-Y',strtotime($Taskech->deadline))) ?></td>
-										<td><?= h(date('d-m-Y',strtotime($Taskech->created_on))) ?></td>
-									</tr>
-									<?php endforeach; ?>
-								</tbody>
-							</table>
-						</div>
-						<div class="modal-footer" style="height:60px;">
-							<div class="row">
-								<div class="col-md-12 text-center">
-									<input type="submit" class="btn btn-info btn-sm" data-dismiss="modal" Value="Cancel"/>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div id="undi<?php echo $task->id; ?>" class="modal fade" role="dialog">
-				<div class="modal-dialog modal-md" >
-					<form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'undodelete',$task->id)) ?>">
-						<div class="modal-content">
-						  <div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal">&times;</button>
-								<h4 class="modal-title">
-								Are you sure you want to undo this Task?
-								</h4>
-							</div>
-							<div class="modal-footer">
-								<button type="submit" class="btn  btn-sm btn-info">Yes</button>
-								<button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
-							</div>
-						</div>
-					</form>
-				</div>
-			</div>
-		<?php endforeach; ?>
-	</div>
+			<div class="box-body" style="overflow-x:scroll">
+                <form method="post" class="loadingshow">
+                    <div class="collapse"  id="myModal122" aria-expanded="false"> 
+                        <fieldset style="text-align:left;"><legend>Filter</legend>
+                            <div class="col-md-12">
+                                <div class="row"> 
+                                    <div class="col-md-4">
+                                        <label class="control-label">Select Project</label>
+                                        <?= $this->Form->control('project_id',['empty'=>'---All---','options'=>$projects,'class'=>'form-control input-sm select2','label'=>false]) ?>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="control-label">Select Project</label>
+                                        <?= $this->Form->control('user_id',['empty'=>'---All---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false]) ?>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-4 text-right"><h4>By Date:</h4></div>
+                                    
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control datepickers" data-date-format="dd-mm-yyyy" name="date_from" id="date_from" placeholder="From">
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control datepickers" data-date-format="dd-mm-yyyy" name="date_to" id="date_to" placeholder="To">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12" align="center">
+                                        <hr style="margin-top: 12px;margin-bottom: 10px;"></hr>
+                                        <a href="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'index')) ?>"class="btn btn-danger btn-sm">Reset</a>
+
+                                        <?php echo $this->Form->button('Apply',['class'=>'btn btn-sm btn-success','id'=>'submit_member','name'=>'search_report']); ?>
+                                    </div> 
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </form> 
+            			
+                <?php foreach ($data as $project): $k = 0;
+                    if(!empty($project->tasks)):
+                    ?>
+
+                    <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
+                        <tbody>
+                            <tr class="user">
+                                <th colspan="8"><?= $project['title']?></th>
+                            </tr>
+                            <tr>
+                                    <th> Sr. No. </th>
+                                    <th> Task </th>
+                                    <th> User </th>
+                                    <th> created_on </th>
+                                    <th> Completion Date </th>
+                                    <th> completed_on </th>  
+                                    <th class="actions"><?= __('Actions') ?></th>
+                                </tr>
+                            <?php foreach ($project['tasks'] as $task): $k++;
+
+                                if($task->status==1){$color="#c5eacf";}else{$color='';}
+                                ?>
+
+                                <tr style="background-color: <?= $color?>;">
+                                    <td><?= $this->Number->format($k) ?></td>
+                                    <td><?= $task['title'] ?></td>
+                                    <td><?= $task['user']['name'] ?></td>
+                                    <td><?= date('d/M',strtotime($task['created_on'])) ?></td>
+                                    <td><?= date('d/M',strtotime($task['deadline'])) ?></td>
+                                    <td><?= (($task['status']==1)?date('d/M',strtotime($task['completed_on'])):'') ?></td>
+                                    <td class="actions"> 
+                                        <?php if($task->status!=1)
+                                        {
+                                            echo $this->Html->link('<i class="fa fa-edit"></i>','/Tasks/edit/'.$task->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
+                                    
+                                            <a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
+                                        <?php } else {?>    
+                                            <a class=" btn btn-successto btn-xs" data-target="#undi<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-reply"></i></a>
+                                        <?php }?>
+
+                                        <?php if(!empty($task['task_statuses'])){ ?>
+                                        <a class=" btn btn-info btn-xs" data-target="#Details<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-book"></i></a>
+                                        <?php } ?>
+                                        
+                                        <div id="deletemodal<?php echo $task->id; ?>" class="modal fade" role="dialog">
+                                            <div class="modal-dialog modal-md" >
+                                                <form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'delete',$task->id)) ?>">
+                                                    <div class="modal-content">
+                                                      <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                            <h4 class="modal-title">
+                                                            Are you sure you want to remove this Task?
+                                                            </h4>
+                                                        </div>
+
+                                                        <div class="modal-footer">
+                                                            <button type="submit" class="btn  btn-sm btn-info">Yes</button>
+                                                            <button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+
+                        </tbody>
+                    </table>
+
+                    <?php   foreach ($project['tasks'] as $task): ?>
+                        <div id="Details<?php echo $task->id;?>" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-md">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        <h4 class="modal-title">Task Status Details</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr style="background-color:#DFD9C4;">
+                                                    <th scope="col">Sr.No.</th> 
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Completion Date</th>
+                                                    <th scope="col">Created On</th> 
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php $xss=0; foreach ($task->task_statuses as $Taskech): ?>
+                                                <?php $xss++; ?>
+                                                <tr>
+                                                    <td><?php echo $xss;?></td>
+                                                    <td><?= h($Taskech->user->name) ?></td>
+                                                    <td><?= h(date('d-M',strtotime($Taskech->deadline))) ?></td>
+                                                    <td><?= h(date('d-M',strtotime($Taskech->created_on))) ?></td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer" style="height:60px;">
+                                        <div class="row">
+                                            <div class="col-md-12 text-center">
+                                                <input type="submit" class="btn btn-info btn-sm" data-dismiss="modal" Value="Cancel"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="undi<?php echo $task->id; ?>" class="modal fade" role="dialog">
+                            <div class="modal-dialog modal-md" >
+                                <form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'undodelete',$task->id)) ?>">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                            <h4 class="modal-title">
+                                            Are you sure you want to undo this Task?
+                                            </h4>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn  btn-sm btn-info">Yes</button>
+                                            <button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>    
+                <?php endif; ?>
+                <?php endforeach; ?>   
+
+
+            </div>
+        </div>
+    </div>
 </div>

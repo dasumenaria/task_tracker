@@ -3,9 +3,9 @@
         margin-bottom: 15px;
     }    
 
-    .table-bordered>thead>tr>th, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>tbody>tr>td, .table-bordered>tfoot>tr>td
-    {
-        border: 1px solid #cecece;
+    .user{
+        background-color: #2391c3;
+        color: #fff;
     }
     .actions
     {
@@ -34,13 +34,13 @@
                                 <div class="row"> 
                                     <div class="col-md-4">
                                         <label class="control-label">Select User</label>
-                                        <?= $this->Form->control('user_id',['empty'=>'---Select---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false]) ?>
+                                        <?= $this->Form->control('user_id',['empty'=>'---All---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false]) ?>
                                     </div>
 
                                     <div class="col-md-4">
                                         <label class="control-label">Select Leave Status</label>
                                         <select name="leave_status" class="form-control input-sm select2">
-                                            <option value="">---select---</option>
+                                            <option value="">---All---</option>
                                             <option value="3">Panding</option>
                                             <option value="1">Approve</option>
                                             <option value="2">Rejected</option>
@@ -48,7 +48,7 @@
                                     </div>
                                 </div>
 
-                                <!--<div class="row">
+                                <div class="row">
                                     <div class="col-md-4 text-right"><h4>By Date:</h4></div>
                                     
                                     <div class="col-md-4">
@@ -58,7 +58,7 @@
                                     <div class="col-md-4">
                                         <input type="text" class="form-control datepickers" data-date-format="dd-mm-yyyy" name="date_to" id="date_to" placeholder="To">
                                     </div>
-                                </div>-->
+                                </div>
 
                                 <div class="row">
                                     <div class="col-md-12" align="center">
@@ -73,17 +73,19 @@
                     </div>
                 </form> 
             			
-                <?php foreach ($data as $user): $k = 0;?>
+                <?php foreach ($data as $user): $k = 0;
+                    if(!empty($user->leaves)):
+                    ?>
 
                     <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
                         <tbody>
-                            <tr>
-                                <th colspan="8"><?= $user['user_name']?> <p class="pull-right">Total Leave:  <?= $user['total_leaves']?></p></th>
+                            <tr class="user">
+                                <th colspan="8"><?= $user['name']?> <p class="pull-right">Total Leave:  <?= $user['total_leaves']?></p></th>
                             </tr>
-                            <?php foreach ($user['leave_data'] as $leave): $k++?>
-                                <tr style='background-color:<?php if($leave['leave_status'] == 0) echo ""; if($leave['leave_status'] == 1)echo "#d9ffe9"; if($leave['leave_status'] == 2)echo "#ffd9d9"; ?>'>
+                            <?php foreach ($user['leaves'] as $leave): $k++?>
+                                <tr>
                                     <td><?= $this->Number->format($k) ?></td>
-                                    <td><?= $leave['leave_type'] ?></td>
+                                    <td><?= $leave['leave_type']['type'] ?></td>
                                     <td><?= $leave['leave_reason'] ?></td>
                                     <td><?php
                                         $datetime1 = new DateTime($leave['date_from']);
@@ -94,9 +96,9 @@
                                         $days = $difference->days;
                                         echo ($days+1).' days';
                                      ?></td>
-                                    <td><?= date('d/m/Y',strtotime($leave['date_from'])) ?></td>
-                                    <td><?= date('d/m/Y',strtotime($leave['date_to'])) ?></td>
-                                    <td><?php if($leave['leave_status'] == 0)echo "<p class='color-blue'>Panding";if($leave['leave_status'] == 1)echo "<p class='color-green'>Approved";if($leave['leave_status'] == 2)echo "<p class='color-red'>Rejected"; ?></td>
+                                    <td><?= date('d/M',strtotime($leave['date_from'])) ?></td>
+                                    <td><?= date('d/M',strtotime($leave['date_to'])) ?></td>
+                                    <td><b><?php if($leave['leave_status'] == 0)echo "<p class='color-blue'>Pending";if($leave['leave_status'] == 1)echo "<p class='color-green'>Approved";if($leave['leave_status'] == 2)echo "<p class='color-red'>Rejected"; ?></b></td>
                                     <td class="actions"> 
         								 
         								<?php echo $this->Html->link('<i class="fa fa-check"></i>', ['action' => 'approve', $leave['id']],['escape'=>false,'class'=>'btn btn-xs btn-success']) ?>
@@ -110,6 +112,7 @@
 
                         </tbody>
                     </table>
+                <?php endif; ?>
                 <?php endforeach; ?>   
             </div>
         </div>

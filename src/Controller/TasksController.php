@@ -27,13 +27,27 @@ class TasksController extends AppController
     public function index()
     {
         $this->set('li','Tasks');
-        $this->paginate = [
-            'contain' => ['Users', 'Projects','TaskStatuses'=>['Users']],
-			'limit'=>40
-        ];
-        $tasks = $this->paginate($this->Tasks->find()->where(['Tasks.is_deleted'=>0]));
 
-        $this->set(compact('tasks'));
+        $data = $this->request->getData();
+
+        if(!empty($data['project_id']))
+            $condition['Projects.id'] =  $data['project_id'];
+
+        if(!empty($data['user_id']))
+            $condition2['Tasks.user_id'] =  $data['user_id'];
+
+        $condition['Projects.is_deleted'] = 0;
+        $condition2['Tasks.is_deleted'] = 0;
+
+        unset($data);
+
+        $data = $this->Tasks->Projects->find()->select(['id','title'])->order(['title'=>'ASC'])->contain(['Tasks'=>function($p) use($condition2){return $p->order(['created_on'=>'DESC'])->contain(['TaskStatuses'=>'Users','Users'=>function($q){return $q->select(['name']);}])->where([$condition2]);}])->where([$condition]);
+        //pr($data->toArray());exit;
+
+        $projects = $this->Tasks->projects->find('list')->where(['is_deleted'=>0])->order(['title'=>'ASC']);
+        $users = $this->Tasks->Users->find('list')->where(['is_deleted'=>0])->order(['name'=>'ASC']);
+
+        $this->set(compact('data','projects','users'));
     }
 
     /**
