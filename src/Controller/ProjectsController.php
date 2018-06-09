@@ -24,21 +24,63 @@ class ProjectsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index($id=null)
+    public function index()
     {
         $this->set('li','Projects');
-        $this->paginate = [
-            'contain' => ['MasterClients', 'Users']
-        ];
+
+        $data = $this->request->getData();
+        if(!empty($data['client_id']))
+            $condition['MasterClients.id'] =  $data['client_id'];
+
+        if(!empty($data['date_from']))
+            if($data['date_filter'] == 'created')
+                $condition2['Projects.created_on >='] = date('Y-m-d',strtotime($data['date_from']));
+            else
+                $condition2['Projects.deadline >='] = date('Y-m-d',strtotime($data['date_from']));
+        
+        if(!empty($data['date_to']))
+            if($data['date_filter'] == 'created')
+                $condition2['Projects.created_on <='] = date('Y-m-d',strtotime($data['date_to']));
+            else
+                $condition2['Projects.deadline <='] = date('Y-m-d',strtotime($data['date_to']));
+
+        if(!empty($data['status']))
+        {
+            if($data['status'] == 2)
+                $condition2['Projects.completed_status'] = 0;
+            else
+                $condition2['Projects.completed_status'] = 1;
+        }
+
+        $condition['MasterClients.is_deleted'] = 0;
+        $condition2['Projects.is_deleted'] = 0;
+
+        if(isset($data['user_id']))
+        {
+            $user_id = $data['user_id'];
+            unset($data);
+            $data = $this->Projects->MasterClients->find()->select(['MasterClients.id','MasterClients.client_name'])->contain(['Projects'=>function($q)use($condition2,$user_id){return $q->order(['created_on'=>'DESC'])->contain(['ProjectMembers'=>function($r)use($user_id){return $r->where(['ProjectMembers.user_id'=>$user_id])->contain(['Users']);},'ProjectStatuses'=>'Projects','Users'=>function($p){return $p->select(['name']);}])->where([$condition2]);}])->where([$condition]);
+
+            foreach ($data as $client) {
+                foreach ($client->projects as $key => $project) {
+                    if(empty($project->project_members))
+                        unset($client->projects[$key]);
+                }
+            }
+            //pr($data->toArray());exit;
+        }
+        else
+        {
+            unset($data);
+            $data = $this->Projects->MasterClients->find()->select(['MasterClients.id','MasterClients.client_name'])->contain(['Projects'=>function($q)use($condition2){return $q->order(['created_on'=>'DESC'])->contain(['ProjectMembers'=>['Users'=>function($r){return $r->select(['name']);}],'ProjectStatuses'=>'Projects','Users'=>function($p){return $p->select(['name']);}])->where([$condition2]);}])->where([$condition]);
+        }
+
+        //pr($data->toArray());exit;
 		 
-		if(!empty($id)){
-			$projects = $this->paginate($this->Projects->find()->where(['Projects.is_deleted'=>0,'Projects.id'=>$id]));
-		}
-		else {
-			$projects = $this->paginate($this->Projects->find()->where(['Projects.is_deleted'=>0]));
-		}
+        $clients = $this->Projects->MasterClients->find('list')->where(['MasterClients.is_deleted'=>0])->order(['client_name'=>'ASC']);
+		$users = $this->Projects->Users->find('list')->where(['Users.is_deleted'=>0])->order(['name'=>'ASC']);
 		 
-        $this->set(compact('projects'));
+        $this->set(compact('clients','users','data'));
     }
 
     /**
@@ -89,8 +131,8 @@ class ProjectsController extends AppController
             }
             $this->Flash->error(__('The project could not be saved. Please, try again.'));
         }
-        $masterClients = $this->Projects->MasterClients->find('list', ['limit' => 200]);
-        $users = $this->Projects->Users->find('list', ['limit' => 200]);
+        $masterClients = $this->Projects->MasterClients->find('list', ['limit' => 200])->order(['client_name'=>'ASC']);
+        $users = $this->Projects->Users->find('list', ['limit' => 200])->order(['name'=>'ASC']);
         $this->set(compact('project', 'masterClients', 'users'));
     }
 
@@ -104,15 +146,27 @@ class ProjectsController extends AppController
     public function edit($id = null)
     {
         $this->set('li','Projects');
+        $project_old = $this->Projects->get($id, [
+            'contain' => ['ProjectMembers']
+        ]);
+
         $project = $this->Projects->get($id, [
             'contain' => ['ProjectMembers']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $project = $this->Projects->patchEntity($project, $this->request->getData());
-			$project->deadline=date('Y-m-d',strtotime($this->request->getData('deadline')));
+            $projects = $this->Projects->patchEntity($project, $this->request->getData());
+			$projects->deadline=date('Y-m-d',strtotime($this->request->getData('deadline')));
 			//pr($project); exit;
-            if ($this->Projects->save($project)) {
+            if ($this->Projects->save($projects)) {
 				$projectmenbers=$this->request->getData('projectmenbers');
+
+                    $status = $this->Projects->ProjectStatuses->newEntity();
+                    $status->project_id = $id;
+                    $status->deadline = $project_old->deadline;
+                    $status->created_by = $this->Auth->User('id');
+                    $status = $this->Projects->ProjectStatuses->patchEntity($status,$status->toArray());
+                    $this->Projects->ProjectStatuses->save($status);
+
 				$this->Projects->ProjectMembers->deleteAll(["project_id"=>$id]);
 				foreach($projectmenbers as $users)
 				{
@@ -121,7 +175,7 @@ class ProjectsController extends AppController
 					$projectMembers->project_id = $id;
 					$projectMembers->user_id = $users;
 					//pr($projectMembers); exit;
-					$this->Projects->ProjectMembers->save($projectMembers);
+                    $this->Projects->ProjectMembers->save($projectMembers);
 				}
                 $this->Flash->success(__('The project has been saved.'));
 
@@ -143,14 +197,33 @@ class ProjectsController extends AppController
      */
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
-        $project = $this->Projects->get($id);
-        if ($this->Projects->delete($project)) {
+        $project = $this->Tasks->get($id, [
+            'contain' => []
+        ]);
+        $project = $this->Projects->patchEntity($project, $this->request->getData());
+        $project->is_deleted=1;
+        if ($this->Projects->save($project)) { 
             $this->Flash->success(__('The project has been deleted.'));
         } else {
             $this->Flash->error(__('The project could not be deleted. Please, try again.'));
         }
 
+        return $this->redirect(['action' => 'index']);
+    }
+
+    public function undodelete($id = null)
+    {
+        $project = $this->Tasks->get($id, [
+            'contain' => []
+        ]);
+        $project = $this->Tasks->patchEntity($project, $this->request->getData());
+        $project->is_deleted=0;
+        $project->completed_status=0;
+        if ($this->Tasks->save($project)) { 
+            $this->Flash->success(__('The project has been undone.'));
+        } else {
+            $this->Flash->error(__('The project could not be undone. Please, try again.'));
+        }
         return $this->redirect(['action' => 'index']);
     }
 }

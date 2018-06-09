@@ -1,4 +1,9 @@
 <style type="text/css">
+    .user{
+        background-color: #2391c3;
+        color: #fff;
+    }
+
     .row{
         margin-bottom: 15px;
     }    
@@ -61,7 +66,7 @@
                     <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
                         <tbody>
                             <tr>
-                                <th colspan="5"><?= $client['client_name']?> <p class="pull-right">Total Meetings:  <?= $client['total_meetings']?></p></th>
+                                <th class="user" colspan="5"><?= $client['client_name']?> <p class="pull-right">Total Meetings:  <?= $client['total_meetings']?></p></th>
                             </tr>
                             <?php foreach ($client['meeting_data'] as $meeting): $k++?>
                                 <tr>

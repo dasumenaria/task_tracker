@@ -23,7 +23,7 @@ label { font-weight:100 !important;}
 						<input type="text" class="form-control" name="title" id="title" placeholder="Enter project title">
 					</div>
 					<div class="form-group col-md-6">
-						<label>Deadline</label>
+						<label>Completion Date</label>
 						<input type="text" class="form-control date-picker" data-date-format="dd-mm-yyyy" name="deadline" id="deadline" placeholder="Enter deadline">
 					</div>
 					<div class="form-group col-md-6">
@@ -37,7 +37,7 @@ label { font-weight:100 !important;}
 						<label id="user-id-error" class="error" style="display:none" for="user-id">This field is required.</label>
 					</div>
 					<div class="form-group col-md-6">
-						<label>Select Project Memabers</label>
+						<label>Select Project Team</label>
 						<?php echo  $this->Form->control('projectmenbers', ['options' => $users,'class'=>"form-control select2",'multiple'=>true, 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false]);?>
 						<label id="projectmenbers-error" class="error" style="display:none" for="projectmenbers">This field is required.</label>
 					</div>  
