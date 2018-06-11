@@ -3,9 +3,15 @@
         margin-bottom: 15px;
     }    
 
-    .user{
+    .panel-default>.panel-heading{
         background-color: #2391c3;
         color: #fff;
+        padding: 1px 10px;
+    }
+
+    .panel-default>.panel-heading>.panel-title>a{
+        display: block;
+        padding: 8px;
     }
     .actions
     {
@@ -29,7 +35,7 @@
         padding-left: 20px;
         margin-bottom: 0;
         font-weight: 400;
-        font-size: 16px;
+        font-size: 14px;
         vertical-align: middle;
         cursor: pointer;
     }
@@ -99,84 +105,92 @@
                         </fieldset>
                     </div>
                 </form> 
-            			
-                <?php foreach ($data as $project): $k = 0;
+            	<div class="panel-group" id="accordion">		
+                <?php $j=0; foreach ($data as $project): $k = 0; $j++;
                     if(!empty($project->tasks)):
                     ?>
 
-                    <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
-                        <tbody>
-                            <tr class="user">
-                                <th colspan="8"><?= $project['title']?></th>
-                            </tr>
-                            <tr>
-                                    <th> Sr. No. </th>
-                                    <th> Task </th>
-                                    <th> Team </th>
-                                    <th> created_on </th>
-                                    <th> Completion Date </th>
-                                    <th> completed_on </th>  
-                                    <th class="actions"><?= __('Actions') ?></th>
-                                </tr>
-                            <?php foreach ($project['tasks'] as $task): $k++;
+                    <div class="panel panel-default">
+                        <div class="panel-heading user">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#collapse<?= $j ?>"><?= $project['title']?></a>
+                            </h4>
+                        </div>
+                        <div id="collapse<?= $j ?>" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
+                                    <tbody>
+                                        <tr>
+                                                <th> Sr. No. </th>
+                                                <th> Task </th>
+                                                <th> Team </th>
+                                                <th> created_on </th>
+                                                <th> Completion Date </th>
+                                                <th> completed_on </th>  
+                                                <th class="actions"><?= __('Actions') ?></th>
+                                            </tr>
+                                        <?php foreach ($project['tasks'] as $task): $k++;
 
-                                if($task->status==1){$color="#c5eacf";}else{$color='';}
-                                ?>
+                                            if($task->status==1){$color="#c5eacf";}else{$color='';}
+                                            ?>
 
-                                <tr style="background-color: <?= $color?>;">
-                                    <td><?= $this->Number->format($k) ?></td>
-                                    <td><?= $task['title'] ?></td>
-                                    <td>
-                                        <div class="dropdown">
-                                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Team
-                                          <span class="caret"></span></button>
-                                          <ul class="dropdown-menu">
-                                            <?php foreach ($task['task_members'] as $user) { echo "<li class='active'><a>".$user->user->name."</a></li>"; } ?>
-                                          </ul>
-                                        </div> 
-                                    </td>
-                                    <td><?= date('d/M',strtotime($task['created_on'])) ?></td>
-                                    <td><?= date('d/M',strtotime($task['deadline'])) ?></td>
-                                    <td><?= (($task['status']==1)?date('d/M',strtotime($task['completed_on'])):'') ?></td>
-                                    <td class="actions"> 
-                                        <?php if($task->status!=1)
-                                        {
-                                            echo $this->Html->link('<i class="fa fa-edit"></i>','/Tasks/edit/'.$task->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
-                                    
-                                            <a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
-                                        <?php } else {?>    
-                                            <a class=" btn btn-successto btn-xs" data-target="#undi<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-reply"></i></a>
-                                        <?php }?>
+                                            <tr style="background-color: <?= $color?>;">
+                                                <td><?= $this->Number->format($k) ?></td>
+                                                <td><?= $task['title'] ?></td>
+                                                <td>
+                                                    <div class="dropdown">
+                                                      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Team
+                                                      <span class="caret"></span></button>
+                                                      <ul class="dropdown-menu">
+                                                        <?php foreach ($task['task_members'] as $user) { echo "<li class='active'><a>".$user->user->name."</a></li>"; } ?>
+                                                      </ul>
+                                                    </div> 
+                                                </td>
+                                                <td><?= date('d/M',strtotime($task['created_on'])) ?></td>
+                                                <td><?= date('d/M',strtotime($task['deadline'])) ?></td>
+                                                <td><?= (($task['status']==1)?date('d/M',strtotime($task['completed_on'])):'') ?></td>
+                                                <td class="actions"> 
+                                                    <?php if($task->status!=1)
+                                                    {
+                                                        echo $this->Html->link('<i class="fa fa-edit"></i>','/Tasks/edit/'.$task->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
+                                                
+                                                        <a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
+                                                    <?php } else {?>    
+                                                        <a class=" btn btn-successto btn-xs" data-target="#undi<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-reply"></i></a>
+                                                    <?php }?>
 
-                                        <?php if(!empty($task['task_statuses'])){ ?>
-                                        <a class=" btn btn-info btn-xs" data-target="#Details<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-book"></i></a>
-                                        <?php } ?>
-                                        
-                                        <div id="deletemodal<?php echo $task->id; ?>" class="modal fade" role="dialog">
-                                            <div class="modal-dialog modal-md" >
-                                                <form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'delete',$task->id)) ?>">
-                                                    <div class="modal-content">
-                                                      <div class="modal-header">
-                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                            <h4 class="modal-title">
-                                                            Are you sure you want to remove this Task?
-                                                            </h4>
-                                                        </div>
+                                                    <?php if(!empty($task['task_statuses'])){ ?>
+                                                    <a class=" btn btn-info btn-xs" data-target="#Details<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-book"></i></a>
+                                                    <?php } ?>
+                                                    
+                                                    <div id="deletemodal<?php echo $task->id; ?>" class="modal fade" role="dialog">
+                                                        <div class="modal-dialog modal-md" >
+                                                            <form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'delete',$task->id)) ?>">
+                                                                <div class="modal-content">
+                                                                  <div class="modal-header">
+                                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                        <h4 class="modal-title">
+                                                                        Are you sure you want to remove this Task?
+                                                                        </h4>
+                                                                    </div>
 
-                                                        <div class="modal-footer">
-                                                            <button type="submit" class="btn  btn-sm btn-info">Yes</button>
-                                                            <button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                                                    <div class="modal-footer">
+                                                                        <button type="submit" class="btn  btn-sm btn-info">Yes</button>
+                                                                        <button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
                                                         </div>
                                                     </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
 
-                        </tbody>
-                    </table>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
 
                     <?php   foreach ($project['tasks'] as $task): ?>
                         <div id="Details<?php echo $task->id;?>" class="modal fade" role="dialog">
@@ -240,7 +254,7 @@
                     <?php endforeach; ?>    
                 <?php endif; ?>
                 <?php endforeach; ?>   
-
+                </div>
 
             </div>
         </div>
