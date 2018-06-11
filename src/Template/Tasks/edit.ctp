@@ -1,4 +1,9 @@
-<?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); ?>
+<?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); 
+$ProjectMenbers=array();
+foreach($task->task_members as $mem){
+	$TaskMenbers[]=$mem->user_id;
+}; 
+?>
 <style>
 #Content{ width:90% !important; margin-left: 5%;}
 input:focus {background-color:#FFF !important;}
@@ -35,7 +40,7 @@ label { font-weight:100 !important;}
 					</div>
 					<div class="form-group col-md-6">
 						<label>Select User</label>
-						<?php echo  $this->Form->control('user_id', ['options' => $users,'class'=>"form-control select2", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false]);?>
+						<?php echo  $this->Form->control('user_id', ['options' => $users,'class'=>"form-control select2",'multiple'=>true, 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'value'=>$TaskMenbers]);?>
 						<label id="user-id-error" class="error" style="display:none" for="user-id">This field is required.</label>
 					</div>  
 				 

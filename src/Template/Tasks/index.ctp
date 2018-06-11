@@ -112,7 +112,7 @@
                             <tr>
                                     <th> Sr. No. </th>
                                     <th> Task </th>
-                                    <th> User </th>
+                                    <th> Team </th>
                                     <th> created_on </th>
                                     <th> Completion Date </th>
                                     <th> completed_on </th>  
@@ -126,7 +126,15 @@
                                 <tr style="background-color: <?= $color?>;">
                                     <td><?= $this->Number->format($k) ?></td>
                                     <td><?= $task['title'] ?></td>
-                                    <td><?= $task['user']['name'] ?></td>
+                                    <td>
+                                        <div class="dropdown">
+                                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Team
+                                          <span class="caret"></span></button>
+                                          <ul class="dropdown-menu">
+                                            <?php foreach ($task['task_members'] as $user) { echo "<li class='active'><a>".$user->user->name."</a></li>"; } ?>
+                                          </ul>
+                                        </div> 
+                                    </td>
                                     <td><?= date('d/M',strtotime($task['created_on'])) ?></td>
                                     <td><?= date('d/M',strtotime($task['deadline'])) ?></td>
                                     <td><?= (($task['status']==1)?date('d/M',strtotime($task['completed_on'])):'') ?></td>

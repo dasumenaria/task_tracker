@@ -47,6 +47,7 @@ class Task extends Entity
         'is_deleted' => true,
         'user' => true,
         'project' => true,
-        'created_user' => true
+        'created_user' => true,
+        'task_members' => true
     ];
 }

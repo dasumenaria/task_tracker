@@ -39,18 +39,18 @@ class TasksTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('Users', [
-            'foreignKey' => 'user_id',
-            'joinType' => 'INNER'
-        ]);
 		$this->hasMany('TaskStatuses', [
-            'foreignKey' => 'task_id',
-			'saveStrategy' => 'replace'
+            'foreignKey' => 'task_id'
         ]);
         $this->belongsTo('Projects', [
             'foreignKey' => 'project_id',
             'joinType' => 'INNER'
-        ]); 
+        ]);
+
+        $this->hasMany('TaskMembers', [
+            'foreignKey' => 'task_id',
+            'saveStrategy' => 'replace'
+        ]);
     }
 
     /**
@@ -87,7 +87,6 @@ class TasksTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['user_id'], 'Users'));
         $rules->add($rules->existsIn(['project_id'], 'Projects')); 
 
         return $rules;

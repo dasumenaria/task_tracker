@@ -46,7 +46,8 @@ class MasterClientsTable extends Table
 			'saveStrategy'=>'replace'			
         ]);
         $this->hasMany('Projects', [
-            'foreignKey' => 'master_client_id'
+            'foreignKey' => 'master_client_id',
+             'joinType' => 'INNER'
         ]);
     }
 

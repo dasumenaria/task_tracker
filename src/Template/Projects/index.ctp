@@ -3,9 +3,15 @@
         margin-bottom: 15px;
     }    
 
-    .user{
+    .panel-default>.panel-heading{
         background-color: #2391c3;
         color: #fff;
+        padding: 1px 10px;
+    }
+
+    .panel-default>.panel-heading>.panel-title>a{
+        display: block;
+        padding: 8px;
     }
     .actions
     {
@@ -64,8 +70,9 @@
                                         <label class="control-label">Select Status</label>
                                         <select name="status" class="form-control input-sm select2">
                                             <option value="">---All---</option>
-                                            <option value="2">Incomplete</option>
+                                            <option value="3">Incomplete</option>
                                             <option value="1">Completed</option>
+                                            <option value="2">Delay</option>
                                         </select>
                                     </div>
                                 </div>
@@ -99,86 +106,95 @@
                         </fieldset>
                     </div>
                 </form> 
+
+                <div class="panel-group" id="accordion">
             			
-                <?php foreach ($data as $client): $k = 0;
+                <?php $j=0; foreach ($data as $client): $k = 0; $j++;
                     if(!empty($client->projects)):
                     ?>
+                    <div class="panel panel-default">
+                        <div class="panel-heading user">
+                            <h4 class="panel-title">
+                              <a data-toggle="collapse" data-parent="#accordion" href="#collapse<?= $j ?>"><?= $client['client_name']?></a>
+                            </h4>
+                        </div>
+                        <div id="collapse<?= $j ?>" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
+                                    <tbody>
+                                        <tr>
+                                                <th> Sr. No. </th>
+                                                <th> Project </th>
+                                                <th> Team </th>
+                                                <th> POC Member </th>
+                                                <th> created_on </th>
+                                                <th> Completion Date </th>
+                                                <th> completed_on </th>  
+                                                <th class="actions"><?= __('Actions') ?></th>
+                                            </tr>
+                                        <?php foreach ($client['projects'] as $project): $k++;
 
-                    <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
-                        <tbody>
-                            <tr class="user">
-                                <th colspan="8"><?= $client['client_name']?></th>
-                            </tr>
-                            <tr>
-                                    <th> Sr. No. </th>
-                                    <th> Project </th>
-                                    <th> Team </th>
-                                    <th> POC Member </th>
-                                    <th> created_on </th>
-                                    <th> Completion Date </th>
-                                    <th> completed_on </th>  
-                                    <th class="actions"><?= __('Actions') ?></th>
-                                </tr>
-                            <?php foreach ($client['projects'] as $project): $k++;
+                                            if($project->completed_status==1){$color="#c5eacf";}else{$color='';}
+                                            ?>
 
-                                if($project->completed_status==1){$color="#c5eacf";}else{$color='';}
-                                ?>
+                                            <tr style="background-color: <?= $color?>;">
+                                                <td><?= $this->Number->format($k) ?></td>
+                                                <td><?= $project['title'] ?></td>
+                                                <td>
+                                                    <div class="dropdown">
+                                                      <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Team
+                                                      <span class="caret"></span></button>
+                                                      <ul class="dropdown-menu">
+                                                        <?php foreach ($project['project_members'] as $user) { echo "<li class='active'><a>".$user->user->name."</a></li>"; } ?>
+                                                      </ul>
+                                                    </div> 
+                                                </td>
+                                                <td><?= $project['user']['name'] ?></td>
+                                                <td><?= date('d/M',strtotime($project['created_on'])) ?></td>
+                                                <td><?= date('d/M',strtotime($project['deadline'])) ?></td>
+                                                <td><?= (($project['completed_status']==1)?date('d/M',strtotime($project['completed_date'])):'') ?></td>
+                                                <td class="actions"> 
+                                                    <?php if($project->completed_status!=1)
+                                                    {
+                                                        echo $this->Html->link('<i class="fa fa-edit"></i>','/projects/edit/'.$project->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
+                                                
+                                                        <a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $project->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
+                                                    <?php } else {?>    
+                                                        <a class=" btn btn-successto btn-xs" data-target="#undi<?php echo $project->id; ?>" data-toggle=modal><i class="fa fa-reply"></i></a>
+                                                    <?php }?>
 
-                                <tr style="background-color: <?= $color?>;">
-                                    <td><?= $this->Number->format($k) ?></td>
-                                    <td><?= $project['title'] ?></td>
-                                    <td>
-                                        <div class="dropdown">
-                                          <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Team
-                                          <span class="caret"></span></button>
-                                          <ul class="dropdown-menu">
-                                            <?php foreach ($project['project_members'] as $user) { echo "<li class='active'><a>".$user->user->name."</a></li>"; } ?>
-                                          </ul>
-                                        </div> 
-                                    </td>
-                                    <td><?= $project['user']['name'] ?></td>
-                                    <td><?= date('d/M',strtotime($project['created_on'])) ?></td>
-                                    <td><?= date('d/M',strtotime($project['deadline'])) ?></td>
-                                    <td><?= (($project['completed_status']==1)?date('d/M',strtotime($project['completed_date'])):'') ?></td>
-                                    <td class="actions"> 
-                                        <?php if($project->completed_status!=1)
-                                        {
-                                            echo $this->Html->link('<i class="fa fa-edit"></i>','/projects/edit/'.$project->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
-                                    
-                                            <a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $project->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
-                                        <?php } else {?>    
-                                            <a class=" btn btn-successto btn-xs" data-target="#undi<?php echo $project->id; ?>" data-toggle=modal><i class="fa fa-reply"></i></a>
-                                        <?php }?>
+                                                    <?php if(!empty($project['project_statuses'])){ ?>
+                                                    <a class=" btn btn-info btn-xs" data-target="#Details<?php echo $project->id; ?>" data-toggle=modal><i class="fa fa-book"></i></a>
+                                                    <?php } ?>
+                                                    
+                                                    <div id="deletemodal<?php echo $project->id; ?>" class="modal fade" role="dialog">
+                                                        <div class="modal-dialog modal-md" >
+                                                            <form method="post" action="<?php echo $this->Url->build(array('controller'=>'projects','action'=>'delete',$project->id)) ?>">
+                                                                <div class="modal-content">
+                                                                  <div class="modal-header">
+                                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                                        <h4 class="modal-title">
+                                                                        Are you sure you want to remove this project?
+                                                                        </h4>
+                                                                    </div>
 
-                                        <?php if(!empty($project['project_statuses'])){ ?>
-                                        <a class=" btn btn-info btn-xs" data-target="#Details<?php echo $project->id; ?>" data-toggle=modal><i class="fa fa-book"></i></a>
-                                        <?php } ?>
-                                        
-                                        <div id="deletemodal<?php echo $project->id; ?>" class="modal fade" role="dialog">
-                                            <div class="modal-dialog modal-md" >
-                                                <form method="post" action="<?php echo $this->Url->build(array('controller'=>'projects','action'=>'delete',$project->id)) ?>">
-                                                    <div class="modal-content">
-                                                      <div class="modal-header">
-                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                            <h4 class="modal-title">
-                                                            Are you sure you want to remove this project?
-                                                            </h4>
-                                                        </div>
-
-                                                        <div class="modal-footer">
-                                                            <button type="submit" class="btn  btn-sm btn-info">Yes</button>
-                                                            <button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                                                    <div class="modal-footer">
+                                                                        <button type="submit" class="btn  btn-sm btn-info">Yes</button>
+                                                                        <button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                                                                    </div>
+                                                                </div>
+                                                            </form>
                                                         </div>
                                                     </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
 
-                        </tbody>
-                    </table>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
 
                     <?php   foreach ($client['projects'] as $project): ?>
                         <div id="Details<?php echo $project->id;?>" class="modal fade" role="dialog">
@@ -241,7 +257,10 @@
                         </div>
                     <?php endforeach; ?>    
                 <?php endif; ?>
-                <?php endforeach; ?>   
+                <?php endforeach; ?>  
+
+
+                </div> 
 
 
             </div>

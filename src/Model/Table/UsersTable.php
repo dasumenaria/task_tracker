@@ -65,7 +65,8 @@ class UsersTable extends Table
         $this->hasMany('TaskStatuses', [
             'foreignKey' => 'user_id'
         ]);
-        $this->hasMany('Tasks', [
+
+        $this->hasMany('TaskMembers', [
             'foreignKey' => 'user_id'
         ]);
     }

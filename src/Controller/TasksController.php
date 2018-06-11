@@ -60,11 +60,10 @@ class TasksController extends AppController
 
         unset($data);
 
-        $data = $this->Tasks->Projects->find()->select(['id','title'])->order(['title'=>'ASC'])->contain(['Tasks'=>function($p) use($condition2){return $p->order(['created_on'=>'DESC'])->contain(['TaskStatuses'=>'Users','Users'=>function($q){return $q->select(['name']);}])->where([$condition2]);}])->where([$condition]);
-        //pr($data->toArray());exit;
+        $data = $this->Tasks->Projects->find()->select(['id','title'])->order(['title'=>'ASC'])->contain(['Tasks'=>function($p) use($condition2){return $p->order(['created_on'=>'DESC'])->contain(['TaskMembers'=>'Users','TaskStatuses'=>'Users'])->where([$condition2]);}])->where([$condition]);
 
         $projects = $this->Tasks->projects->find('list')->where(['is_deleted'=>0])->order(['title'=>'ASC']);
-        $users = $this->Tasks->Users->find('list')->where(['is_deleted'=>0])->order(['name'=>'ASC']);
+        $users = $this->Tasks->TaskStatuses->Users->find('list')->where(['is_deleted'=>0])->order(['name'=>'ASC']);
 
         $this->set(compact('data','projects','users'));
     }
@@ -80,7 +79,7 @@ class TasksController extends AppController
     {
         $this->set('li','Tasks');
         $task = $this->Tasks->get($id, [
-            'contain' => ['Users', 'Projects']
+            'contain' => ['Projects']
         ]);
         $this->set('task', $task);
     }
@@ -94,18 +93,34 @@ class TasksController extends AppController
     {
         $this->set('li','Tasks');
         $task = $this->Tasks->newEntity();
+
         if ($this->request->is('post')) {
-            $task = $this->Tasks->patchEntity($task, $this->request->getData());
-			$task->deadline=date('Y-m-d',strtotime($this->request->getData('deadline')));			 
+            $i = 0;
+            foreach ($this->request->getData('user_id') as $user_id) 
+            {
+                $task_members[$i]['user_id'] = $user_id;  
+                $i++;
+            }
+
+            $data = $this->request->getData();
+            $data['task_members']=$task_members;
+            
+            $task = $this->Tasks->patchEntity($task,$data);
+            unset($task->user_id);
+			$task->deadline=date('Y-m-d',strtotime($this->request->getData('deadline')));	 
+
+            //pr($task);exit;
+
             if ($this->Tasks->save($task)) {
+               
                 $this->Flash->success(__('The task has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The task could not be saved. Please, try again.'));
         }
-        $users = $this->Tasks->Users->find('list', ['limit' => 200])->where(['is_deleted'=>0]);
-        $projects = $this->Tasks->Projects->find('list', ['limit' => 200])->where(['is_deleted'=>0]);
+        $users = $this->Tasks->TaskStatuses->Users->find('list', ['limit' => 200])->where(['is_deleted'=>0])->order(['name'=>'ASC']);
+        $projects = $this->Tasks->Projects->find('list', ['limit' => 200])->where(['is_deleted'=>0])->order(['title'=>'ASC']);
 		$this->set(compact('task','users','projects'));
     }
 
@@ -119,25 +134,43 @@ class TasksController extends AppController
     public function edit($id = null)
     {
         $this->set('li','Tasks');
-		$TaskStatuses = $this->Tasks->TaskStatuses->newEntity();
+
+        $task_old = $this->Tasks->get($id, [
+            'contain' => ['TaskMembers','Projects']
+        ]);
+
         $task = $this->Tasks->get($id, [
-            'contain' => ['TaskStatuses']
+            'contain' => ['TaskMembers','Projects']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $task = $this->Tasks->patchEntity($task, $this->request->getData());
 			$task->deadline=date('Y-m-d',strtotime($this->request->getData('deadline')));
             if ($this->Tasks->save($task)) {
-				$TaskStatuses = $this->Tasks->TaskStatuses->patchEntity($TaskStatuses, $this->request->getData());
-				$TaskStatuses->deadline=$this->request->getData('TaskStatusesDeadline');
-				$TaskStatuses->user_id=$this->Auth->User('id');
-				$TaskStatuses->task_id=$id;
-				$this->Tasks->TaskStatuses->save($TaskStatuses);				
+
+				$status = $this->Tasks->TaskStatuses->newEntity();
+                    $status->task_id = $id;
+                    $status->deadline = $task_old->deadline;
+                    $status->user_id = $this->Auth->User('id');
+                    $status = $this->Tasks->TaskStatuses->patchEntity($status,$status->toArray());
+                    $this->Tasks->TaskStatuses->save($status);
+
+                $this->Tasks->TaskMembers->deleteAll(["task_id"=>$id]);
+
+                foreach ($this->request->getData('user_id') as $user_id) 
+                {
+                    $taskMembers = $this->Tasks->TaskMembers->newEntity();
+                    $taskMembers = $this->Tasks->TaskMembers->patchEntity($taskMembers, $this->request->getData());
+                    $taskMembers->task_id = $id;
+                    $taskMembers->user_id = $user_id;
+                    $this->Tasks->TaskMembers->save($taskMembers);
+                }  
+
                 $this->Flash->success(__('The task has been saved.'));
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The task could not be saved. Please, try again.'));
         }
-        $users = $this->Tasks->Users->find('list', ['limit' => 200])->where(['is_deleted'=>0]);
+        $users = $this->Tasks->TaskStatuses->Users->find('list', ['limit' => 200])->where(['is_deleted'=>0]);
         $projects = $this->Tasks->Projects->find('list', ['limit' => 200])->where(['is_deleted'=>0]); 
 		$this->set(compact('task','users','projects'));
     }

@@ -47,10 +47,10 @@ class ProjectsController extends AppController
 
         if(!empty($data['status']))
         {
-            if($data['status'] == 2)
+            if($data['status'] == 3)
                 $condition2['Projects.completed_status'] = 0;
             else
-                $condition2['Projects.completed_status'] = 1;
+                $condition2['Projects.completed_status'] = $data['status'];
         }
 
         $condition['MasterClients.is_deleted'] = 0;
@@ -60,25 +60,16 @@ class ProjectsController extends AppController
         {
             $user_id = $data['user_id'];
             unset($data);
-            $data = $this->Projects->MasterClients->find()
-            ->select(['MasterClients.id','MasterClients.client_name'])
-            ->contain(['Projects'=>function($q)use($condition2,$user_id){
-                return $q->order(['created_on'=>'DESC'])
-                    ->contain(['ProjectMembers'=>function($r)use($user_id){
-                        return $r->where(['ProjectMembers.user_id'=>$user_id])
-                            ->contain(['Users']);},'ProjectStatuses'=>'Projects'])
-                    ->where([$condition2]);}])
+            $data = $this->Projects->MasterClients->find();
+            $data->select(['MasterClients.id','MasterClients.client_name','total_project'=>$data->func()->count('Projects.id')])
+            ->innerJoinWith('Projects')
+            ->contain(['Projects'=>function($q) use($user_id){
+                return $q->contain(['ProjectMembers'=>'Users'])->innerJoinWith('ProjectMembers',function($q1)use($user_id){
+                return $q1->where(['ProjectMembers.user_id'=>$user_id]);
+            });
+            }])
+            ->having(['total_project >' => 0])
             ->where([$condition]);
-
-            foreach ($data as $client) {
-                foreach ($client->projects as $key => $project) {
-                    if(empty($project->project_members))
-                        unset($client->projects[$key]);
-                }
-            }
-            //pr($condition2);
-            //pr($data->toArray());
-            //exit;
         }
         else
         {
