@@ -29,7 +29,7 @@
         padding-left: 20px;
         margin-bottom: 0;
         font-weight: 400;
-        font-size: 16px;
+        font-size: 14px;
         vertical-align: middle;
         cursor: pointer;
     }
@@ -72,7 +72,7 @@
 
                                 <div class="row">
                                     <div class="radio-list col-md-4">
-                                        <label><h4>By Date: &nbsp;</h4></label>
+                                        <label><h5>By Date: &nbsp;</h5></label>
                                         <label class="radio-inline">
                                         <input type="radio" name="date_filter" id="policy" value="completion" checked> Completion Date </label>
 

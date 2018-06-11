@@ -40,6 +40,11 @@ class ProjectStatusesTable extends Table
             'foreignKey' => 'project_id',
             'joinType' => 'INNER'
         ]);
+
+        $this->belongsTo('Users', [
+            'foreignKey' => 'created_by',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**

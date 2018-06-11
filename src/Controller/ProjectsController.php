@@ -29,6 +29,7 @@ class ProjectsController extends AppController
         $this->set('li','Projects');
 
         $data = $this->request->getData();
+
         if(!empty($data['client_id']))
             $condition['MasterClients.id'] =  $data['client_id'];
 
@@ -55,11 +56,19 @@ class ProjectsController extends AppController
         $condition['MasterClients.is_deleted'] = 0;
         $condition2['Projects.is_deleted'] = 0;
 
-        if(isset($data['user_id']))
+        if(!empty($data['user_id']))
         {
             $user_id = $data['user_id'];
             unset($data);
-            $data = $this->Projects->MasterClients->find()->select(['MasterClients.id','MasterClients.client_name'])->contain(['Projects'=>function($q)use($condition2,$user_id){return $q->order(['created_on'=>'DESC'])->contain(['ProjectMembers'=>function($r)use($user_id){return $r->where(['ProjectMembers.user_id'=>$user_id])->contain(['Users']);},'ProjectStatuses'=>'Projects','Users'=>function($p){return $p->select(['name']);}])->where([$condition2]);}])->where([$condition]);
+            $data = $this->Projects->MasterClients->find()
+            ->select(['MasterClients.id','MasterClients.client_name'])
+            ->contain(['Projects'=>function($q)use($condition2,$user_id){
+                return $q->order(['created_on'=>'DESC'])
+                    ->contain(['ProjectMembers'=>function($r)use($user_id){
+                        return $r->where(['ProjectMembers.user_id'=>$user_id])
+                            ->contain(['Users']);},'ProjectStatuses'=>'Projects'])
+                    ->where([$condition2]);}])
+            ->where([$condition]);
 
             foreach ($data as $client) {
                 foreach ($client->projects as $key => $project) {
@@ -67,12 +76,22 @@ class ProjectsController extends AppController
                         unset($client->projects[$key]);
                 }
             }
-            //pr($data->toArray());exit;
+            //pr($condition2);
+            //pr($data->toArray());
+            //exit;
         }
         else
         {
             unset($data);
-            $data = $this->Projects->MasterClients->find()->select(['MasterClients.id','MasterClients.client_name'])->contain(['Projects'=>function($q)use($condition2){return $q->order(['created_on'=>'DESC'])->contain(['ProjectMembers'=>['Users'=>function($r){return $r->select(['name']);}],'ProjectStatuses'=>'Projects','Users'=>function($p){return $p->select(['name']);}])->where([$condition2]);}])->where([$condition]);
+            $data = $this->Projects->MasterClients->find()
+                        ->select(['MasterClients.id','MasterClients.client_name'])
+                        ->contain(['Projects'=>function($q)use($condition2){
+                                        return $q->order(['created_on'=>'DESC'])
+                                            ->contain(['ProjectMembers'=>['Users'=>function($r){
+                                                    return $r->select(['name']);}],'ProjectStatuses'=>['Projects']])
+                                            ->where([$condition2]);}])
+                        ->where([$condition]);
+                       // exit;
         }
 
         //pr($data->toArray());exit;
