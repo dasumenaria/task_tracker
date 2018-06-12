@@ -60,27 +60,30 @@
                         </fieldset>
                     </div>
                 </form> 
+                <?php if (!empty($data)): ?>
+                    <?php foreach ($data as $client): $k = 0;?>
 
-                <?php foreach ($data as $client): $k = 0;?>
-
-                    <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
-                        <tbody>
-                            <tr>
-                                <th class="user" colspan="5"><?= $client['client_name']?> <p class="pull-right">Total Meetings:  <?= $client['total_meetings']?></p></th>
-                            </tr>
-                            <?php foreach ($client['meeting_data'] as $meeting): $k++?>
+                        <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
+                            <tbody>
                                 <tr>
-                                    <td><?= $this->Number->format($k) ?></td>
-                                    <td><?= $meeting['user'] ?></td>
-                                    <td><?= date('d/m/Y',strtotime($meeting['visit_date'])) ?></td>
-                                    <td><?= $meeting['reason'] ?></td>
-                                    <td><?= $meeting['vehicle_type']." vehicle" ?></td>
+                                    <th class="user" colspan="5"><?= $client['client_name']?> <p class="pull-right">Total Meetings:  <?= $client['total_meetings']?></p></th>
                                 </tr>
-                            <?php endforeach; ?>
+                                <?php foreach ($client['meeting_data'] as $meeting): $k++?>
+                                    <tr>
+                                        <td><?= $this->Number->format($k) ?></td>
+                                        <td><?= $meeting['user'] ?></td>
+                                        <td><?= date('d/m/Y',strtotime($meeting['visit_date'])) ?></td>
+                                        <td><?= $meeting['reason'] ?></td>
+                                        <td><?= $meeting['vehicle_type']." vehicle" ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
 
-                        </tbody>
-                    </table>
-                <?php endforeach; ?> 
+                            </tbody>
+                        </table>
+                    <?php endforeach; ?> 
+                <?php else: ?>
+                    <h4>No Data Found</h4>
+                <?php endif; ?>
             </div>
         </div>
     </div>

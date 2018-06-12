@@ -3,9 +3,38 @@
 	<div class="col-md-12">
 		<div class="box box-primary">
 			<div class="box-header with-border">
-				<b>Client lists </b>
+				<b>Client List </b>
+                <div class="box-tools pull-right">
+                    <a style="font-size:19px;  margin-top: -6px;" class="btn btn-box-tool" data-target="#myModal122" data-toggle="collapse"> <i class="fa fa-filter"></i></a>
+                </div>
  			</div>
 			<div class="box-body" style="overflow-x:scroll">
+                <form method="post" class="loadingshow">
+                    <div class="collapse"  id="myModal122" aria-expanded="false"> 
+                        <fieldset style="text-align:left;"><legend>Filter</legend>
+                            <div class="col-md-12">
+                                <div class="row"> 
+                                    <div class="col-md-4">
+                                        <label class="control-label">Select Client</label>
+                                        <?= $this->Form->control('client_id',['empty'=>'---All---','options'=>$clients,'class'=>'form-control input-sm select2','label'=>false]) ?>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="control-label">Select POC</label>
+                                        <?= $this->Form->control('poc',['empty'=>'---All---','options'=>$pocs,'class'=>'form-control input-sm select2','label'=>false]) ?>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12" align="center">
+                                        <hr style="margin-top: 12px;margin-bottom: 10px;"></hr>
+                                        <?php echo $this->Form->button('Apply',['class'=>'btn btn-sm btn-success','id'=>'submit_member','name'=>'search_report']); ?>
+                                    </div> 
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </form>
 						
 				<table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
 					<thead>
@@ -151,16 +180,6 @@
 						<?php endforeach; ?>
 					</tbody>
 				</table>
-				<div class="paginator">
-					<ul class="pagination">
-						<?= $this->Paginator->first('<< ' . __('first')) ?>
-						<?= $this->Paginator->prev('< ' . __('previous')) ?>
-						<?= $this->Paginator->numbers() ?>
-						<?= $this->Paginator->next(__('next') . ' >') ?>
-						<?= $this->Paginator->last(__('last') . ' >>') ?>
-					</ul>
-					<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-				</div>
 			</div>
 		</div>
 	</div>

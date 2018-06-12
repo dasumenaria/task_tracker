@@ -27,66 +27,49 @@ class LeavesController extends AppController
     public function index()
     {
         $this->set('li','Reports');
+
         $data = $this->request->getData();
 
         if(!empty($data['user_id']))
-            $condition['id'] = $data['user_id'];
+            $condition['Users.id'] = $data['user_id'];
 
         if(!empty($data['date_from']))
-            $date_from = date('Y-m-d',strtotime($data['date_from']));
+            $condition2['Leaves.date_from >='] = date('Y-m-d',strtotime($data['date_from']));
+
+        else
+            $condition2['Leaves.date_from >='] = date('Y-m-01');
 
         if(!empty($data['date_to']))
-            $date_to = date('Y-m-d',strtotime($data['date_to']));
+            $condition2['Leaves.date_from <='] = date('Y-m-d',strtotime($data['date_to']));
+        else
+            $condition2['Leaves.date_from <='] = date('Y-m-t');
 
         if(!empty($data['leave_status']))
         {
             if($data['leave_status'] == 3)
-                $status = 0;
+                $condition2['Leaves.leave_status'] = 0;
             else
-                $status = $data['leave_status'];
+                $condition2['Leaves.leave_status'] = $data['leave_status'];
         }
 
-        $condition['is_deleted'] = 0;
+        $condition['Users.is_deleted'] = 0;
+        $condition2['Leaves.is_deleted'] = 0;
         unset($data);
+        //pr($condition2);exit;
 
-        $data = $this->Leaves->Users->find()->select(['Users.id','Users.name'])->order(['Users.name' => 'ASC'])->contain(['Leaves'=>function($q){
-            return $q->where(['Leaves.date_from >='=>date('Y-01-01'),'Leaves.date_to <='=>date('Y-12-31')])->contain(['LeaveTypes']);
-        }])->where([$condition]);
-
-        foreach ($data as $value) 
-        {
-            $value['total_leaves'] = 0;
-            foreach ($value->leaves as $key => $leave)
-            {
-                if($leave->leave_status == 1)
-                {
-                    $datetime1 = new \DateTime($leave->date_from);
-
-                    $datetime2 = new \DateTime($leave->date_to);
-
-                    $difference = $datetime2->diff($datetime1);
-                    $days = $difference->days+1;
-
-                    $value['total_leaves'] += $days;
-                }
-
-                if(date('Y-m-d',strtotime($leave->date_from)) >= (isset($date_from)?$date_from:date('Y-m-01')) && date('Y-m-d',strtotime($leave->date_from)) <= (isset($date_to)?$date_to:date('Y-m-t')))
-                {}
-                else
-                {
-                    unset($value->leaves[$key]);
-                }
-
-                if(isset($status))
-                    if($leave->leave_status == $status)
-                    {}
-                    else
-                    {
-                        unset($value->leaves[$key]);
-                    }
-
-            }
-        }
+        $data = $this->Leaves->Users->find();
+        $data->select(['id','name'])
+        ->innerJoinWith('Leaves',function($q)use($condition2){
+            return $q->where([$condition2]);
+        })
+        ->contain(['Leaves'=>function($p)use($condition2){
+            return $p->contain(['LeaveTypes'])->where([$condition2]);
+        }])
+        ->enableAutoFields(true)
+        ->order(['Users.name' => 'ASC'])
+        ->group(['Leaves.user_id'])
+        ->where([$condition]);
+       // pr($data->toArray());exit;
 
         $users = $this->Leaves->Users->find('list')->order(['name'=>'ASC']);
 

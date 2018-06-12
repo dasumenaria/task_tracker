@@ -115,7 +115,7 @@ class TasksController extends AppController
                
                 $this->Flash->success(__('The task has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'add']);
             }
             $this->Flash->error(__('The task could not be saved. Please, try again.'));
         }

@@ -27,18 +27,38 @@ class MasterClientsController extends AppController
     public function index($id=null)
     {
         $this->set('li','Master Clients');
-		$this->paginate = [
-            'contain' => ['MasterClientPocs'=>function($q){
-				return $q->where(['MasterClientPocs.is_deleted'=>0]);
-			}, 'Projects'=>['Users']]
-        ];
-		if(!empty($id)){
-			$masterClients = $this->paginate($this->MasterClients->find()->where(['MasterClients.is_deleted'=>0,'id'=>$id]));
-		}
-		else{
-			$masterClients = $this->paginate($this->MasterClients->find()->where(['MasterClients.is_deleted'=>0]));
-		}
-        $this->set(compact('masterClients'));
+        
+
+        $data = $this->request->getData();
+        
+
+        if (!empty($data['client_id'])) {
+            $condition['MasterClients.id'] = $data['client_id'];
+        }
+
+        if (!empty($data['poc'])) {
+            $condition2['MasterClientPocs.id'] = $data['poc'];
+        }
+
+        $condition['MasterClients.is_deleted'] = 0;
+        $condition2['MasterClientPocs.is_deleted'] = 0;
+        //pr($condition);exit;
+
+		$masterClients = $this->MasterClients->find();
+        $masterClients->select(['MasterClients.id','MasterClients.client_name','MasterClients.address','poc'=>$masterClients->func()->count('MasterClientPocs.id')])
+        ->innerJoinWith('MasterClientPocs',function($q)use($condition2){
+                return $q->where([$condition2]);
+            })
+        ->contain(['MasterClientPocs', 'Projects'=>['Users']])
+        ->group(['MasterClientPocs.master_client_id'])
+        ->having(['poc >' => 0])
+        ->where([$condition]);  
+
+        //pr($masterClients->toArray());exit;
+
+        $clients = $this->MasterClients->find('list')->where(['MasterClients.is_deleted'=>0])->order(['MasterClients.client_name'=>'ASC']);
+        $pocs = $this->MasterClients->MasterClientPocs->find('list')->order(['MasterClientPocs.contact_person_name']);
+        $this->set(compact('masterClients','clients','pocs'));
     } 
 	
     public function view($id = null)
