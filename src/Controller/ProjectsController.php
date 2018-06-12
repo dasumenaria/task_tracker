@@ -104,10 +104,10 @@ class ProjectsController extends AppController
     {
         $this->set('li','Projects');
         $project = $this->Projects->get($id, [
-            'contain' => ['MasterClients', 'Users', 'ProjectMembers'=>['Users'], 'ProjectStatuses', 'Tasks'=>['Users']]
+            'contain' => ['MasterClients', 'Users', 'ProjectMembers'=>['Users'], 'ProjectStatuses', 'Tasks'=>['TaskMembers'=>'Users']]
         ]);
 
-        $this->set('project', $project);
+        $this->set(compact('project','id'));
     }
 
     /**

@@ -9,6 +9,7 @@ use Cake\ORM\Entity;
  * @property int $id
  * @property int $master_client_id
  * @property string $contact_person_name
+ * @property string $designation
  * @property string $email
  * @property string $username
  * @property string $password
@@ -34,6 +35,7 @@ class MasterClientPoc extends Entity
     protected $_accessible = [
         'master_client_id' => true,
         'contact_person_name' => true,
+        'designation' => true,
         'email' => true,
         'username' => true,
         'password' => true,

@@ -34,25 +34,30 @@ label { font-weight:100 !important;}
 				<?php $vf=0; foreach($masterClient->master_client_pocs as $master_client_pocs) { ?>
 					<div class="data">
 						<div class="col-md-12"><hr style="margin-top:5px;margin-bottom:5px;"></hr></div>
-						<div class="form-group col-md-4">
+						<div class="form-group col-md-3">
 							<label>Contact Person</label>
-							<input type="text" class="form-control poc" value="<?php echo $master_client_pocs->contact_person_name ?>" name="contact_person_name" id="contact_person_name" placeholder="Enter name of Contact person"> 
+							<input type="text" class="form-control poc" value="<?php echo $master_client_pocs->contact_person_name ?>" name="contact_person_name" id="contact_person_name" placeholder="Enter name"> 
 						</div>
+						<div class="form-group col-md-3">
+							<label>Designation</label>
+							<input type="text" class="form-control designation" value="<?php echo $master_client_pocs->designation ?>" name="designation" id="designation" placeholder="Designation"> 
+						</div>
+
 						<div class="form-group col-md-3">
 							<label>Email</label>
-							<input type="text" class="form-control email" value="<?php echo $master_client_pocs->email ?>" name="email" id="email" placeholder="Enter Contact Email"> 
+							<input type="text" class="form-control email" value="<?php echo $master_client_pocs->email ?>" name="email" id="email" placeholder="Enter Email"> 
 						</div>
-						<div class="form-group col-md-3">
+						<div class="form-group col-md-2">
 							<label>Mobile No.</label>
 							<input type="text" class="form-control mobile"  maxlength="10" minlength="10"  value="<?php echo $master_client_pocs->mobile ?>" name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
 						</div>
 						<?php if($vf==0){ ?>
-						<div class="form-group col-md-2">
+						<div class="form-group col-md-1">
 							<label style="visibility:hidden">helloasdasdsdsasd</label>
 							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> </button> 
 						</div> 
 						<?php } else { ?>
-						<div class="form-group col-md-2">
+						<div class="form-group col-md-1">
 							<label style="visibility:hidden">helloasdasdsdsasd</label>
 							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> </button> 
 							<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i> </button>	
@@ -75,22 +80,26 @@ label { font-weight:100 !important;}
 <div id="monthly" style="display:none;">
 	<div class="data">
 		<div class="col-md-12"><hr style="margin-top:5px;margin-bottom:5px;"></hr></div>
-		<div class="form-group col-md-4">
+		<div class="form-group col-md-3">
 			<label>Contact Person</label>
-			<input type="text" class="form-control poc" name="contact_person_name" id="contact_person_name" placeholder="Enter name of Contact person"> 
+			<input type="text" class="form-control poc" name="contact_person_name" id="contact_person_name" placeholder="Enter name"> 
+		</div>
+		<div class="form-group col-md-3">
+			<label>Designation</label>
+			<input type="text" class="form-control designation" name="designation" id="designation" placeholder="Designation"> 
 		</div>
 		<div class="form-group col-md-3">
 			<label>Email</label>
-			<input type="text" class="form-control email" name="email" id="email" placeholder="Enter Contact Email"> 
+			<input type="text" class="form-control email" name="email" id="email" placeholder="Enter Email"> 
 		</div>
-		<div class="form-group col-md-3">
+		<div class="form-group col-md-2">
 			<label>Mobile No.</label>
 			<input type="text" class="form-control mobile"  maxlength="10" minlength="10"  name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
 		</div>
-		<div class="form-group col-md-2">
+		<div class="form-group col-md-1">
 			<label style="visibility:hidden">helloasdasdsdsasd</label>
-			<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> </button> 
-			<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i></button>	
+			<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i>   </button> 
+			<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i>  </button>	
 		</div>
 	</div>
 </div>

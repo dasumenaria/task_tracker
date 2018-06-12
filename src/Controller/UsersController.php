@@ -38,7 +38,7 @@ class UsersController extends AppController
 	 
 		$ProjectsCount=$this->Users->Projects->find()->where(['Projects.is_deleted'=>0])->count();
 		 
-		$TasksCount=$this->Users->Tasks->find()->where(['Tasks.is_deleted'=>0])->count();
+		$TasksCount=$this->Users->TaskMembers->Tasks->find()->where(['Tasks.is_deleted'=>0])->count();
 
         $this->set(compact('users','MasterClientsCount','UsersCount','ProjectsCount','TasksCount'));
 	}

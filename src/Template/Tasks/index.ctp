@@ -78,7 +78,7 @@
 
                                 <div class="row">
                                     <div class="radio-list col-md-4">
-                                        <label><h4>By Date: &nbsp;</h4></label>
+                                        <label><h5>By Date: &nbsp;</h5></label>
                                         <label class="radio-inline">
                                         <input type="radio" name="date_filter" id="policy" value="completion" checked> Completion Date </label>
 
@@ -116,19 +116,19 @@
                               <a data-toggle="collapse" data-parent="#accordion" href="#collapse<?= $j ?>"><?= $project['title']?></a>
                             </h4>
                         </div>
-                        <div id="collapse<?= $j ?>" class="panel-collapse collapse in">
+                        <div id="collapse<?= $j ?>" class="panel-collapse collapse <?=($j==1?'in':'')?>">
                             <div class="panel-body">
                                 <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
                                     <tbody>
                                         <tr>
-                                                <th> Sr. No. </th>
-                                                <th> Task </th>
-                                                <th> Team </th>
-                                                <th> created_on </th>
-                                                <th> Completion Date </th>
-                                                <th> completed_on </th>  
-                                                <th class="actions"><?= __('Actions') ?></th>
-                                            </tr>
+                                            <th> Sr. No. </th>
+                                            <th class="text-center" style="width: 50%;"> Task </th>
+                                            <th> Team </th>
+                                            <th> created_on </th>
+                                            <th> Completion Date </th>
+                                            <th> completed_on </th>  
+                                            <th class="actions"><?= __('Actions') ?></th>
+                                        </tr>
                                         <?php foreach ($project['tasks'] as $task): $k++;
 
                                             if($task->status==1){$color="#c5eacf";}else{$color='';}

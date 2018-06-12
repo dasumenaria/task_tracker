@@ -425,7 +425,7 @@ fieldset
 		<li class="treeview <?= $li=='Master Clients'?'active':'' ?>">
           <a href="#">
             <i class="fa fa-group"></i>
-            <span>Master Clients</span>
+            <span>Client</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
@@ -439,7 +439,7 @@ fieldset
 		<li class="treeview <?= $li=='Projects'?'active':'' ?>">
           <a href="#">
             <i class="fa fa-database"></i>
-            <span>Projects</span>
+            <span>Project</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
@@ -450,24 +450,10 @@ fieldset
           </ul>
         </li>
 		<hr class="breakline"></hr>
-		<li class="treeview <?= $li=='Users'?'active':'' ?>">
-          <a href="#">
-            <i class="fa fa-user"></i>
-            <span>Users</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'add']); ?>"><i class="fa fa-user"></i> Add</a></li>
-            <li><a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'index']); ?>"><i class="fa fa-edit"></i> View</a></li> 
-          </ul>
-        </li>
-		<hr class="breakline"></hr>
 		<li class="treeview <?= $li=='Tasks'?'active':'' ?>">
           <a href="#">
             <i class="fa fa-book"></i>
-            <span>Tasks</span>
+            <span>Task</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
@@ -481,7 +467,7 @@ fieldset
 		<li class="treeview <?= $li=='Reports'?'active':'' ?>">
           <a href="#">
             <i class="fa fa-book"></i>
-            <span>Reports</span>
+            <span>Report</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
@@ -492,6 +478,20 @@ fieldset
           </ul>
         </li>
 		
+		<hr class="breakline"></hr>
+		<li class="treeview <?= $li=='Users'?'active':'' ?>">
+          <a href="#">
+            <i class="fa fa-user"></i>
+            <span>User</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+            <li><a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'add']); ?>"><i class="fa fa-user"></i> Add</a></li>
+            <li><a href="<?php echo $this->Url->build(["controller" => "Users",'action'=>'index']); ?>"><i class="fa fa-edit"></i> View</a></li> 
+          </ul>
+        </li>
 	 
 		
 	</ul>

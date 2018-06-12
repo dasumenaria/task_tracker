@@ -28,7 +28,7 @@ label { font-weight:100 !important;}
 					</div>
 					<div class="form-group col-md-6">
 						<label>Select Project</label>
-						<?php echo  $this->Form->control('project_id', ['options' => $projects,'class'=>"form-control select2", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false]);?>
+						<?php echo  $this->Form->control('project_id', ['options' => $projects,'class'=>"form-control select2", 'data-placeholder'=>'Select...','empty'=>'Select...','label'=>false,'value'=>$id]);?>
 						<label id="project-id-error" class="error" style="display:none" for="project-id">This field is required.</label>
 					</div>
 					<div class="form-group col-md-6">

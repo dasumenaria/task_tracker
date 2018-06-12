@@ -89,7 +89,7 @@ class TasksController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($id = null)
     {
         $this->set('li','Tasks');
         $task = $this->Tasks->newEntity();
@@ -121,7 +121,7 @@ class TasksController extends AppController
         }
         $users = $this->Tasks->TaskStatuses->Users->find('list', ['limit' => 200])->where(['is_deleted'=>0])->order(['name'=>'ASC']);
         $projects = $this->Tasks->Projects->find('list', ['limit' => 200])->where(['is_deleted'=>0])->order(['title'=>'ASC']);
-		$this->set(compact('task','users','projects'));
+		$this->set(compact('task','users','projects','id'));
     }
 
     /**
@@ -212,5 +212,18 @@ class TasksController extends AppController
             $this->Flash->error(__('The task could not be deleted. Please, try again.'));
         }
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function dublicate()
+    {
+        $data = $this->Tasks->find()->select(['id','user_id']);
+        foreach ($data as $value) {
+            $member = $this->Tasks->TaskMembers->newEntity();
+            $a['user_id'] = $value->user_id;
+            $a['task_id'] = $value->id;
+            $member = $this->Tasks->TaskMembers->patchEntity($member,$a);
+            $this->Tasks->TaskMembers->save($member);
+        }
+        pr("done");exit;
     }
 }

@@ -118,13 +118,13 @@
                               <a data-toggle="collapse" data-parent="#accordion" href="#collapse<?= $j ?>"><?= $client['client_name']?></a>
                             </h4>
                         </div>
-                        <div id="collapse<?= $j ?>" class="panel-collapse collapse in">
+                        <div id="collapse<?= $j ?>" class="panel-collapse collapse <?=($j==1?'in':'')?>">
                             <div class="panel-body">
                                 <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">
                                     <tbody>
                                         <tr>
                                                 <th> Sr. No. </th>
-                                                <th> Project </th>
+                                                <th class="text-center" style="width: 50%;"> Project </th>
                                                 <th> Team </th>
                                                 <th> POC Member </th>
                                                 <th> created_on </th>

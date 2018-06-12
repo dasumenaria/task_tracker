@@ -38,6 +38,7 @@
 												<tr style="background-color:#DFD9C4;">
 													<th scope="col">Sr.No.</th>
 													<th scope="col">Name</th>
+													<th scope="col">Designation</th>
 													<th scope="col">Email</th>
 													<th scope="col">Mobile No.</th>
 													<th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -49,6 +50,7 @@
 												<tr>
 													<td><?php echo $x;?></td>
 													<td><?= h($master_client_pocs->contact_person_name) ?></td>
+													<td><?= h($master_client_pocs->designation) ?></td>
 													<td><?= h($master_client_pocs->email) ?></td>
 													<td><?= h($master_client_pocs->mobile) ?></td>
 													<td><?= $this->Form->postLink(__('Delete'), ['action' => '../MasterClientPocs/delete', $master_client_pocs->id], ['class'=>'btn btn-danger btn-xs','confirm' => __('Are you sure you want to delete')]) ?></td>

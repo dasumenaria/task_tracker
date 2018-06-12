@@ -34,19 +34,23 @@ label { font-weight:100 !important;}
 				<div class="no-print" style="margin-top:20px;" id="monthly_table">
 					<div class="data">
 						<div class="col-md-12"><hr style="margin-top:5px;margin-bottom:5px;"></hr></div>
-						<div class="form-group col-md-4">
+						<div class="form-group col-md-3">
 							<label>Contact Person</label>
 							<input type="text" class="form-control poc" required name="contact_person_name" id="contact_person_name" placeholder="Enter name of Contact"> 
+						</div>
+						<div class="form-group col-md-3">
+							<label>Designation</label>
+							<input type="text" class="form-control designation" name="designation" id="designation" placeholder="Designation"> 
 						</div>
 						<div class="form-group col-md-3">
 							<label>Email</label>
 							<input type="text" class="form-control email" required name="email" id="email" placeholder="Enter Contact Email"> 
 						</div>
-						<div class="form-group col-md-3">
+						<div class="form-group col-md-2">
 							<label>Mobile No.</label>
 							<input type="text" class="form-control mobile" required maxlength="10" minlength="10"  name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
 						</div>
-						<div class="form-group col-md-2">
+						<div class="form-group col-md-1">
 							<label style="visibility:hidden">helloasdasdsdsasd</label>
 							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i>  </button> 
 						</div> 
@@ -66,19 +70,23 @@ label { font-weight:100 !important;}
 <div id="monthly" style="display:none;">
 	<div class="data">
 		<div class="col-md-12"><hr style="margin-top:5px;margin-bottom:5px;"></hr></div>
-		<div class="form-group col-md-4">
+		<div class="form-group col-md-3">
 			<label>Contact Person</label>
-			<input type="text" class="form-control poc" name="contact_person_name" id="contact_person_name" placeholder="Enter name of Contact Person"> 
+			<input type="text" class="form-control poc" name="contact_person_name" id="contact_person_name" placeholder="Enter name"> 
+		</div>
+		<div class="form-group col-md-3">
+			<label>Designation</label>
+			<input type="text" class="form-control designation" name="designation" id="designation" placeholder="Designation"> 
 		</div>
 		<div class="form-group col-md-3">
 			<label>Email</label>
-			<input type="text" class="form-control email" name="email" id="email" placeholder="Enter Contact Email"> 
+			<input type="text" class="form-control email" name="email" id="email" placeholder="Enter Email"> 
 		</div>
-		<div class="form-group col-md-3">
+		<div class="form-group col-md-2">
 			<label>Mobile No.</label>
 			<input type="text" class="form-control mobile"  maxlength="10" minlength="10"  name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
 		</div>
-		<div class="form-group col-md-2">
+		<div class="form-group col-md-1">
 			<label style="visibility:hidden">helloasdasdsdsasd</label>
 			<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i>   </button> 
 			<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i>  </button>	
@@ -152,6 +160,8 @@ function rename_rows()
 	var i =0;
 	$("#monthly_table .data").each(function(){  
 		$(this).find("input.poc").attr({name:"master_client_pocs["+i+"][contact_person_name]"});
+
+		$(this).find("input.designation").attr({name:"master_client_pocs["+i+"][designation]"});
 
 		$(this).find("input.email").attr({name:"master_client_pocs["+i+"][email]"});
 		
