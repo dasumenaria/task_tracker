@@ -26,7 +26,9 @@ class ProjectsController extends AppController
      */
     public function index()
     {
+
         $this->set('li','Projects');
+        $condition2 = [];
 
         $data = $this->request->getData();
 
@@ -35,55 +37,43 @@ class ProjectsController extends AppController
 
         if(!empty($data['date_from']))
             if($data['date_filter'] == 'created')
-                $condition2['Projects.created_on >='] = date('Y-m-d',strtotime($data['date_from']));
+                $condition1['Projects.created_on >='] = date('Y-m-d',strtotime($data['date_from']));
             else
-                $condition2['Projects.deadline >='] = date('Y-m-d',strtotime($data['date_from']));
+                $condition1['Projects.deadline >='] = date('Y-m-d',strtotime($data['date_from']));
         
         if(!empty($data['date_to']))
             if($data['date_filter'] == 'created')
-                $condition2['Projects.created_on <='] = date('Y-m-d',strtotime($data['date_to']));
+                $condition1['Projects.created_on <='] = date('Y-m-d',strtotime($data['date_to']));
             else
-                $condition2['Projects.deadline <='] = date('Y-m-d',strtotime($data['date_to']));
+                $condition1['Projects.deadline <='] = date('Y-m-d',strtotime($data['date_to']));
 
         if(!empty($data['status']))
         {
             if($data['status'] == 3)
-                $condition2['Projects.completed_status'] = 0;
+                $condition1['Projects.completed_status'] = 0;
             else
-                $condition2['Projects.completed_status'] = $data['status'];
+                $condition1['Projects.completed_status'] = $data['status'];
         }
-
-        $condition['MasterClients.is_deleted'] = 0;
-        $condition2['Projects.is_deleted'] = 0;
 
         if(!empty($data['user_id']))
-        {
-            $user_id = $data['user_id'];
-            unset($data);
-            $data = $this->Projects->MasterClients->find();
+            $condition2['ProjectMembers.user_id'] = $data['user_id'];
+
+        $condition['MasterClients.is_deleted'] = 0;
+        $condition1['Projects.is_deleted'] = 0;
+        unset($data);
+
+        $data = $this->Projects->MasterClients->find();
             $data->select(['MasterClients.id','MasterClients.client_name','total_project'=>$data->func()->count('Projects.id')])
             ->innerJoinWith('Projects')
-            ->contain(['Projects'=>function($q) use($user_id){
-                return $q->contain(['ProjectMembers'=>'Users'])->innerJoinWith('ProjectMembers',function($q1)use($user_id){
-                return $q1->where(['ProjectMembers.user_id'=>$user_id]);
-            });
+            ->contain(['MasterClientPocs','Projects'=>function($q) use($condition1,$condition2){
+                return $q->contain(['ProjectMembers'=>'Users'])->innerJoinWith('ProjectMembers',function($q1)use($condition2){
+                return $q1->where([$condition2]);
+            })
+                ->where([$condition1]);
             }])
+            ->group('Projects.master_client_id')
             ->having(['total_project >' => 0])
             ->where([$condition]);
-        }
-        else
-        {
-            unset($data);
-            $data = $this->Projects->MasterClients->find()
-                        ->select(['MasterClients.id','MasterClients.client_name'])
-                        ->contain(['Projects'=>function($q)use($condition2){
-                                        return $q->order(['created_on'=>'DESC'])
-                                            ->contain(['ProjectMembers'=>['Users'=>function($r){
-                                                    return $r->select(['name']);}],'ProjectStatuses'=>['Projects']])
-                                            ->where([$condition2]);}])
-                        ->where([$condition]);
-                       // exit;
-        }
 
         //pr($data->toArray());exit;
 		 
