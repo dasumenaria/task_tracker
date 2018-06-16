@@ -69,7 +69,36 @@ class LeavesController extends AppController
         ->order(['Users.name' => 'ASC'])
         ->group(['Leaves.user_id'])
         ->where([$condition]);
-       // pr($data->toArray());exit;
+
+        $data = $data->toArray();
+        foreach ($data as $key => $user) {
+            $total = 0;
+            $year = date("Y");
+            $month = date('m');
+
+            if($month > 03)
+            {
+                $start_date = date('Y-04-01');
+                $end_date = date(($year+1).'-03-31');
+            }
+            else
+            {
+                $start_date = date(($year-1).'-04-01');
+                $end_date = date('Y-03-31');
+            }    
+            $leaves = $this->Leaves->find('All')->where(['Leaves.user_id'=>$user->id,'Leaves.leave_status'=>1,'Leaves.date_from >='=>$start_date,'Leaves.date_from <='=>$end_date]);
+
+            foreach ($leaves as $leave) {
+                $datetime1 = new \DateTime($leave->date_from);
+                $datetime2 = new \DateTime($leave->date_to);
+
+                $difference = $datetime2->diff($datetime1);
+                $c = $difference->days+1;
+                $total+=$c;
+            }
+            $data[$key]['total_leaves'] = $total;
+        }
+       //pr($data);exit;
 
         $users = $this->Leaves->Users->find('list')->order(['name'=>'ASC']);
 
@@ -192,4 +221,6 @@ class LeavesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+    
 }

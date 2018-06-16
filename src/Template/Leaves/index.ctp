@@ -72,9 +72,11 @@
                         </fieldset>
                     </div>
                 </form> 
-            	<?php if (!empty($data->toArray())): ?>		
+            	<?php if (!empty($data)): ?>		
                     <?php foreach ($data as $user): $k = 0;
+                       // pr($user['total_leaves']);exit;
                         if(!empty($user->leaves)):
+
                         ?>
 
                         <table class="table table-bordered" cellpadding="0" cellspacing="0" id="main_tble">

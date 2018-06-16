@@ -27,44 +27,70 @@ class TasksController extends AppController
     public function index()
     {
         $this->set('li','Tasks');
-
+        $condition2 = [];
         $data = $this->request->getData();
 
         if(!empty($data['project_id']))
             $condition['Projects.id'] =  $data['project_id'];
 
         if(!empty($data['user_id']))
-            $condition2['Tasks.user_id'] =  $data['user_id'];
+            $condition2['TaskMembers.user_id'] =  $data['user_id'];
 
         if(!empty($data['date_from']))
             if($data['date_filter'] == 'created')
-                $condition2['Tasks.created_on >='] = date('Y-m-d',strtotime($data['date_from']));
+                $condition1['Tasks.created_on >='] = date('Y-m-d',strtotime($data['date_from']));
             else
-                $condition2['Tasks.deadline >='] = date('Y-m-d',strtotime($data['date_from']));
+                $condition1['Tasks.deadline >='] = date('Y-m-d',strtotime($data['date_from']));
         
         if(!empty($data['date_to']))
             if($data['date_filter'] == 'created')
-                $condition2['Tasks.created_on <='] = date('Y-m-d',strtotime($data['date_to']));
+                $condition1['Tasks.created_on <='] = date('Y-m-d',strtotime($data['date_to']));
             else
-                $condition2['Tasks.deadline <='] = date('Y-m-d',strtotime($data['date_to']));
+                $condition1['Tasks.deadline <='] = date('Y-m-d',strtotime($data['date_to']));
         if(!empty($data['status']))
         {
-            if($data['status'] == 2)
-                $condition2['Tasks.status'] = 0;
+            if($data['status'] == 3)
+                $condition1['Tasks.status'] = 0;
             else
-                $condition2['Tasks.status'] = 1;
+                $condition1['Tasks.status'] = $data['status'];
         }
 
         $condition['Projects.is_deleted'] = 0;
-        $condition2['Tasks.is_deleted'] = 0;
+        $condition1['Tasks.is_deleted'] = 0;
 
         unset($data);
 
-        $data = $this->Tasks->Projects->find()->select(['id','title'])->order(['title'=>'ASC'])->contain(['Tasks'=>function($p) use($condition2){return $p->order(['created_on'=>'DESC'])->contain(['TaskMembers'=>'Users','TaskStatuses'=>'Users'])->where([$condition2]);}])->where([$condition]);
+        $data = $this->Tasks->Projects->find('all');
+        $data->select(['Projects.id','Projects.title','total_task'=>$data->func()->count('Tasks.id')])
+        ->innerJoinWith('Tasks',function($q)use($condition1,$condition2){
+            return $q->select(['Tasks.id'])->innerJoinWith('TaskMembers',function($p)use($condition1,$condition2){
+                return $p->where([$condition2]);
+            })
+            ->order(['Tasks.created_on'=>'DESC'])
+            ->where([$condition1]);
+        })
+        ->group('Tasks.project_id')
+        ->order(['Tasks.title'=>'ASC'])
+        ->contain(['Tasks'=>function($s)use($condition1,$condition2){
+            return $s->contain('TaskMembers',function($p)use($condition1,$condition2){
+                return $p->where([$condition2]);
+            })
+            ->where([$condition1])
+            ->contain(['TaskMembers'=>['Users'=>function($r){return $r->select(['name']);}]])
+            ->order(['Tasks.created_on'=>'DESC']);
+        }])
+        ->where([$condition]);
 
+        $data = $data->toArray();
+        //pr($data);exit;
+        foreach ($data as $k => $project) {
+            foreach ($project->tasks as $key => $task) {
+                    if(empty($task->task_members))
+                        unset($data[$k]['tasks'][$key]);          
+            }
+        }
         $projects = $this->Tasks->projects->find('list')->where(['is_deleted'=>0])->order(['title'=>'ASC']);
         $users = $this->Tasks->TaskStatuses->Users->find('list')->where(['is_deleted'=>0])->order(['name'=>'ASC']);
-
         $this->set(compact('data','projects','users'));
     }
 
@@ -225,5 +251,15 @@ class TasksController extends AppController
             $this->Tasks->TaskMembers->save($member);
         }
         pr("done");exit;
+    }
+
+    public function overdue()
+    {
+        $query = $this->Tasks->query();
+        $query->update()
+        ->set(['status' => 2])
+        ->where(['Tasks.deadline <' => date('Y-m-d'),'Tasks.status'=>0])
+        ->execute();
+        exit;
     }
 }

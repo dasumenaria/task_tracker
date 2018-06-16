@@ -63,15 +63,16 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <label class="control-label">Select Project</label>
+                                        <label class="control-label">Select User</label>
                                         <?= $this->Form->control('user_id',['empty'=>'---All---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false]) ?>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="control-label">Select Status</label>
                                         <select name="status" class="form-control input-sm select2">
                                             <option value="">---All---</option>
-                                            <option value="2">Incomplete</option>
+                                            <option value="3">Incomplete</option>
                                             <option value="1">Completed</option>
+                                            <option value="2">Overdue</option>
                                         </select>
                                     </div>
                                 </div>
@@ -105,7 +106,8 @@
                         </fieldset>
                     </div>
                 </form> 
-            	<div class="panel-group" id="accordion">		
+            	<div class="panel-group" id="accordion">
+                <?php if(!empty($data)): ?>		
                 <?php $j=0; foreach ($data as $project): $k = 0; $j++;
                     if(!empty($project->tasks)):
                     ?>
@@ -253,7 +255,9 @@
                         </div>
                     <?php endforeach; ?>    
                 <?php endif; ?>
-                <?php endforeach; ?>   
+                <?php endforeach; ?>
+                <?php else: echo "No Data Found"; ?>
+                <?php endif; ?>   
                 </div>
 
             </div>

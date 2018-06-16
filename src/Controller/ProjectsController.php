@@ -26,7 +26,6 @@ class ProjectsController extends AppController
      */
     public function index()
     {
-
         $this->set('li','Projects');
         $condition2 = [];
 
@@ -62,20 +61,37 @@ class ProjectsController extends AppController
         $condition1['Projects.is_deleted'] = 0;
         unset($data);
 
-        $data = $this->Projects->MasterClients->find();
-            $data->select(['MasterClients.id','MasterClients.client_name','total_project'=>$data->func()->count('Projects.id')])
-            ->innerJoinWith('Projects')
-            ->contain(['MasterClientPocs','Projects'=>function($q) use($condition1,$condition2){
-                return $q->contain(['ProjectMembers'=>'Users'])->innerJoinWith('ProjectMembers',function($q1)use($condition2){
-                return $q1->where([$condition2]);
+        $data = $this->Projects->MasterClients->find('all');
+        $data->select(['MasterClients.id','MasterClients.client_name','total_project'=>$data->func()->count('Projects.id')])
+        ->innerJoinWith('Projects',function($q)use($condition1,$condition2){
+            return $q->select(['Projects.id'])->innerJoinWith('ProjectMembers',function($p)use($condition1,$condition2){
+                return $p->where([$condition2]);
             })
-                ->where([$condition1]);
-            }])
-            ->group('Projects.master_client_id')
-            ->having(['total_project >' => 0])
-            ->where([$condition]);
+            ->order(['Projects.created_on'=>'DESC'])
+            ->where([$condition1]);
+        })
+        ->group('Projects.master_client_id')
+        ->order(['MasterClients.client_name'=>'ASC'])
+        ->contain(['Projects'=>function($s)use($condition1,$condition2){
+            return $s->contain('ProjectMembers',function($p)use($condition1,$condition2){
+                return $p->where([$condition2]);
+            })
+            ->where([$condition1])
+            ->contain(['ProjectMembers'=>['Users'=>function($r){return $r->select(['name']);}]])
+            ->order(['Projects.created_on'=>'DESC']);
+        }])
+        ->where([$condition]);
 
-        //pr($data->toArray());exit;
+        $data = $data->toArray();
+
+        foreach ($data as $k => $client) {
+            foreach ($client->projects as $key => $project) {
+                    if(empty($project->project_members))
+                        unset($data[$k]['projects'][$key]);          
+            }
+        }
+
+        //pr($data);exit;
 		 
         $clients = $this->Projects->MasterClients->find('list')->where(['MasterClients.is_deleted'=>0])->order(['client_name'=>'ASC']);
 		$users = $this->Projects->Users->find('list')->where(['Users.is_deleted'=>0])->order(['name'=>'ASC']);
@@ -213,17 +229,27 @@ class ProjectsController extends AppController
 
     public function undodelete($id = null)
     {
-        $project = $this->Tasks->get($id, [
+        $project = $this->Projects->get($id, [
             'contain' => []
         ]);
-        $project = $this->Tasks->patchEntity($project, $this->request->getData());
+        $project = $this->Projects->patchEntity($project, $this->request->getData());
         $project->is_deleted=0;
         $project->completed_status=0;
-        if ($this->Tasks->save($project)) { 
+        if ($this->Projectojects->save($project)) { 
             $this->Flash->success(__('The project has been undone.'));
         } else {
             $this->Flash->error(__('The project could not be undone. Please, try again.'));
         }
         return $this->redirect(['action' => 'index']);
+    }
+
+    public function overdue()
+    {
+        $query = $this->Projects->query();
+        $query->update()
+        ->set(['completed_status' => 2])
+        ->where(['Projects.deadline <' => date('Y-m-d'),'Projects.completed_status'=>0])
+        ->execute();
+        exit;
     }
 }

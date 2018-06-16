@@ -108,7 +108,7 @@
                 </form> 
 
                 <div class="panel-group" id="accordion">
-            			
+            	<?php if(!empty($data)): ?>    		
                 <?php $j=0; foreach ($data as $client): $k = 0; $j++;
                     if(!empty($client->projects)):
                     ?>
@@ -257,8 +257,9 @@
                         </div>
                     <?php endforeach; ?>    
                 <?php endif; ?>
-                <?php endforeach; ?>  
-
+                <?php endforeach; ?> 
+                <?php else: echo "No Data Found"; ?>
+                <?php endif; ?> 
 
                 </div> 
 
