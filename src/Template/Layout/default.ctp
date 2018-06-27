@@ -513,9 +513,12 @@ fieldset
 <footer class="main-footer hide_print">
     2016 &copy; <a href="http://www.phppoets.com" target="_blank"> PHP POETS IT SOLUTION PRIVATE LTD.</a> All Rights Reserved.
 </footer>
-<?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); ?>
-<?php echo $this->Html->script('/assets/bootstrap/js/bootstrap.min.js'); ?>
+
+<?php //echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); ?>
+
+<?php //echo $this->Html->script('/assets/bootstrap/js/jquery.min.js'); ?>
 <?php echo $this->Html->script('/assets/plugins/jquery-validation/lib/jquery.js'); ?>
+
 <?php echo $this->Html->script('/assets/plugins/jquery-validation/dist/jquery.validate.js'); ?>
 <?php echo $this->Html->script('/assets/plugins/slimScroll/jquery.slimscroll.min.js'); ?>
 <?php echo $this->Html->script('/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js'); ?>
@@ -529,6 +532,8 @@ fieldset
 <?php echo $this->Html->script('/assets/dist/js/demo.js'); ?> 
 <?php echo $this->Html->script('/assets/plugins/WYSIWYG/editor.js'); ?>
 <?php echo $this->Html->script('/assets/scroll/js/fixed_table_rc.js'); ?>
+
+<?php echo $this->Html->script('/assets/bootstrap/js/bootstrap.min.js'); ?>
 <script>
 	$('.select2').select2();
 	var date = new Date();
@@ -555,5 +560,7 @@ fieldset
 		'insert_img':false,
 	}); 
 </script> 
+<?php echo $this->fetch('script'); ?>
+<?= $this->fetch('scriptBottom')?>
 </body>
 </html>

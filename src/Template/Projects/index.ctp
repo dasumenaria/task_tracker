@@ -15,7 +15,7 @@
     }
     .actions
     {
-        width: 100px;
+        width: 150px;
     }
     .box-body>.table {
         margin-bottom: 20px;
@@ -52,19 +52,19 @@
                 </div>
  			</div>
 			<div class="box-body" style="overflow-x:scroll">
-                <form method="post" class="loadingshow">
+                <form method="get" class="loadingshow">
                     <div class="collapse"  id="myModal122" aria-expanded="false"> 
                         <fieldset style="text-align:left;"><legend>Filter</legend>
                             <div class="col-md-12">
                                 <div class="row"> 
                                     <div class="col-md-4">
                                         <label class="control-label">Select Client</label>
-                                        <?= $this->Form->control('client_id',['empty'=>'---All---','options'=>$clients,'class'=>'form-control input-sm select2','label'=>false]) ?>
+                                        <?= $this->Form->control('client_id',['empty'=>'---All---','options'=>$clients,'class'=>'form-control input-sm select2','label'=>false,'value'=>@$_GET['client_id']]) ?>
                                     </div>
 
                                     <div class="col-md-4">
                                         <label class="control-label">Select User</label>
-                                        <?= $this->Form->control('user_id',['empty'=>'---All---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false]) ?>
+                                        <?= $this->Form->control('user_id',['empty'=>'---All---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false,'value'=>@$_GET['user_id']]) ?>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="control-label">Select Status</label>
@@ -124,7 +124,7 @@
                                     <tbody>
                                         <tr>
                                                 <th> Sr. No. </th>
-                                                <th class="text-center" style="width: 50%;"> Project </th>
+                                                <th class="text-center" style="width: 40%;"> Project </th>
                                                 <th> Team </th>
                                                 <th> POC Member </th>
                                                 <th> created_on </th>
@@ -156,7 +156,7 @@
                                                 <td class="actions"> 
                                                     <?php if($project->completed_status!=1)
                                                     {
-                                                        echo $this->Html->link('<i class="fa fa-edit"></i>','/projects/edit/'.$project->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
+                                                        echo $this->Html->link(('<i class="fa fa-edit"></i>'), ['action' => 'edit', $project['id'],str_replace('%','-',urlencode($this->Url->build('', true)))],['escape'=>false,'class'=>'btn btn-xs btn-info']) ?>
                                                 
                                                         <a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $project->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
                                                     <?php } else {?>    
@@ -169,7 +169,7 @@
                                                     
                                                     <div id="deletemodal<?php echo $project->id; ?>" class="modal fade" role="dialog">
                                                         <div class="modal-dialog modal-md" >
-                                                            <form method="post" action="<?php echo $this->Url->build(array('controller'=>'projects','action'=>'delete',$project->id)) ?>">
+                                                            <form method="post" action="<?php echo $this->Url->build(array('controller'=>'projects','action'=>'delete',$project->id,str_replace('%','-',urlencode($this->Url->build('', true))))) ?>">
                                                                 <div class="modal-content">
                                                                   <div class="modal-header">
                                                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -239,7 +239,7 @@
                         </div>
                         <div id="undi<?php echo $project->id; ?>" class="modal fade" role="dialog">
                             <div class="modal-dialog modal-md" >
-                                <form method="post" action="<?php echo $this->Url->build(array('controller'=>'projects','action'=>'undodelete',$project->id)) ?>">
+                                <form method="post" action="<?php echo $this->Url->build(array('controller'=>'projects','action'=>'undodelete',$project->id,str_replace('%','-',urlencode($this->Url->build('', true))))) ?>">
                                     <div class="modal-content">
                                       <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">&times;</button>

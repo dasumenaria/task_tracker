@@ -28,7 +28,7 @@ class LeavesController extends AppController
     {
         $this->set('li','Reports');
 
-        $data = $this->request->getData();
+        $data = $this->request->getQuery();
 
         if(!empty($data['user_id']))
             $condition['Users.id'] = $data['user_id'];
@@ -93,7 +93,11 @@ class LeavesController extends AppController
                 $datetime2 = new \DateTime($leave->date_to);
 
                 $difference = $datetime2->diff($datetime1);
-                $c = $difference->days+1;
+                if($leave->half_day == 'yes')
+                    $c = ($difference->days+1)*0.5;
+                else
+                    $c = $difference->days+1;
+
                 $total+=$c;
             }
             $data[$key]['total_leaves'] = $total;
@@ -150,8 +154,11 @@ class LeavesController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($id = null,$url = null)
     {
+        $url = str_replace('-','%',$url);
+        $url = urldecode($url);
+
         $this->set('li','Reports');
         $leave = $this->Leaves->get($id, [
             'contain' => []
@@ -167,7 +174,9 @@ class LeavesController extends AppController
             $leave->date_to = date('Y-m-d',strtotime($this->request->getData('date_to')));
             if ($this->Leaves->save($leave)) {
                 $this->Flash->success(__('The leave has been saved.'));
-
+                
+                echo '<meta http-equiv=REFRESH CONTENT=0;url='.$url.'>';
+                exit;
                 return $this->redirect(['action' => 'index']);
             }
             else
@@ -200,26 +209,37 @@ class LeavesController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
-    public function approve(int $id = null)
+    public function approve($id = null,$url = null)
     {
+        $url = str_replace('-','%',$url);
+        $url = urldecode($url);
+       // echo $url;exit;
+
         $query = $this->Leaves->query();
         $query->update()
         ->set(['leave_status' => 1])
         ->where(['id' => $id])
         ->execute();
 
-        return $this->redirect(['action' => 'index']);
+        //return $this->redirect($url);
+        echo '<meta http-equiv=REFRESH CONTENT=0;url='.$url.'>';
+        exit;
     }
 
-    public function reject(int $id = null)
+    public function reject($id = null,$url = null)
     {
+        $url = str_replace('-','%',$url);
+        $url = urldecode($url);
+
         $query = $this->Leaves->query();
         $query->update()
         ->set(['leave_status' => 2])
         ->where(['id' => $id])
         ->execute();
 
-        return $this->redirect(['action' => 'index']);
+        //return $this->redirect(['action' => 'index']);
+        echo '<meta http-equiv=REFRESH CONTENT=0;url='.$url.'>';
+        exit;
     }
 
     

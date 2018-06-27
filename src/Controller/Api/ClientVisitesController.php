@@ -30,11 +30,11 @@ class ClientVisitesController extends AppController
         }
 		if($count>0){
 			 if($user_id==1){ 
-				$response_object = $this->ClientVisites->find()->contain(['MasterClients','Users']);
+				$response_object = $this->ClientVisites->find()->contain(['MasterClients','Users'])->order(['ClientVisites.id'=>'DESC']);
 			}
 			else
 			{  
-				$response_object = $this->ClientVisites->find()->where(['ClientVisites.user_id'=>$user_id])->contain(['MasterClients','Users']);
+				$response_object = $this->ClientVisites->find()->where(['ClientVisites.user_id'=>$user_id])->contain(['MasterClients','Users'])->order(['ClientVisites.id'=>'DESC']);
 			}
 			$success=true;
 			$error='';

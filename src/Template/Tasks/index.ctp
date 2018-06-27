@@ -42,6 +42,27 @@
 </style>
 
 <section class="content">
+
+<div id="emailmodal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-md" >
+        <form method="post" id="email_form" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'index')) ?>">
+            <div class="modal-content">
+              <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                    Are you sure you want to send email?
+                    </h4>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" name="send_email" class="btn btn-sm btn-info">Yes</button>
+                    <button type="button" class="btn  btn-sm btn-danger" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-primary">
@@ -52,19 +73,19 @@
                 </div>
  			</div>
 			<div class="box-body" style="overflow-x:scroll">
-                <form method="post" class="loadingshow">
+                <form method="get" class="loadingshow">
                     <div class="collapse"  id="myModal122" aria-expanded="false"> 
                         <fieldset style="text-align:left;"><legend>Filter</legend>
                             <div class="col-md-12">
                                 <div class="row"> 
                                     <div class="col-md-4">
                                         <label class="control-label">Select Project</label>
-                                        <?= $this->Form->control('project_id',['empty'=>'---All---','options'=>$projects,'class'=>'form-control input-sm select2','label'=>false]) ?>
+                                        <?= $this->Form->control('project_id',['empty'=>'---All---','options'=>$projects,'class'=>'form-control input-sm select2','label'=>false,'value'=>@$_GET['project_id']]) ?>
                                     </div>
 
                                     <div class="col-md-4">
                                         <label class="control-label">Select User</label>
-                                        <?= $this->Form->control('user_id',['empty'=>'---All---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false]) ?>
+                                        <?= $this->Form->control('user_id',['empty'=>'---All---','options'=>$users,'class'=>'form-control input-sm select2','label'=>false,'value'=>@$_GET['user_id']]) ?>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="control-label">Select Status</label>
@@ -100,6 +121,9 @@
                                     <div class="col-md-12" align="center">
                                         <hr style="margin-top: 12px;margin-bottom: 10px;"></hr>
                                         <?php echo $this->Form->button('Apply',['class'=>'btn btn-sm btn-success','id'=>'submit_member','name'=>'search_report']); ?>
+
+                                        <a class="btn btn-sm btn-primary" id="email_button">Send Email</a>
+
                                     </div> 
                                 </div>
                             </div>
@@ -124,7 +148,7 @@
                                     <tbody>
                                         <tr>
                                             <th> Sr. No. </th>
-                                            <th class="text-center" style="width: 50%;"> Task </th>
+                                            <th class="text-center" style="width: 48%;"> Task </th>
                                             <th> Team </th>
                                             <th> created_on </th>
                                             <th> Completion Date </th>
@@ -154,7 +178,7 @@
                                                 <td class="actions"> 
                                                     <?php if($task->status!=1)
                                                     {
-                                                        echo $this->Html->link('<i class="fa fa-edit"></i>','/Tasks/edit/'.$task->id,array('escape'=>false,'class'=>'btn btn-success btn-xs'));?>
+                                                        echo $this->Html->link(('<i class="fa fa-edit"></i>'), ['action' => 'edit', $task['id'],str_replace('%','-',urlencode($this->Url->build('', true)))],['escape'=>false,'class'=>'btn btn-xs btn-info'])?>
                                                 
                                                         <a class=" btn btn-danger btn-xs" data-target="#deletemodal<?php echo $task->id; ?>" data-toggle=modal><i class="fa fa-trash"></i></a>
                                                     <?php } else {?>    
@@ -167,7 +191,7 @@
                                                     
                                                     <div id="deletemodal<?php echo $task->id; ?>" class="modal fade" role="dialog">
                                                         <div class="modal-dialog modal-md" >
-                                                            <form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'delete',$task->id)) ?>">
+                                                            <form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'delete',$task->id,str_replace('%','-',urlencode($this->Url->build('', true))))) ?>">
                                                                 <div class="modal-content">
                                                                   <div class="modal-header">
                                                                         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -237,7 +261,7 @@
                         </div>
                         <div id="undi<?php echo $task->id; ?>" class="modal fade" role="dialog">
                             <div class="modal-dialog modal-md" >
-                                <form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'undodelete',$task->id)) ?>">
+                                <form method="post" action="<?php echo $this->Url->build(array('controller'=>'Tasks','action'=>'undodelete',$task->id),str_replace('%','-',urlencode($this->Url->build('', true)))) ?>">
                                     <div class="modal-content">
                                       <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -264,3 +288,14 @@
         </div>
     </div>
 </div>
+
+ <?php 
+ $url = $this->Url->build(array('controller'=>'Tasks','action'=>'index'));
+ $js = '
+    $("#email_button").click(function(){
+            var project_id = $("#project-id").find(":selected").val();
+            $("#email_form").attr("action","'.$url.'?project_id="+project_id+"&send_email=1");
+            $("#emailmodal").modal("toggle");
+        });
+ ';
+ echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));  ?>

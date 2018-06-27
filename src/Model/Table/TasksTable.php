@@ -47,6 +47,11 @@ class TasksTable extends Table
             'joinType' => 'INNER'
         ]);
 
+        $this->belongsTo('Users', [
+            'foreignKey' => 'completed_by',
+            'joinType' => 'INNER'
+        ]);
+
         $this->hasMany('TaskMembers', [
             'foreignKey' => 'task_id',
             'saveStrategy' => 'replace'

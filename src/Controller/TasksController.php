@@ -1,6 +1,6 @@
 <?php
 namespace App\Controller;
-
+use Cake\Mailer\Email;
 use App\Controller\AppController;
 
 /**
@@ -15,7 +15,7 @@ class TasksController extends AppController
 	public function initialize()
 	{
 		parent::initialize();
-		$this->Auth->allow(['logout']);
+		$this->Auth->allow(['logout','TaskOverdueUpdate','TodayReport','PendingReport']);
 		$loginId=$this->Auth->User('id');
 		if($loginId!=1){ $this->Flash->error(__('You are not authorized user!'));  return $this->redirect(['controller'=>'Users','action' => 'login']); }
 	}
@@ -28,7 +28,15 @@ class TasksController extends AppController
     {
         $this->set('li','Tasks');
         $condition2 = [];
-        $data = $this->request->getData();
+        $data = $this->request->getQuery();
+
+        if(isset($data['send_email'])){
+            if(!empty($data['project_id'])){
+                $project_id = $data['project_id'];
+                $this->sendEmailToClient($project_id);
+            }
+
+        }
 
         if(!empty($data['project_id']))
             $condition['Projects.id'] =  $data['project_id'];
@@ -59,36 +67,41 @@ class TasksController extends AppController
         $condition1['Tasks.is_deleted'] = 0;
 
         unset($data);
+        //pr($condition2);
 
         $data = $this->Tasks->Projects->find('all');
         $data->select(['Projects.id','Projects.title','total_task'=>$data->func()->count('Tasks.id')])
         ->innerJoinWith('Tasks',function($q)use($condition1,$condition2){
-            return $q->select(['Tasks.id'])->innerJoinWith('TaskMembers',function($p)use($condition1,$condition2){
+            return $q->select(['Tasks.id'])->innerJoinWith('TaskMembers',function($p)use($condition2){
                 return $p->where([$condition2]);
             })
             ->order(['Tasks.created_on'=>'DESC'])
             ->where([$condition1]);
         })
         ->group('Tasks.project_id')
-        ->order(['Tasks.title'=>'ASC'])
+        ->order(['Projects.title'=>'ASC'])
         ->contain(['Tasks'=>function($s)use($condition1,$condition2){
-            return $s->contain('TaskMembers',function($p)use($condition1,$condition2){
+            return $s->contain(['TaskMembers'=>function($p)use($condition1,$condition2){
                 return $p->where([$condition2]);
-            })
+            }])
             ->where([$condition1])
-            ->contain(['TaskMembers'=>['Users'=>function($r){return $r->select(['name']);}]])
+            ->contain(['TaskStatuses'=>['Users'=>function($r){return $r->select(['name']);}],'TaskMembers'=>['Users'=>function($r){return $r->select(['name']);}]])
             ->order(['Tasks.created_on'=>'DESC']);
         }])
         ->where([$condition]);
 
         $data = $data->toArray();
+
         //pr($data);exit;
+
         foreach ($data as $k => $project) {
             foreach ($project->tasks as $key => $task) {
                     if(empty($task->task_members))
                         unset($data[$k]['tasks'][$key]);          
             }
         }
+
+        //pr($data);exit;
         $projects = $this->Tasks->projects->find('list')->where(['is_deleted'=>0])->order(['title'=>'ASC']);
         $users = $this->Tasks->TaskStatuses->Users->find('list')->where(['is_deleted'=>0])->order(['name'=>'ASC']);
         $this->set(compact('data','projects','users'));
@@ -157,8 +170,11 @@ class TasksController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($id = null,$url = null)
     {
+        $url = str_replace('-','%',$url);
+        $url = urldecode($url);
+
         $this->set('li','Tasks');
 
         $task_old = $this->Tasks->get($id, [
@@ -190,6 +206,8 @@ class TasksController extends AppController
                     $taskMembers->user_id = $user_id;
                     $this->Tasks->TaskMembers->save($taskMembers);
                 }  
+                echo '<meta http-equiv=REFRESH CONTENT=0;url='.$url.'>';
+                exit;
 
                 $this->Flash->success(__('The task has been saved.'));
                 return $this->redirect(['action' => 'index']);
@@ -208,24 +226,28 @@ class TasksController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($id = null,$url = null)
     {
-        $task = $this->Tasks->get($id, [
-            'contain' => []
-        ]);
-		$task = $this->Tasks->patchEntity($task, $this->request->getData());
-		$task->is_deleted=1;
-		if ($this->Tasks->save($task)) { 
-            $this->Flash->success(__('The task has been deleted.'));
-        } else {
-            $this->Flash->error(__('The task could not be deleted. Please, try again.'));
-        }
+        $url = str_replace('-','%',$url);
+        $url = urldecode($url);
 
-        return $this->redirect(['action' => 'index']);
+        $query = $this->Tasks->query();
+        $query->update()
+        ->set(['Tasks.is_deleted'=>1,'Tasks.deleted_on'=>date('Y-m-d')])
+        ->where(['Tasks.id'=>$id])
+        ->execute();
+
+        $this->Flash->success(__('The task has been deleted.'));
+        
+        echo '<meta http-equiv=REFRESH CONTENT=0;url='.$url.'>';
+                exit;
     }
 	
-    public function undodelete($id = null)
+    public function undodelete($id = null,$url = null)
     {
+        $url = str_replace('-','%',$url);
+        $url = urldecode($url);
+
         $task = $this->Tasks->get($id, [
             'contain' => []
         ]);
@@ -237,7 +259,8 @@ class TasksController extends AppController
         } else {
             $this->Flash->error(__('The task could not be deleted. Please, try again.'));
         }
-        return $this->redirect(['action' => 'index']);
+        echo '<meta http-equiv=REFRESH CONTENT=0;url='.$url.'>';
+                exit;
     }
 
     public function dublicate()
@@ -253,7 +276,7 @@ class TasksController extends AppController
         pr("done");exit;
     }
 
-    public function overdue()
+    public function TaskOverdueUpdate()
     {
         $query = $this->Tasks->query();
         $query->update()
@@ -261,5 +284,163 @@ class TasksController extends AppController
         ->where(['Tasks.deadline <' => date('Y-m-d'),'Tasks.status'=>0])
         ->execute();
         exit;
+    }
+
+    public function TodayReport()
+    {
+        $users = [];
+        $data = $this->Tasks->find('all');
+        $data->contain(['Users'])
+        ->order(['Tasks.completed_by'=>'ASC'])
+        ->where(['Tasks.is_deleted'=>0,'Tasks.completed_on'=> date('Y-m-d'),'Tasks.status'=>1,'Tasks.task_email_status'=>0])->toArray();
+        $i = 0;
+        $j = 0;
+        $usr = @$data->toArray()[0]['user']['name'];
+        foreach ($data as $value) {
+            if($value['user']['name'] != $usr)
+            {
+                $j=0;
+                $usr = $value['user']['name'];
+                $i++;
+            }
+            if($j == 0)
+            {
+                $users[$i]['name'] = $value['user']['name'];
+                $users[$i]['email'] = $value['user']['email'];
+            }
+
+            unset($value->user);
+            $users[$i]['tasks'][$j] = $value;
+            $j++;
+        }
+
+        foreach ($users as $user) 
+        {    
+            $mailto = "vivekbhatt119@gmail.com";
+            ///start code for send email
+            if(!empty($mailto))
+            {
+                $email = new Email();
+                $email->setTransport('SendGrid');
+                $email->setProfile('default')
+                ->setTemplate('send_email_for_tasks')
+                ->setEmailFormat('html');
+                $email->setFrom([$user['email'] => $user['name']])
+                ->setTo($mailto)
+                ->setSubject('Today\'s Completed Task')
+                ->setViewVars(['user' => $user]);
+
+                if($email->send())
+                {
+                   foreach ($user['tasks'] as $task)
+                   {
+                        $query = $this->Tasks->query();
+                        $query->update()
+                        ->set(['Tasks.task_email_status'=>1])
+                        ->where(['Tasks.id'=> $task['id']])
+                        ->execute();
+                   }
+                }
+            }
+        }
+        exit;
+    }
+
+    public function PendingReport()
+    {
+        $users = [];
+        $data = $this->Tasks->Projects->find('all');
+        $data->select(['Projects.id','Projects.title','total_task'=>$data->func()->count('Tasks.id')])
+        ->innerJoinWith('Tasks',function($q){
+            return $q->select(['Tasks.id'])
+            ->order(['Tasks.deadline'=>'ASC'])
+            ->where(['Tasks.is_deleted'=>0,'Tasks.status'=>2]);
+        })
+        ->group('Tasks.project_id')
+        ->contain(['Tasks'=>function($q){
+            return $q->order(['Tasks.deadline'=>'DESC'])
+            ->where(['Tasks.is_deleted'=>0,'Tasks.status'=>2,'Tasks.pending_email_status'=>0]);
+        }])
+        ->where(['Projects.is_deleted'=>0]);
+
+        $data = $data->toArray();
+
+        //pr($data);exit;
+
+        foreach ($data as $k => $project) {
+            if(empty($project->tasks))
+                unset($data[$k]);
+        }
+
+        if(!empty($data))
+        {
+            $mailto = "vivekbhatt119@gmail.com";
+            ///start code for send email
+            if(!empty($mailto))
+            {
+                $email = new Email();
+                $email->setTransport('SendGrid');
+                $email->setProfile('default')
+                ->setTemplate('send_email_for_pending')
+                ->setEmailFormat('html');
+                $email->setFrom(['info@phppoets.com' => 'PhpPoets IT Solution Pvt Ltd'])
+                ->setTo($mailto)
+                ->setSubject('Today\'s Completed Task')
+                ->setViewVars(['projects' => $data]);
+
+                if($email->send())
+                {
+                   foreach ($data as $project)
+                   {
+                        foreach($project['tasks'] as $task)
+                        {
+                            $query = $this->Tasks->query();
+                            $query->update()
+                            ->set(['Tasks.pending_email_status'=>1])
+                            ->where(['Tasks.id'=> $task['id']])
+                            ->execute();
+                        }
+                   }
+                }
+            }
+        }
+        exit;
+    }
+
+    public function sendEmailToClient($project_id=null){
+        $projects_data = $this->Tasks->Projects->find()->contain(['Tasks'=>function($q){
+                    return $q->where(['status'=>1,'is_deleted'=>0])->contain(['TaskMembers'=>'Users','TaskStatuses'=>'Users']);
+                }])->contain(['MasterClients'=>['MasterClientPocs']])->where(['Projects.id'=>$project_id])->toArray();
+            
+            $cc_email=[];
+            $data=[];
+            $mailto='';     
+            foreach($projects_data as $value){
+                
+                $mailto =$value->master_client->master_client_pocs[0]->email;
+                foreach($value->tasks as $task){
+                    $data[]=$task;
+                    foreach($task->task_members as $taskmember){
+                        $cc_email = $taskmember->user->email;
+                    }
+                }
+            }
+        $mailto = "vivekbhatt119@gmail.com";
+        $cc_email = ["vivek@phppoets.in"];
+        ///start code for send email
+        if(!empty($mailto)){
+            $email = new Email();
+            $email->setTransport('SendGrid');
+            $email->setProfile('default')
+            ->setTemplate('send_email_for_clients')
+            ->setEmailFormat('html');
+            $email->setFrom(['ankit@phppoets.com' => 'PhpPoets IT Solution Pvt Ltd'])
+            ->setTo($mailto)
+            ->setCC($cc_email)
+            ->setSubject($projects_data[0]->title.'-'.'Completed Task')
+            ->setViewVars(['projects_data' => $data]);
+
+            $email->send();
+        }
     }
 }

@@ -27,7 +27,7 @@
                 </div>
  			</div>
 			<div class="box-body" style="overflow-x:scroll">
-                <form method="post" class="loadingshow">
+                <form method="get" class="loadingshow">
                     <div class="collapse"  id="myModal122" aria-expanded="false"> 
                         <fieldset style="text-align:left;"><legend>Filter</legend>
                             <div class="col-md-12">
@@ -103,10 +103,10 @@
                                         <td><b><?php if($leave['leave_status'] == 0)echo "<p class='color-blue'>Pending";if($leave['leave_status'] == 1)echo "<p class='color-green'>Approved";if($leave['leave_status'] == 2)echo "<p class='color-red'>Rejected"; ?></b></td>
                                         <td class="actions"> 
             								 
-            								<?php echo $this->Html->link('<i class="fa fa-check"></i>', ['action' => 'approve', $leave['id']],['escape'=>false,'class'=>'btn btn-xs btn-success']) ?>
-            								<?php echo $this->Html->link(('<i class="fa fa-times"></i>'), ['action' => 'reject', $leave['id']],['escape'=>false,'class'=>'btn btn-xs btn-danger']) ?>
+            								<?php echo $this->Html->link('<i class="fa fa-check"></i>', ['action' => 'approve', $leave['id'],str_replace('%','-',urlencode($this->Url->build('', true)))],['escape'=>false,'class'=>'btn btn-xs btn-success']) ?>
+            								<?php echo $this->Html->link(('<i class="fa fa-times"></i>'), ['action' => 'reject', $leave['id'],str_replace('%','-',urlencode($this->Url->build('', true)))],['escape'=>false,'class'=>'btn btn-xs btn-danger']) ?>
 
-                                            <?php echo $this->Html->link(('<i class="fa fa-edit"></i>'), ['action' => 'edit', $leave['id']],['escape'=>false,'class'=>'btn btn-xs btn-info']) ?>
+                                            <?php echo $this->Html->link(('<i class="fa fa-edit"></i>'), ['action' => 'edit', $leave['id'],str_replace('%','-',urlencode($this->Url->build('', true)))],['escape'=>false,'class'=>'btn btn-xs btn-info']) ?>
                                              
                                         </td>
                                     </tr>

@@ -37,7 +37,7 @@ class ProjectsController extends AppController
 				}
 			}
 			$totalSizeOf=0;
-			foreach($response_object as $projectss){
+			foreach($response_object as $projectss){ 
 				if(!empty($projectss->tasks)){				
 					$totalSizeOf=sizeof($task_dates[$projectss->id]);
 					//pr($projectss); exit;
@@ -58,7 +58,7 @@ class ProjectsController extends AppController
 		$this->set(compact('success','error','response_object'));	
         $this->set('_serialize', ['success','error','response_object']);
     }
-    public function projectListbyUser($user_id=null)
+    public function projectListbyUser($user_id=null) 
     {
         $user_id=$this->request->getQuery('user_id');
 		if($user_id!=1){ 
@@ -66,7 +66,9 @@ class ProjectsController extends AppController
 				->innerJoinWith('ProjectMembers',function($q)use($user_id){
 					return $q->where(['ProjectMembers.user_id'=>$user_id]);
 				})->contain(['Users','Tasks'=>function ($q) use($user_id){
-					return $q->where(['user_id'=>$user_id])->order(['Tasks.deadline'=>'ASC']);
+					return $q->contain(['TaskMembers'=>function ($q) use($user_id){
+					    return $q->where(['TaskMembers.user_id'=>$user_id]);
+					}])->order(['Tasks.deadline'=>'ASC']);
 				}])->where(['Projects.completed_status'=>0])->count();
 				
 		}
@@ -83,7 +85,9 @@ class ProjectsController extends AppController
 				->innerJoinWith('ProjectMembers',function($q)use($user_id){
 					return $q->where(['ProjectMembers.user_id'=>$user_id]);
 				})->contain(['Users','Tasks'=>function ($q) use($user_id){
-					return $q->where(['user_id'=>$user_id])->order(['Tasks.deadline'=>'ASC']);
+					return $q->contain(['TaskMembers'=>function ($q) use($user_id){
+					    return $q->where(['TaskMembers.user_id'=>$user_id]);
+					}])->order(['Tasks.deadline'=>'ASC']);
 				}])->where(['Projects.completed_status'=>0]);
 
 			}
@@ -142,9 +146,11 @@ public function projectDetails($project_id=null,$user_id=null)
 				->innerJoinWith('ProjectMembers',function($q)use($user_id){
 					return $q->where(['ProjectMembers.user_id'=>$user_id]);
 				})
-				->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers','Tasks'=>function($q) use($user_id){
-					return $q->where(['Tasks.status'=>0,'Tasks.user_id'=>$user_id])->order(['Tasks.deadline'=>'ASC']);
-				}])
+				->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'])->innerJoinWith('Tasks',function($q) use($user_id){
+					return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC'])->contain(['TaskMembers'=>function ($q) use($user_id){
+					    return $q->where(['user_id'=>$user_id])->contain(['Users']);
+					}]);
+				})
 				->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0])->count();
 				
 		}
@@ -152,7 +158,7 @@ public function projectDetails($project_id=null,$user_id=null)
 			$count=$this->Projects->find()
 				->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>
 					['Users'],'Tasks'=>function($q){
-					return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
+					return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC'])->contain(['TaskMembers'=>['Users']]);
 				}])
 				->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0])->count();
 		}
@@ -160,30 +166,41 @@ public function projectDetails($project_id=null,$user_id=null)
 			if($user_id == 1){
 				$response_object = $this->Projects->get($project_id,[
 					'contain'=>['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users'],'Tasks'=>function($q){
-						return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC']);
+						return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC'])->contain(['TaskMembers'=>['Users']]);
 					}],
 					'conditions' => ['Projects.completed_status' => 0],
 				]);
 			}else{
 				$response_object = $this->Projects->find()
-					->innerJoinWith('ProjectMembers')
-					->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users'],'Tasks'=>function($q) use($user_id){
-						return $q->where(['Tasks.status'=>0,'Tasks.user_id'=>$user_id])->order(['Tasks.deadline'=>'ASC']);
-					}])
+					->innerJoinWith('ProjectMembers',function($q)use($user_id){
+					return $q->where(['ProjectMembers.user_id'=>$user_id]);
+				})
+					->contain(['MasterClients'=>['MasterClientPocs'],'Users','ProjectMembers'=>['Users']])
+					->innerJoinWith('Tasks',function($q) use($user_id){
+					return $q->where(['Tasks.status'=>0])->order(['Tasks.deadline'=>'ASC'])->contain(['TaskMembers'=>function ($q) use($user_id){
+					    return $q->where(['user_id'=>$user_id])->contain(['Users']);
+					}]);
+				})
 					->where(['Projects.id'=>$project_id,'Projects.completed_status'=>0])->first();
 			}
 			//pr($response_object);exit;zz
 				//start code for get deadline date
-			$tasks=[];
-			$tasks[$response_object->id]=$response_object->tasks;
+			//$tasks=[];
+			$tasks=$response_object->tasks;
 				
-			
+		
 			$task_dates=[];
-			foreach($tasks as $task){  
-				foreach($task as $tasks_deadline){
+			foreach($tasks as $key=>$task){   
+				foreach($task as $k=>$tasks_deadline){
+				    if(empty($tasks_deadline->task_members)){
+				        unset($tasks[$key][$k]);
+				    }
 					$task_dates[$tasks_deadline->project_id][] = date('Y-m-d',strtotime($tasks_deadline->deadline));
 				}
 			}
+			$response_object= (object)$tasks;
+			$response_object = (object)$response_object;
+		//	pr($response_object);exit;
 			$totalSizeOf=0;
 				if(!empty($response_object->tasks)){				
 					$totalSizeOf=sizeof($task_dates[$response_object->id]);
@@ -191,9 +208,7 @@ public function projectDetails($project_id=null,$user_id=null)
 					$LastDateOfTask=$task_dates[$response_object->id][$noFoSize];
 					$response_object['LastDateOfTask']=$LastDateOfTask;
 				}
-				else{
-					$response_object['LastDateOfTask']='0000-00-00';
-				}
+			
 		 
 		//ends code for get deadline date
 			$success=true;

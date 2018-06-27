@@ -15,7 +15,7 @@ class ProjectsController extends AppController
 	public function initialize()
 	{
 		parent::initialize();
-		$this->Auth->allow(['logout']);
+		$this->Auth->allow(['logout','ProjectOverdueUpdate']);
 		$loginId=$this->Auth->User('id');
 		if($loginId!=1){ $this->Flash->error(__('You are not authorized user!'));  return $this->redirect(['controller'=>'Users','action' => 'login']); }
 	}
@@ -29,7 +29,7 @@ class ProjectsController extends AppController
         $this->set('li','Projects');
         $condition2 = [];
 
-        $data = $this->request->getData();
+        $data = $this->request->getQuery();
 
         if(!empty($data['client_id']))
             $condition['MasterClients.id'] =  $data['client_id'];
@@ -73,11 +73,11 @@ class ProjectsController extends AppController
         ->group('Projects.master_client_id')
         ->order(['MasterClients.client_name'=>'ASC'])
         ->contain(['Projects'=>function($s)use($condition1,$condition2){
-            return $s->contain('ProjectMembers',function($p)use($condition1,$condition2){
+            return $s->contain(['Users'=>function($r){return $r->select(['name']);},'ProjectMembers'=>function($p)use($condition1,$condition2){
                 return $p->where([$condition2]);
-            })
+            }])
             ->where([$condition1])
-            ->contain(['ProjectMembers'=>['Users'=>function($r){return $r->select(['name']);}]])
+            ->contain(['ProjectStatuses'=>['Projects'=>function($r){return $r->select(['title']);}],'ProjectMembers'=>['Users'=>function($r){return $r->select(['name']);}]])
             ->order(['Projects.created_on'=>'DESC']);
         }])
         ->where([$condition]);
@@ -147,8 +147,8 @@ class ProjectsController extends AppController
             }
             $this->Flash->error(__('The project could not be saved. Please, try again.'));
         }
-        $masterClients = $this->Projects->MasterClients->find('list', ['limit' => 200])->order(['client_name'=>'ASC']);
-        $users = $this->Projects->Users->find('list', ['limit' => 200])->order(['name'=>'ASC']);
+        $masterClients = $this->Projects->MasterClients->find('list', ['limit' => 200])->order(['client_name'=>'ASC'])->where(['is_deleted'=>0]);
+        $users = $this->Projects->Users->find('list', ['limit' => 200])->order(['name'=>'ASC'])->where(['is_deleted'=>0]);
         $this->set(compact('project', 'masterClients', 'users'));
     }
 
@@ -159,8 +159,11 @@ class ProjectsController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($id = null,$url = null)
     {
+        $url = str_replace('-','%',$url);
+        $url = urldecode($url);
+
         $this->set('li','Projects');
         $project_old = $this->Projects->get($id, [
             'contain' => ['ProjectMembers']
@@ -194,7 +197,8 @@ class ProjectsController extends AppController
                     $this->Projects->ProjectMembers->save($projectMembers);
 				}
                 $this->Flash->success(__('The project has been saved.'));
-
+                echo '<meta http-equiv=REFRESH CONTENT=0;url='.$url.'>';
+                exit;
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The project could not be saved. Please, try again.'));
@@ -211,24 +215,27 @@ class ProjectsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($id = null,$url = null)
     {
-        $project = $this->Tasks->get($id, [
-            'contain' => []
-        ]);
-        $project = $this->Projects->patchEntity($project, $this->request->getData());
-        $project->is_deleted=1;
-        if ($this->Projects->save($project)) { 
-            $this->Flash->success(__('The project has been deleted.'));
-        } else {
-            $this->Flash->error(__('The project could not be deleted. Please, try again.'));
-        }
+        $url = str_replace('-','%',$url);
+        $url = urldecode($url);
 
+        $query = $this->Projects->query();
+        $query->update()
+        ->set(['Projects.is_deleted'=>1])
+        ->where(['Projects.id'=>$id])
+        ->execute();
+
+        echo '<meta http-equiv=REFRESH CONTENT=0;url='.$url.'>';
+        exit;
         return $this->redirect(['action' => 'index']);
     }
 
-    public function undodelete($id = null)
+    public function undodelete($id = null,$url = null)
     {
+        $url = str_replace('-','%',$url);
+        $url = urldecode($url);
+
         $project = $this->Projects->get($id, [
             'contain' => []
         ]);
@@ -240,10 +247,13 @@ class ProjectsController extends AppController
         } else {
             $this->Flash->error(__('The project could not be undone. Please, try again.'));
         }
+        
+        echo '<meta http-equiv=REFRESH CONTENT=0;url='.$url.'>';
+        exit;
         return $this->redirect(['action' => 'index']);
     }
 
-    public function overdue()
+    public function ProjectOverdueUpdate()
     {
         $query = $this->Projects->query();
         $query->update()
