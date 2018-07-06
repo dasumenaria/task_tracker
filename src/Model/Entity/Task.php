@@ -49,6 +49,7 @@ class Task extends Entity
         'project' => true,
         'created_user' => true,
         'completed_by' => true,
+        'task_members' => true,
         'task_email_status' => true,
         'pending_email_status' => true
     ];

@@ -146,9 +146,7 @@ class TasksController extends AppController
             
             $task = $this->Tasks->patchEntity($task,$data);
             unset($task->user_id);
-			$task->deadline=date('Y-m-d',strtotime($this->request->getData('deadline')));	 
-
-            //pr($task);exit;
+			$task->deadline=date('Y-m-d',strtotime($this->request->getData('deadline')));
 
             if ($this->Tasks->save($task)) {
                
