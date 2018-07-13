@@ -1,0 +1,201 @@
+<?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); ?>
+<style>
+#Content{ width:90% !important; margin-left: 5%;}
+input:focus {background-color:#FFF !important;}
+input[type="password"]:focus {background-color:#FFF !important;}
+div.error { display: block !important; } 
+label { font-weight:100 !important;}
+</style>
+
+<section class="content">
+<div class="col-md-12"></div>
+      <div class="row">
+        <div class="col-md-12">
+         <div class="box box-primary">
+			<div class="box-header with-border">
+              <h3 class="box-title">Edit Client</h3>
+            </div>
+			
+			<?php  echo $this->Form->create($masterClient, ['type' => 'file','id'=>"UserRegisterForm"]); ?>
+			<div class="box-body"> 
+ 				<div class="form-group col-md-4">
+					<label>Company Name</label>
+					<input type="text" class="form-control" name="client_name" value="<?php echo $masterClient->client_name;?>" id="client_name" placeholder="Enter Company Name">
+                </div>
+				<div class="form-group col-md-4">
+					<label>Alias</label>
+					<textarea type="text" class="form-control" name="location" rows="1" id="location" placeholder="Enter Alias"><?php echo $masterClient->location;?></textarea>
+                </div>
+				<div class="form-group col-md-4">
+					<label>Address</label>
+					<textarea type="text" class="form-control" name="address" id="address" placeholder="Enter Company Address"><?php echo $masterClient->address;?></textarea>
+                </div>
+				<div class="no-print" style="margin-top:20px;" id="monthly_table">
+				<?php $vf=0; foreach($masterClient->master_client_pocs as $master_client_pocs) { ?>
+					<div class="data">
+						<div class="col-md-12"><hr style="margin-top:5px;margin-bottom:5px;"></hr></div>
+						<div class="form-group col-md-3">
+							<label>Contact Person</label>
+							<input type="text" class="form-control poc" value="<?php echo $master_client_pocs->contact_person_name ?>" name="contact_person_name" id="contact_person_name" placeholder="Enter name"> 
+						</div>
+						<div class="form-group col-md-3">
+							<label>Designation</label>
+							<input type="text" class="form-control designation" value="<?php echo $master_client_pocs->designation ?>" name="designation" id="designation" placeholder="Designation"> 
+						</div>
+
+						<div class="form-group col-md-3">
+							<label>Email</label>
+							<input type="text" class="form-control email" value="<?php echo $master_client_pocs->email ?>" name="email" id="email" placeholder="Enter Email"> 
+						</div>
+						<div class="form-group col-md-2">
+							<label>Mobile No.</label>
+							<input type="text" class="form-control mobile"  maxlength="10" minlength="10"  value="<?php echo $master_client_pocs->mobile ?>" name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
+						</div>
+						<?php if($vf==0){ ?>
+						<div class="form-group col-md-1">
+							<label style="visibility:hidden">helloasdasdsdsasd</label>
+							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> </button> 
+						</div> 
+						<?php } else { ?>
+						<div class="form-group col-md-1">
+							<label style="visibility:hidden">helloasdasdsdsasd</label>
+							<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i> </button> 
+							<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i> </button>	
+						</div>
+						<?php } ?>
+					</div> 
+				<?php $vf++; } ?>
+				</div>
+				<div class="col-md-12">
+					<hr></hr>
+					<center>
+						<button type="submit" class="btn btn-info">Update</button>
+					</center>	
+				</div>	 			
+             </form>
+          </div>            
+        </div>
+       </div>
+   </section> 
+<div id="monthly" style="display:none;">
+	<div class="data">
+		<div class="col-md-12"><hr style="margin-top:5px;margin-bottom:5px;"></hr></div>
+		<div class="form-group col-md-3">
+			<label>Contact Person</label>
+			<input type="text" class="form-control poc" name="contact_person_name" id="contact_person_name" placeholder="Enter name"> 
+		</div>
+		<div class="form-group col-md-3">
+			<label>Designation</label>
+			<input type="text" class="form-control designation" name="designation" id="designation" placeholder="Designation"> 
+		</div>
+		<div class="form-group col-md-3">
+			<label>Email</label>
+			<input type="text" class="form-control email" name="email" id="email" placeholder="Enter Email"> 
+		</div>
+		<div class="form-group col-md-2">
+			<label>Mobile No.</label>
+			<input type="text" class="form-control mobile"  maxlength="10" minlength="10"  name="mobile" id="mobile" placeholder="Enter Contact Mobile No."> 
+		</div>
+		<div class="form-group col-md-1">
+			<label style="visibility:hidden">helloasdasdsdsasd</label>
+			<button type="button" class="btn btn-primary btn-xs add_row"><i class="fa fa-plus"></i>   </button> 
+			<button type="button" class="btn  btn-danger btn-xs remove_row"><i class="fa fa-times"></i>  </button>	
+		</div>
+	</div>
+</div>
+<?php echo $this->Html->script('/assets/plugins/jquery/jquery-2.2.3.min.js'); ?>
+<?php echo $this->Html->script(['jquery.validate']);?>   
+<script>  
+$.validator.addMethod("specialChars", function( value, element ) {
+	var regex = new RegExp("^[a-zA-Z ]+$");
+	var key = value;
+
+	if (!regex.test(key)) {
+	   return false;
+	}
+	return true;
+}, "please use only alphabetic characters");
+
+$('#UserRegisterForm').validate({
+	rules: {
+		"client_name": {
+			required: true,
+			specialChars: true
+		},
+		"location": {
+			required: true
+		},
+		"address": {
+			required: true,
+		},
+		"master_client_pocs[0][contact_person_name]": {
+			required: true,
+			specialChars: true
+		},
+		"master_client_pocs[0][email]": {
+			required: true,
+		},
+		"master_client_pocs[0][mobile]": {
+			required: true, 
+			digits:true,
+		},
+	},
+	messages: {
+		"client_name": {
+			required: "Please enter Clien Name."
+		},
+		"location": {
+			required: "Please enter Location."
+		},
+		"email": {
+			address: "Please enter Address."
+		}
+	},
+	ignore: ":hidden:not(select)",
+	submitHandler: function (form) {
+		$("#loader-1").show();
+		form[0].submit(); 
+	}
+});
+
+</script>
+ <script>
+function add_row()
+{   
+	var new_line=$("#monthly").html();
+	$("#monthly_table").append(new_line);
+}
+function rename_rows()
+{ 
+	var i =0;
+	$("#monthly_table .data").each(function(){  
+		$(this).find("input.poc").attr({name:"master_client_pocs["+i+"][contact_person_name]"});
+
+		$(this).find("input.email").attr({name:"master_client_pocs["+i+"][email]"});
+		
+		$(this).find("input.mobile").attr({name:"master_client_pocs["+i+"][mobile]"});
+		 
+		i++;
+	});
+		
+} 
+$(document).ready(function(){
+	<?php if($vf==0){ ?>
+	add_row(); <?php } ?>
+	rename_rows();
+});
+$( document ).ready(function() {  
+	$(document).on("click",".add_row",function(){ 
+		add_row();
+		rename_rows();
+	});
+	
+	$(document).on("click",".remove_row",function(){ 
+		$(this).closest("div .data").remove();
+		rename_rows();
+ 	});
+	//-- END GENERAL
+	 
+});
+
+</script>

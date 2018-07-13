@@ -1,0 +1,112 @@
+<?php
+namespace App\Controller\Api;
+use App\Controller\Api;
+use App\Controller\Api\AppController;
+
+/**
+ * MasterClientPocs Controller
+ *
+ * @property \App\Model\Table\MasterClientPocsTable $MasterClientPocs
+ *
+ * @method \App\Model\Entity\MasterClientPoc[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ */
+class MasterClientPocsController extends AppController
+{
+
+    /**
+     * Index method
+     *
+     * @return \Cake\Http\Response|void
+     */
+    public function index()
+    {
+        $this->paginate = [
+            'contain' => ['MasterClients']
+        ];
+        $masterClientPocs = $this->paginate($this->MasterClientPocs);
+
+        $this->set(compact('masterClientPocs'));
+    }
+
+    /**
+     * View method
+     *
+     * @param string|null $id Master Client Poc id.
+     * @return \Cake\Http\Response|void
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function view($id = null)
+    {
+        $masterClientPoc = $this->MasterClientPocs->get($id, [
+            'contain' => ['MasterClients']
+        ]);
+
+        $this->set('masterClientPoc', $masterClientPoc);
+    }
+
+    /**
+     * Add method
+     *
+     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
+     */
+    public function add()
+    {
+        $masterClientPoc = $this->MasterClientPocs->newEntity();
+        if ($this->request->is('post')) {
+            $masterClientPoc = $this->MasterClientPocs->patchEntity($masterClientPoc, $this->request->getData());
+            if ($this->MasterClientPocs->save($masterClientPoc)) {
+                $this->Flash->success(__('The master client poc has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The master client poc could not be saved. Please, try again.'));
+        }
+        $masterClients = $this->MasterClientPocs->MasterClients->find('list', ['limit' => 200]);
+        $this->set(compact('masterClientPoc', 'masterClients'));
+    }
+
+    /**
+     * Edit method
+     *
+     * @param string|null $id Master Client Poc id.
+     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
+     * @throws \Cake\Network\Exception\NotFoundException When record not found.
+     */
+    public function edit($id = null)
+    {
+        $masterClientPoc = $this->MasterClientPocs->get($id, [
+            'contain' => []
+        ]);
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $masterClientPoc = $this->MasterClientPocs->patchEntity($masterClientPoc, $this->request->getData());
+            if ($this->MasterClientPocs->save($masterClientPoc)) {
+                $this->Flash->success(__('The master client poc has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The master client poc could not be saved. Please, try again.'));
+        }
+        $masterClients = $this->MasterClientPocs->MasterClients->find('list', ['limit' => 200]);
+        $this->set(compact('masterClientPoc', 'masterClients'));
+    }
+
+    /**
+     * Delete method
+     *
+     * @param string|null $id Master Client Poc id.
+     * @return \Cake\Http\Response|null Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+    public function delete($id = null)
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        $masterClientPoc = $this->MasterClientPocs->get($id);
+        if ($this->MasterClientPocs->delete($masterClientPoc)) {
+            $this->Flash->success(__('The master client poc has been deleted.'));
+        } else {
+            $this->Flash->error(__('The master client poc could not be deleted. Please, try again.'));
+        }
+
+        return $this->redirect(['action' => 'index']);
+    }
+}
